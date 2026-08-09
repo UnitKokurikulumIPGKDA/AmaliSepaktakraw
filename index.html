@@ -2,36 +2,19 @@
 <html lang="ms">
 <head>
   <meta charset="UTF-8">
-  <!-- Langkah 1: Konfigurasi Viewport untuk Responsif -->
   <meta id="viewport-meta" name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistem Pemarkahan Amali MPU3421</title>
   <style>
-    /* Pembolehubah Tema Minimalis */
+    /* ----------------------------------------------------
+       TEMA & GAYA ASAS (CSS)
+       ---------------------------------------------------- */
     :root {
-      --primary: #1a73e8;
-      --success: #188038;
-      --danger: #d93025;
-      --bg: #f1f3f4;
-      --surface: #ffffff;
-      --text: #202124;
-      --border: #dadce0;
+      --primary: #1a73e8; --success: #188038; --danger: #d93025;
+      --bg: #f1f3f4; --surface: #ffffff; --text: #202124; --border: #dadce0;
     }
+    body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; transition: all 0.3s ease; }
+    body.force-desktop { min-width: 1024px; margin: 0 auto; }
     
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      margin: 0;
-      padding: 0;
-      transition: all 0.3s ease;
-    }
-
-    /* Kelas untuk memaksa paparan komputer pada peranti mudah alih */
-    body.force-desktop {
-      min-width: 1024px;
-      margin: 0 auto;
-    }
-
     .container { max-width: 900px; margin: 20px auto; padding: 20px; }
     .card { background: var(--surface); border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.12); padding: 24px; margin-bottom: 20px; }
     
@@ -39,29 +22,22 @@
     header h1 { margin: 0; font-size: 1.2rem; }
     
     button { background: var(--primary); color: white; border: none; padding: 10px 16px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; max-width: 300px; }
-    button:hover { opacity: 0.9; }
-    button:disabled { background: #ccc; cursor: not-allowed; }
+    button:hover { opacity: 0.9; } button:disabled { background: #ccc; cursor: not-allowed; }
     button.outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
     button.outline-white { background: transparent; border: 1px solid white; color: white; }
     
     input, select { padding: 10px; border: 1px solid var(--border); border-radius: 4px; width: 100%; box-sizing: border-box; margin-bottom: 10px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; } th, td { border: 1px solid var(--border); padding: 12px; text-align: left; } th { background-color: var(--bg); }
     
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { border: 1px solid var(--border); padding: 12px; text-align: left; }
-    th { background-color: var(--bg); }
-    
-    .hidden { display: none !important; }
-    .flex-row { display: flex; gap: 15px; flex-wrap: wrap; }
-    
+    .hidden { display: none !important; } .flex-row { display: flex; gap: 15px; flex-wrap: wrap; }
     .profile-preview { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); margin: 10px auto; display: block; }
     
-    /* Gaya Rubrik */
+    /* GAYA RUBRIK */
     .rubrik-box { border: 1px solid var(--border); border-radius: 8px; padding: 15px; margin-bottom: 15px; }
     .tahap-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 15px; }
     .tahap-card { border: 1px solid var(--border); border-radius: 4px; padding: 10px; cursor: pointer; text-align: center; }
     .tahap-card.selected { border-color: var(--primary); background-color: #e8f0fe; font-weight: bold; }
-    .mark-input-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .mark-input-group input { width: 100px; margin: 0; }
+    .mark-input-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; } .mark-input-group input { width: 100px; margin: 0; }
     
     #loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); display: flex; justify-content: center; align-items: center; z-index: 1000; font-weight: bold; font-size: 1.2rem; color: var(--primary); }
   </style>
@@ -69,74 +45,72 @@
 <body>
 
   <header>
-    <h1>Amali MPU3421</h1>
+    <h1>Sistem Amali MPU3421</h1>
     <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-      <button id="toggle-view-btn" class="outline-white" style="padding: 5px 10px; width: auto;" onclick="app.toggleDesktopView()">Tukar Paparan Komputer</button>
+      <button id="toggle-view-btn" class="outline-white" style="padding: 5px 10px; width: auto;" onclick="app.toggleDesktopView()">Paparan Komputer</button>
       <span id="user-label" class="hidden"></span>
       <button id="btn-logout" class="outline-white hidden" style="padding: 5px 10px; width: auto;" onclick="app.logout()">Log Keluar</button>
     </div>
   </header>
 
-  <div id="loader" class="hidden">Sedang Memproses...</div>
+  <div id="loader" class="hidden">Menghubungi Pangkalan Data...</div>
 
   <div class="container">
     
-    <!-- PANDANGAN: PILIHAN LOG MASUK -->
+    <!-- PANDANGAN 1: LOG MASUK -->
     <div id="view-login" class="card">
-      <h2 style="text-align: center; margin-bottom: 30px;">Selamat Datang</h2>
+      <h2 style="text-align: center; margin-bottom: 30px;">Log Masuk Utama</h2>
       <div class="flex-row" style="justify-content: space-around;">
-        
-        <!-- Login Pelajar -->
+        <!-- Akses Pelajar -->
         <div style="flex: 1; min-width: 280px; padding: 15px; border: 1px solid var(--border); border-radius: 8px;">
           <h3>Akses Pelajar</h3>
-          <p style="font-size: 0.9em; color: gray;">Muat naik gambar profil / bukti ujian.</p>
-          <input type="text" id="nokp-input" placeholder="No. Kad Pengenalan (Contoh: 010101141234)">
-          <button onclick="app.loginPelajar()">Log Masuk Pelajar</button>
+          <p style="font-size: 0.9em; color: gray;">Masukkan Kad Pengenalan Tanpa Sengkang (-)</p>
+          <input type="text" id="nokp-input" placeholder="Contoh: 010101141234">
+          <button onclick="app.loginPelajar()">Masuk</button>
         </div>
 
-        <!-- Login Kakitangan -->
+        <!-- Akses Penilai -->
         <div style="flex: 1; min-width: 280px; padding: 15px; border: 1px solid var(--border); border-radius: 8px;">
-          <h3>Akses Penilai / Pensyarah</h3>
-          <p style="font-size: 0.9em; color: gray;">Borang pemarkahan & pelaporan amali.</p>
+          <h3>Akses Penilai</h3>
+          <p style="font-size: 0.9em; color: gray;">Log masuk menggunakan PIN khas (1111/2222)</p>
           <select id="login-role">
             <option value="P1">Penilai 1</option>
             <option value="P2">Penilai 2</option>
-            <option value="PENSYARAH">Pensyarah / Penyelaras</option>
+            <option value="PENSYARAH">Penyelaras (9999)</option>
           </select>
-          <input type="password" id="login-pin" placeholder="PIN Akses">
-          <button onclick="app.loginKakitangan()">Log Masuk Kakitangan</button>
+          <input type="password" id="login-pin" placeholder="Masukkan PIN">
+          <button onclick="app.loginKakitangan()">Masuk</button>
         </div>
-
       </div>
     </div>
 
-    <!-- PANDANGAN: PROFIL PELAJAR (Muat Naik Gambar) -->
+    <!-- PANDANGAN 2: PROFIL PELAJAR (Upload Gambar) -->
     <div id="view-profil" class="card hidden">
       <h2>Profil Pelajar</h2>
-      <table style="width: 100%; max-width: 400px; margin-bottom: 20px;">
-        <tr><td><strong>Nama:</strong></td><td id="lbl-nama"></td></tr>
+      <table style="width: 100%; max-width: 500px; margin-bottom: 20px;">
+        <tr><td style="width: 30%;"><strong>Nama:</strong></td><td id="lbl-nama"></td></tr>
         <tr><td><strong>No. Giliran:</strong></td><td id="lbl-giliran"></td></tr>
-        <tr><td><strong>Status:</strong></td><td id="lbl-status" style="font-weight:bold; color:var(--primary);"></td></tr>
+        <tr><td><strong>Status Bukti:</strong></td><td id="lbl-status" style="font-weight:bold; color:var(--primary);"></td></tr>
       </table>
       
-      <div style="text-align: center; border: 1px dashed var(--border); padding: 20px; border-radius: 8px;">
-        <img id="img-preview" src="https://via.placeholder.com/150?text=Tiada+Gambar" class="profile-preview" alt="Gambar Profil">
+      <div style="text-align: center; border: 1px dashed var(--border); padding: 20px; border-radius: 8px; background: #f9f9f9;">
+        <img id="img-preview" src="" class="profile-preview" alt="Gambar Profil">
         <br>
-        <label style="font-size: 0.9em; font-weight: bold;">Pilih Gambar (Format: JPG/PNG, Max: 2MB):</label>
+        <label style="font-size: 0.9em; font-weight: bold;">Muat Naik Gambar Baru (JPG/PNG, Max 2MB):</label>
         <input type="file" id="file-input" accept="image/png, image/jpeg, image/jpg" style="max-width: 300px; display: block; margin: 10px auto;">
-        <button id="btn-upload" onclick="app.uploadImage()">Muat Naik / Kemaskini Gambar</button>
-        <p id="upload-status"></p>
+        <button id="btn-upload" onclick="app.uploadImage()">Simpan Ke Pangkalan Data</button>
+        <p id="upload-status" style="margin-top: 10px; font-weight: bold;"></p>
       </div>
     </div>
 
-    <!-- PANDANGAN: PAPAN PEMUKA PENILAI (Senarai Pelajar) -->
+    <!-- PANDANGAN 3: PAPAN PEMUKA PENILAI -->
     <div id="view-penilai" class="card hidden">
-      <h2>Senarai Pelajar Untuk Dinilai</h2>
+      <h2>Senarai Pelajar Sedia Dinilai</h2>
       <div style="overflow-x: auto;">
         <table id="table-pelajar-penilai">
           <thead>
             <tr>
-              <th>Gambar</th>
+              <th>Bukti Gambar</th>
               <th>Nama Pelajar (No KP)</th>
               <th>Kelas</th>
               <th>Tindakan</th>
@@ -147,18 +121,15 @@
       </div>
     </div>
 
-    <!-- PANDANGAN: BORANG PENILAIAN RUBRIK -->
+    <!-- PANDANGAN 4: BORANG PENILAIAN RUBRIK -->
     <div id="view-borang" class="card hidden">
-      <button class="outline" onclick="app.showView('view-penilai')" style="margin-bottom: 15px; width: auto;">&larr; Kembali ke Senarai</button>
-      <h2 id="borang-title">Borang Penilaian Amali</h2>
+      <button class="outline" onclick="app.showView('view-penilai')" style="margin-bottom: 15px; width: auto;">&larr; Kembali</button>
+      <h2 id="borang-title">Rubrik Penilaian</h2>
       <p id="borang-subtitle" style="background: #e8f0fe; padding: 10px; border-radius: 4px; font-weight: bold;"></p>
-      
-      <!-- Borang Rubrik Dinamik -->
       <div id="rubrik-container"></div>
-      
       <div style="background-color: var(--bg); padding: 15px; border-radius: 8px; display:flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 20px;">
-        <div style="font-size: 1.2rem;"><strong>Jumlah Skor:</strong> <span id="borang-total" style="color:var(--primary);">0.00</span></div>
-        <button onclick="app.simpanPenilaian()" style="width: auto;">Simpan Penilaian</button>
+        <div style="font-size: 1.2rem;"><strong>Jumlah Markah:</strong> <span id="borang-total" style="color:var(--primary);">0.00</span> / 60.00</div>
+        <button onclick="app.simpanPenilaian()" style="width: auto; background-color: var(--success)">Hantar Pemarkahan</button>
       </div>
     </div>
 
@@ -166,121 +137,93 @@
 
   <script>
     /**
-     * KONFIGURASI KURSUS (Single Source of Truth untuk Frontend)
+     * =====================================================================
+     * KONFIGURASI APLIKASI
+     * =====================================================================
      */
     const CONFIG_KURSUS = {
-      penilai: [{ id: 'P1', label: 'Penilai 1' }, { id: 'P2', label: 'Penilai 2' }],
-      pin: { P1: '1111', P2: '2222', PENSYARAH: '9999' },
+      // Masukkan pautan script anda yang dikongsikan di sini (Dipastikan betul)
+      API_URL: 'https://script.google.com/macros/s/AKfycbxIQMBSVJ5xAKBuNlArTkLw5C5-yCaRCHv_g3tug4F4lcphiX8eRMsF0rEILivZzX2A4A/exec',
+      
       tahapList: [
         { id: 'cemerlang', nama: 'Cemerlang', min: 16.0, max: 20.0 },
         { id: 'sederhana', nama: 'Sederhana', min: 10.0, max: 15.9 },
         { id: 'lemah', nama: 'Lemah', min: 0.0, max: 9.99 }
       ],
       kemahiran: [
-        { id: 'servis', nama: 'Servis (Sepak Sila)' },
-        { id: 'mengumpan', nama: 'Mengumpan' },
-        { id: 'menanduk', nama: 'Menanduk' }
+        { id: 'servis', nama: 'Kemahiran 1: Servis (Sepak Sila)' },
+        { id: 'mengumpan', nama: 'Kemahiran 2: Mengumpan' },
+        { id: 'menanduk', nama: 'Kemahiran 3: Menanduk' }
       ]
     };
 
     /**
-     * MOCK BACKEND (Untuk simulasi UI di GitHub Pages tanpa sambungan GAS)
-     */
-    const MOCK_BACKEND = {
-      loginPelajar: (payload) => {
-        if(payload.noKP === '010101') {
-          return { success: true, pelajar: { nama: 'Mock Pelajar', noKP: '010101', noGiliran: 'G01', status: 'Belum', linkGambar: '' } };
-        }
-        return { success: false, message: 'No KP tidak wujud (Guna 010101 untuk mock).' };
-      },
-      loginKakitangan: (payload) => {
-        const pinBenar = CONFIG_KURSUS.pin[payload.role];
-        if (payload.pin === pinBenar) return { success: true, role: payload.role, label: payload.role };
-        return { success: false, message: 'PIN Salah.' };
-      },
-      muatNaikGambar: (payload) => {
-        return { success: true, url: 'https://via.placeholder.com/150/0000FF/808080 ?Text=Mock+Gambar', message: 'Mock Upload Berjaya.' };
-      },
-      getPelajarList: () => [
-        { noKP: '010101', nama: 'Mock Pelajar 1', kelas: 'A', linkGambar: '' },
-        { noKP: '020202', nama: 'Mock Pelajar 2', kelas: 'B', linkGambar: '' }
-      ],
-      getPenilaianPelajar: () => ({ servis: { adaData: false }, mengumpan: { adaData: false }, menanduk: { adaData: false } }),
-      savePenilaian: () => ({ success: true })
-    };
-
-    /**
-     * APP LOGIC & STATE MANAGEMENT
+     * =====================================================================
+     * LOGIK SISTEM (FRONTEND APP)
+     * =====================================================================
      */
     const app = {
       state: {
-        isDesktopForce: false,
-        sesiSemasa: null, // 'PELAJAR' atau role penilai ('P1', 'P2', 'PENSYARAH')
-        dataPelajarSemasa: null,
-        dataPenilaianBorang: {}
+        isDesktopForce: false, sesiSemasa: null, dataPelajarSemasa: null, dataPenilaianBorang: {}
       },
 
-      /**
-       * Pembungkus Panggilan Backend Berkembar (GAS vs Mock)
-       * @param {string} action Nama fungsi di Code.gs
-       * @param {Object} payload Data untuk dihantar
+      /** 
+       * Panggilan Klien ke Server (Fetch API untuk GitHub Pages)
+       * Menggunakan kaedah POST dengan Content-Type: text/plain bagi mengelak isu CORS
        */
-      gasCall: function(action, payload) {
-        return new Promise((resolve, reject) => {
-          if (typeof google !== 'undefined' && google.script && google.script.run) {
-            google.script.run
-              .withSuccessHandler(resolve)
-              .withFailureHandler(reject)
-              .handleRequest(action, payload);
-          } else {
-            console.warn(`[MOCK MODE] Executing: ${action}`);
-            setTimeout(() => {
-              try { resolve(MOCK_BACKEND[action](payload)); } 
-              catch (err) { reject(err); }
-            }, 800);
-          }
-        });
-      },
-
-      showLoader: (show) => document.getElementById('loader').classList.toggle('hidden', !show),
-
-      showView: function(viewId) {
-        ['view-login', 'view-profil', 'view-penilai', 'view-borang'].forEach(id => {
-          document.getElementById(id).classList.add('hidden');
-        });
-        document.getElementById(viewId).classList.remove('hidden');
-      },
-
-      toggleDesktopView: function() {
-        this.state.isDesktopForce = !this.state.isDesktopForce;
-        const btn = document.getElementById('toggle-view-btn');
-        const metaViewport = document.getElementById('viewport-meta');
-        
-        if (this.state.isDesktopForce) {
-          document.body.classList.add('force-desktop');
-          metaViewport.setAttribute('content', 'width=1024'); // Paksa lebar 1024px untuk telefon
-          btn.innerText = 'Tukar Paparan Telefon';
+      gasCall: async function(action, payload) {
+        if (typeof google !== 'undefined' && google.script && google.script.run) {
+          // Fallback jika dibuka terus melalui link Google Apps Script
+          return new Promise((resolve, reject) => {
+            google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).handleRequest(action, payload);
+          });
         } else {
-          document.body.classList.remove('force-desktop');
-          metaViewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
-          btn.innerText = 'Tukar Paparan Komputer';
+          // Logik Fetch API apabila fail ini dihost di GitHub Pages
+          try {
+            const bodyData = JSON.stringify({ action: action, data: payload });
+            const response = await fetch(CONFIG_KURSUS.API_URL, {
+              method: 'POST',
+              headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // Mengelak Preflight CORS
+              body: bodyData
+            });
+            
+            if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+            
+            const result = await response.json();
+            if (result && result.success !== undefined) return result;
+            throw new Error('Respons tidak sah dari pelayan.');
+          } catch (error) {
+            console.error('[API Fetch Error]', error);
+            throw new Error('Gagal berhubung dengan pangkalan data: ' + error.message);
+          }
         }
       },
 
-      /** LOG MASUK PELAJAR */
+      showLoader: (s) => document.getElementById('loader').classList.toggle('hidden', !s),
+      showView: (v) => { ['view-login', 'view-profil', 'view-penilai', 'view-borang'].forEach(id => document.getElementById(id).classList.add('hidden')); document.getElementById(v).classList.remove('hidden'); },
+
+      toggleDesktopView: function() {
+        this.state.isDesktopForce = !this.state.isDesktopForce;
+        const btn = document.getElementById('toggle-view-btn'), meta = document.getElementById('viewport-meta');
+        if (this.state.isDesktopForce) {
+          document.body.classList.add('force-desktop'); meta.setAttribute('content', 'width=1024'); btn.innerText = 'Paparan Telefon';
+        } else {
+          document.body.classList.remove('force-desktop'); meta.setAttribute('content', 'width=device-width, initial-scale=1.0'); btn.innerText = 'Paparan Komputer';
+        }
+      },
+
+      /* ---------------- Modul Pelajar ---------------- */
       loginPelajar: async function() {
         const noKP = document.getElementById('nokp-input').value.trim();
-        if (!noKP) return alert("Sila masukkan No. Kad Pengenalan.");
-
+        if (!noKP) return alert("Sila masukkan No. KP");
         this.showLoader(true);
         try {
           const res = await this.gasCall('loginPelajar', { noKP });
           if (res.success) {
-            this.state.sesiSemasa = 'PELAJAR';
-            this.state.dataPelajarSemasa = res.pelajar;
-            this.kemaskiniHeader('Pelajar');
+            this.state.sesiSemasa = 'PELAJAR'; this.state.dataPelajarSemasa = res.pelajar;
+            document.getElementById('user-label').innerText = 'Profil: ' + res.pelajar.nama;
+            document.getElementById('user-label').classList.remove('hidden'); document.getElementById('btn-logout').classList.remove('hidden');
             
-            // Papar Data Pelajar
             document.getElementById('lbl-nama').innerText = res.pelajar.nama;
             document.getElementById('lbl-giliran').innerText = res.pelajar.noGiliran || '-';
             document.getElementById('lbl-status').innerText = res.pelajar.status || 'Belum Dimuat Naik';
@@ -288,256 +231,125 @@
             document.getElementById('upload-status').innerText = '';
             
             this.showView('view-profil');
-          } else {
-            alert(res.message);
-          }
-        } catch (e) {
-          alert('Ralat sistem: ' + e.message);
-        } finally {
-          this.showLoader(false);
-        }
+          } else alert(res.message);
+        } catch (e) { alert(e.message); } finally { this.showLoader(false); }
       },
 
-      /** MUAT NAIK GAMBAR (Base64 Reader) */
       uploadImage: function() {
         const fileInput = document.getElementById('file-input');
-        if (fileInput.files.length === 0) return alert("Sila pilih fail gambar dahulu.");
+        if (fileInput.files.length === 0) return alert("Pilih fail dahulu.");
         
         const file = fileInput.files[0];
-        // Validasi Saiz (Max 2MB)
-        if (file.size > 2097152) return alert("Saiz gambar melebihi 2MB. Sila kurangkan saiz fail.");
+        if (file.size > 2097152) return alert("Fail terlalu besar. Saiz maksimum adalah 2MB.");
 
-        const statusLbl = document.getElementById('upload-status');
-        const btn = document.getElementById('btn-upload');
-        
-        statusLbl.style.color = "#b06000";
-        statusLbl.innerText = "Membaca data fail...";
-        btn.disabled = true;
+        const statusLbl = document.getElementById('upload-status'), btn = document.getElementById('btn-upload');
+        statusLbl.style.color = "#b06000"; statusLbl.innerText = "Memproses fail..."; btn.disabled = true;
 
         const reader = new FileReader();
         reader.onload = async (e) => {
-          const base64Data = e.target.result;
-          statusLbl.innerText = "Memuat naik ke pelayan (Sila tunggu)...";
-          
+          statusLbl.innerText = "Menghantar ke Google Drive (Sila tunggu)...";
           try {
-            const res = await this.gasCall('muatNaikGambar', {
-              base64Data: base64Data,
-              filename: file.name,
-              noKP: this.state.dataPelajarSemasa.noKP
-            });
-            
+            const res = await this.gasCall('muatNaikGambar', { base64Data: e.target.result, filename: file.name, noKP: this.state.dataPelajarSemasa.noKP });
             if (res.success) {
-              statusLbl.style.color = "green";
-              statusLbl.innerText = "Berjaya dimuat naik!";
-              document.getElementById('img-preview').src = res.url;
-              document.getElementById('lbl-status').innerText = 'Selesai';
-            } else {
-              statusLbl.style.color = "red";
-              statusLbl.innerText = "Gagal: " + res.message;
-            }
-          } catch (err) {
-            statusLbl.style.color = "red";
-            statusLbl.innerText = "Ralat rangkaian: " + err.message;
-          } finally {
-            btn.disabled = false;
-          }
+              statusLbl.style.color = "green"; statusLbl.innerText = "Telah Disimpan!";
+              document.getElementById('img-preview').src = res.url; document.getElementById('lbl-status').innerText = 'Selesai';
+            } else { statusLbl.style.color = "red"; statusLbl.innerText = res.message; }
+          } catch (err) { statusLbl.style.color = "red"; statusLbl.innerText = err.message; } finally { btn.disabled = false; }
         };
         reader.readAsDataURL(file);
       },
 
-      /** LOG MASUK KAKITANGAN */
+      /* ---------------- Modul Penilai ---------------- */
       loginKakitangan: async function() {
-        const role = document.getElementById('login-role').value;
-        const pin = document.getElementById('login-pin').value.trim();
-        if (!pin) return alert("Sila masukkan PIN Akses.");
-
+        const role = document.getElementById('login-role').value, pin = document.getElementById('login-pin').value.trim();
+        if (!pin) return alert("Sila masukkan PIN.");
         this.showLoader(true);
         try {
           const res = await this.gasCall('loginKakitangan', { role, pin });
           if (res.success) {
             this.state.sesiSemasa = role;
-            this.kemaskiniHeader(`Sesi: ${res.label}`);
+            document.getElementById('user-label').innerText = 'Sesi: ' + role;
+            document.getElementById('user-label').classList.remove('hidden'); document.getElementById('btn-logout').classList.remove('hidden');
             
-            if (role === 'PENSYARAH') {
-              alert('Fungsi Papan Pemuka Pensyarah akan ditambah pada fasa seterusnya.');
-              this.logout(); // Placeholder
-            } else {
-              this.muatSenaraiPelajar();
-            }
-          } else {
-            alert(res.message);
-          }
-        } catch (e) {
-          alert('Ralat sistem: ' + e.message);
-        } finally {
-          this.showLoader(false);
-        }
+            if (role === 'PENSYARAH') { alert('Panel Laporan Pensyarah dalam pembangunan.'); this.logout(); } else this.muatSenaraiPelajar();
+          } else alert(res.message);
+        } catch (e) { alert(e.message); } finally { this.showLoader(false); }
       },
 
       muatSenaraiPelajar: async function() {
         this.showLoader(true);
         try {
           const senarai = await this.gasCall('getPelajarList');
-          const tbody = document.querySelector('#table-pelajar-penilai tbody');
-          tbody.innerHTML = '';
-          
+          const tbody = document.querySelector('#table-pelajar-penilai tbody'); tbody.innerHTML = '';
           senarai.forEach(p => {
-            const imgSrc = p.linkGambar || 'https://via.placeholder.com/50';
             const tr = document.createElement('tr');
-            tr.innerHTML = `
-              <td style="text-align:center;"><img src="${imgSrc}" style="width:50px; height:50px; border-radius:50%; object-fit:cover;"></td>
-              <td><strong>${p.nama}</strong><br><small>${p.noKP}</small></td>
-              <td>${p.kelas}</td>
-              <td><button onclick="app.bukaBorangPenilaian('${p.noKP}', '${p.nama}')" style="padding: 5px 10px; width:auto;">Nilai</button></td>
-            `;
+            tr.innerHTML = `<td style="text-align:center;"><img src="${p.linkGambar || 'https://via.placeholder.com/50?text=Tiada'}" style="width:50px; height:50px; border-radius:50%; object-fit:cover;"></td>
+              <td><strong>${p.nama}</strong><br><small>${p.noKP}</small></td><td>${p.kelas}</td>
+              <td><button onclick="app.bukaBorangPenilaian('${p.noKP}', '${p.nama}')" style="width:auto;">Nilai</button></td>`;
             tbody.appendChild(tr);
           });
           this.showView('view-penilai');
-        } catch (e) {
-          alert('Gagal mengambil senarai pelajar: ' + e.message);
-        } finally {
-          this.showLoader(false);
-        }
+        } catch (e) { alert(e.message); } finally { this.showLoader(false); }
       },
 
-      /** MODUL PENILAIAN RUBRIK */
       bukaBorangPenilaian: async function(noKP, nama) {
-        this.state.dataPelajarSemasa = { noKP, nama };
-        this.state.dataPenilaianBorang = {};
-        
-        document.getElementById('borang-subtitle').innerText = `Menilai: ${nama} | Oleh: ${this.state.sesiSemasa}`;
+        this.state.dataPelajarSemasa = { noKP, nama }; this.state.dataPenilaianBorang = {};
+        document.getElementById('borang-subtitle').innerText = `Menilai: ${nama} | Penilai: ${this.state.sesiSemasa}`;
         this.binaUIBorang();
         
         this.showLoader(true);
         try {
-          const rekodSediaAda = await this.gasCall('getPenilaianPelajar', { noKP, penilai: this.state.sesiSemasa });
-          
-          Object.keys(rekodSediaAda).forEach(kId => {
-            if (rekodSediaAda[kId].adaData) {
-              this.pilihTahapRubrik(kId, rekodSediaAda[kId].tahapId);
-              document.getElementById(`markah-${kId}`).value = rekodSediaAda[kId].markah;
-            }
-          });
-          this.kiraJumlahMarkah();
-          this.showView('view-borang');
-        } catch (e) {
-          alert('Gagal mengambil data penilaian sebelumnya.');
-        } finally {
-          this.showLoader(false);
-        }
+          const rekod = await this.gasCall('getPenilaianPelajar', { noKP, penilai: this.state.sesiSemasa });
+          Object.keys(rekod).forEach(kId => { if (rekod[kId].adaData) { this.pilihTahapRubrik(kId, rekod[kId].tahapId); document.getElementById(`markah-${kId}`).value = rekod[kId].markah; } });
+          this.kiraJumlahMarkah(); this.showView('view-borang');
+        } catch (e) { alert('Gagal muat rekod lama.'); } finally { this.showLoader(false); }
       },
 
       binaUIBorang: function() {
-        const container = document.getElementById('rubrik-container');
-        container.innerHTML = '';
-        
-        CONFIG_KURSUS.kemahiran.forEach((k, index) => {
-          let tahapHTML = '';
-          CONFIG_KURSUS.tahapList.forEach(t => {
-            tahapHTML += `
-              <div class="tahap-card" id="card-${k.id}-${t.id}" onclick="app.pilihTahapRubrik('${k.id}', '${t.id}')">
-                <h4>${t.nama}</h4>
-                <small>(${t.min} - ${t.max})</small>
-              </div>
-            `;
-          });
-
-          const html = `
-            <div class="rubrik-box">
-              <h3>${index + 1}. ${k.nama}</h3>
-              <div class="tahap-options">${tahapHTML}</div>
-              <div class="mark-input-group hidden" id="input-group-${k.id}">
-                <label>Skor Diberi:</label>
-                <input type="number" id="markah-${k.id}" step="0.1" onchange="app.kiraJumlahMarkah()">
-                <small id="hint-${k.id}" style="color:gray;"></small>
-              </div>
-            </div>
-          `;
-          container.insertAdjacentHTML('beforeend', html);
+        const c = document.getElementById('rubrik-container'); c.innerHTML = '';
+        CONFIG_KURSUS.kemahiran.forEach((k, idx) => {
+          let tHTML = '';
+          CONFIG_KURSUS.tahapList.forEach(t => { tHTML += `<div class="tahap-card" id="card-${k.id}-${t.id}" onclick="app.pilihTahapRubrik('${k.id}', '${t.id}')"><h4>${t.nama}</h4><small>(${t.min} - ${t.max})</small></div>`; });
+          c.insertAdjacentHTML('beforeend', `<div class="rubrik-box"><h3>${idx + 1}. ${k.nama}</h3><div class="tahap-options">${tHTML}</div>
+              <div class="mark-input-group hidden" id="input-group-${k.id}"><label>Skor Diberi:</label><input type="number" id="markah-${k.id}" step="0.1" onchange="app.kiraJumlahMarkah()"><small id="hint-${k.id}" style="color:gray;"></small></div></div>`);
         });
       },
 
-      pilihTahapRubrik: function(kemahiranId, tahapId) {
-        this.state.dataPenilaianBorang[kemahiranId] = tahapId;
+      pilihTahapRubrik: function(kId, tId) {
+        this.state.dataPenilaianBorang[kId] = tId;
+        CONFIG_KURSUS.tahapList.forEach(t => document.getElementById(`card-${kId}-${t.id}`).classList.remove('selected'));
+        document.getElementById(`card-${kId}-${tId}`).classList.add('selected');
         
-        CONFIG_KURSUS.tahapList.forEach(t => {
-          document.getElementById(`card-${kemahiranId}-${t.id}`).classList.remove('selected');
-        });
-        document.getElementById(`card-${kemahiranId}-${tahapId}`).classList.add('selected');
+        const tahapDef = CONFIG_KURSUS.tahapList.find(t => t.id === tId), inputEl = document.getElementById(`markah-${kId}`);
+        inputEl.min = tahapDef.min; inputEl.max = tahapDef.max;
         
-        // Clamping Data (Mengehadkan input pengguna)
-        const tahapDef = CONFIG_KURSUS.tahapList.find(t => t.id === tahapId);
-        const inputEl = document.getElementById(`markah-${kemahiranId}`);
-        inputEl.min = tahapDef.min;
-        inputEl.max = tahapDef.max;
-        
-        // Tetapkan nilai lalai max jika kosong, atau kekalkan dalam julat jika ditukar tahap
-        let currentVal = Number(inputEl.value);
-        if (!inputEl.value || currentVal < tahapDef.min || currentVal > tahapDef.max) {
-          inputEl.value = tahapDef.max;
-        }
-        
-        document.getElementById(`hint-${kemahiranId}`).innerText = `Julat Sah: ${tahapDef.min} - ${tahapDef.max}`;
-        document.getElementById(`input-group-${kemahiranId}`).classList.remove('hidden');
-        
-        this.kiraJumlahMarkah();
+        let cur = Number(inputEl.value); if (!inputEl.value || cur < tahapDef.min || cur > tahapDef.max) inputEl.value = tahapDef.max;
+        document.getElementById(`hint-${kId}`).innerText = `Sah: ${tahapDef.min} - ${tahapDef.max}`;
+        document.getElementById(`input-group-${kId}`).classList.remove('hidden'); this.kiraJumlahMarkah();
       },
 
       kiraJumlahMarkah: function() {
-        let total = 0;
-        CONFIG_KURSUS.kemahiran.forEach(k => {
-          const val = document.getElementById(`markah-${k.id}`)?.value;
-          total += Number(val) || 0;
-        });
-        document.getElementById('borang-total').innerText = total.toFixed(2);
+        let t = 0; CONFIG_KURSUS.kemahiran.forEach(k => { t += Number(document.getElementById(`markah-${k.id}`)?.value) || 0; });
+        document.getElementById('borang-total').innerText = t.toFixed(2);
       },
 
       simpanPenilaian: async function() {
-        const payload = {
-          noKP: this.state.dataPelajarSemasa.noKP,
-          penilai: this.state.sesiSemasa,
-          kemahiran: {}
-        };
-        
+        const payload = { noKP: this.state.dataPelajarSemasa.noKP, penilai: this.state.sesiSemasa, kemahiran: {} };
         for (const k of CONFIG_KURSUS.kemahiran) {
-          const tahapId = this.state.dataPenilaianBorang[k.id];
-          const markah = document.getElementById(`markah-${k.id}`).value;
-          
-          if (!tahapId || !markah) return alert(`Sila lengkapkan pilihan tahap bagi kemahiran: ${k.nama}`);
-          payload.kemahiran[k.id] = { tahapId, markah: Number(markah) };
+          const tId = this.state.dataPenilaianBorang[k.id], m = document.getElementById(`markah-${k.id}`).value;
+          if (!tId || !m) return alert(`Sila lengkapkan maklumat bagi: ${k.nama}`);
+          payload.kemahiran[k.id] = { tahapId: tId, markah: Number(m) };
         }
 
         this.showLoader(true);
-        try {
-          await this.gasCall('savePenilaian', payload);
-          alert('Penilaian berjaya disimpan.');
-          this.showView('view-penilai');
-        } catch (e) {
-          alert('Gagal menyimpan: ' + e.message);
-        } finally {
-          this.showLoader(false);
-        }
-      },
-
-      /** PENGURUSAN SESI */
-      kemaskiniHeader: function(label) {
-        document.getElementById('user-label').innerText = label;
-        document.getElementById('user-label').classList.remove('hidden');
-        document.getElementById('btn-logout').classList.remove('hidden');
+        try { await this.gasCall('savePenilaian', payload); alert('Berjaya disimpan!'); this.showView('view-penilai'); } 
+        catch (e) { alert(e.message); } finally { this.showLoader(false); }
       },
 
       logout: function() {
-        this.state.sesiSemasa = null;
-        this.state.dataPelajarSemasa = null;
-        
-        document.getElementById('user-label').classList.add('hidden');
-        document.getElementById('btn-logout').classList.add('hidden');
-        
-        // Reset input fields
-        document.getElementById('nokp-input').value = '';
-        document.getElementById('login-pin').value = '';
-        document.getElementById('login-role').value = 'P1';
-        
+        this.state.sesiSemasa = null; this.state.dataPelajarSemasa = null;
+        ['nokp-input', 'login-pin'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('user-label').classList.add('hidden'); document.getElementById('btn-logout').classList.add('hidden');
         this.showView('view-login');
       }
     };
