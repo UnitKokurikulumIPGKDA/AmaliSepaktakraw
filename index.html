@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pemarkahan Amali Sepak Takraw - MPU3421</title>
+  <style>
+    :root {
+      --primary: #1a73e8;
+      --success: #188038;
+      --danger: #d93025;
+      --bg: #f1f3f4;
+      --surface: #ffffff;
+      --text: #202124;
+      --border: #dadce0;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+    }
+    .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+    .card { background: var(--surface); border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.12); padding: 24px; margin-bottom: 20px; }
+    h1, h2, h3 { margin-top: 0; }
+    header { background: var(--primary); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+    header h1 { margin: 0; font-size: 1.2rem; }
+    button { background: var(--primary); color: white; border: none; padding: 10px 16px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+    button:hover { opacity: 0.9; }
+    button.outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
+    input, select { padding: 10px; border: 1px solid var(--border); border-radius: 4px; width: 100%; box-sizing: border-box; margin-bottom: 10px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid var(--border); padding: 12px; text-align: left; }
+    th { background-color: var(--bg); }
+    .hidden { display: none !important; }
+    .rubrik-box { border: 1px solid var(--border); border-radius: 8px; padding: 15px; margin-bottom: 15px; }
+    .tahap-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
+    .tahap-card { border: 1px solid var(--border); border-radius: 4px; padding: 10px; cursor: pointer; }
+    .tahap-card.selected { border-color: var(--primary); background-color: #e8f0fe; }
+    .mark-input-group { display: flex; align-items: center; gap: 10px; }
+    .mark-input-group input { width: 100px; margin: 0; }
+    .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; }
+    .status-lengkap { background: #ceead6; color: var(--success); }
+    .status-separuh { background: #fef7e0; color: #b06000; }
+    .status-belum { background: #fad2cf; color: var(--danger); }
+    #loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); display: flex; justify-content: center; align-items: center; z-index: 1000; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>MPU3421 - Ujian Amali Kemahiran Sepak Takraw</h1>
+    <div id="user-info" class="hidden">
+      <span id="user-label"></span>
+      <button class="outline" style="margin-left: 15px; color: white; border-color: white;" onclick="app.logout()">Log Keluar</button>
+    </div>
+  </header>
+
+  <div id="loader" class="hidden">Sila Tunggu...</div>
+
+  <div class="container">
+    
+    <!-- PANDANGAN: LOG MASUK -->
+    <div id="view-login" class="card">
+      <h2>Log Masuk Sistem</h2>
+      <p>Sila masukkan peranan dan PIN anda untuk meneruskan.</p>
+      <div>
+        <label>Peranan:</label>
+        <select id="login-role">
+          <option value="P1">Penilai 1</option>
+          <option value="P2">Penilai 2</option>
+          <option value="PENSYARAH">Pensyarah / Penyelaras</option>
+        </select>
+        <label>PIN:</label>
+        <input type="password" id="login-pin" placeholder="Masukkan PIN" autocomplete="off">
+        <button onclick="app.login()">Log Masuk</button>
+      </div>
+      <div style="margin-top:20px; font-size:0.85em; color:gray;">
+        *PIN Demo: P1 (1111), P2 (2222), Pensyarah (9999). 
+        <br>*Jika dibuka terus dalam pelayar, sistem ini menggunakan data simulasi (Mock Data).
+      </div>
+    </div>
+
+    <!-- PANDANGAN: PAPAN PEMUKA PENILAI (SENARAI PELAJAR) -->
+    <div id="view-penilai" class="card hidden">
+      <h2>Senarai Pelajar</h2>
+      <p>Pilih pelajar untuk melaksanakan atau mengemaskini penilaian amali.</p>
+      <div style="overflow-x: auto;">
+        <table id="table-pelajar-penilai">
+          <thead>
+            <tr>
+              <th>Angka Giliran</th>
+              <th>Nama Pelajar</th>
+              <th>Kumpulan</th>
+              <th>Tindakan</th>
+            </tr>
+          </thead>
+          <tbody><!-- Dijana Dinamik --></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PANDANGAN: BORANG PENILAIAN RUBRIK -->
+    <div id="view-borang" class="card hidden">
+      <button class="outline" onclick="app.showView('view-penilai')" style="margin-bottom: 15px;">&larr; Kembali</button>
+      <h2 id="borang-title">Borang Penilaian</h2>
+      <p id="borang-subtitle"></p>
+      
+      <div id="rubrik-container">
+        <!-- Borang rubrik dijana secara dinamik -->
+      </div>
+      
+      <div class="card" style="background-color: #f8f9fa; display:flex; justify-content: space-between; align-items: center;">
+        <div><strong>Jumlah Markah (Anggaran):</strong> <span id="borang-total">0.00</span> / 60.00</div>
+        <button onclick="app.simpanPenilaian()">Simpan Penilaian</button>
+      </div>
+    </div>
+
+    <!-- PANDANGAN: PAPAN PEMUKA PENSYARAH (LAPORAN KESELURUHAN) -->
+    <div id="view-pensyarah" class="card hidden">
+      <h2>Laporan Keseluruhan Penilaian</h2>
+      <div style="overflow-x: auto;">
+        <table id="table-laporan">
+          <thead>
+            <tr>
+              <th>Angka Giliran</th>
+              <th>Nama Pelajar</th>
+              <th>Status</th>
+              <th>Markah P1</th>
+              <th>Markah P2</th>
+              <th>Purata (Akhir)</th>
+            </tr>
+          </thead>
+          <tbody><!-- Dijana Dinamik --></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    /**
+     * =====================================================================
+     * CONFIG_KURSUS (SALINAN IDENTIK DARI Code.gs)
+     * =====================================================================
+     */
+    const CONFIG_KURSUS = {
+      kodKursus: 'MPU3421',
+      namaKursus: 'Sepak Takraw - Ujian Amali Kemahiran',
+      program: 'PISMP · Tahun 2 / Semester I',
+      tugasan: 'UJIAN AMALI: KEMAHIRAN SEPAK TAKRAW (60%)',
+      wajaranPeratus: 60,
+      markahMaxSetiapKemahiran: 20,
+      penilai: [
+        { id: 'P1', label: 'Penilai 1' },
+        { id: 'P2', label: 'Penilai 2' }
+      ],
+      pin: { P1: '1111', P2: '2222', PENSYARAH: '9999' },
+      tahapList: [
+        { id: 'cemerlang', nama: 'Cemerlang', min: 16.0, max: 20.0 },
+        { id: 'sederhana', nama: 'Sederhana', min: 10.0, max: 15.9 },
+        { id: 'lemah', nama: 'Lemah', min: 0.0, max: 9.99 }
+      ],
+      kemahiran: [
+        { id: 'servis', nama: 'Servis (Sepak Sila)', kod: '[P3, HPP3]', tahap: {
+            cemerlang: { sebelum: 'Kedudukan kaki mantap...', semasa: 'Teknik tepat...', selepas: 'Ikut lajak lancar...' },
+            sederhana: { sebelum: 'Kaki sokongan di bulatan...', semasa: 'Teknik betul...', selepas: 'Ikut lajak asas...' },
+            lemah: { sebelum: 'Kaki keluar bulatan...', semasa: 'Gagal teknik...', selepas: 'Tiada ikut lajak...' }
+          }
+        },
+        { id: 'mengumpan', nama: 'Mengumpan', kod: '[P3, HPP3]', tahap: {
+            cemerlang: { sebelum: 'Langkah kukuh...', semasa: 'Sentuhan lembut...', selepas: 'Ikut lajak kemas...' },
+            sederhana: { sebelum: 'Berdiri selesa...', semasa: 'Teknik hantaran...', selepas: 'Ikut lajak asas...' },
+            lemah: { sebelum: 'Langkah tak seimbang...', semasa: 'Sentuhan tak tepat...', selepas: 'Tiada ikut lajak...' }
+          }
+        },
+        { id: 'menanduk', nama: 'Menanduk', kod: '[P3, HPP3]', tahap: {
+            cemerlang: { sebelum: 'Bacaan tepat...', semasa: 'Kontak dahi tepat...', selepas: 'Mendarat seimbang...' },
+            sederhana: { sebelum: 'Berdiri selesa...', semasa: 'Kontak dahi...', selepas: 'Serap daya...' },
+            lemah: { sebelum: 'Pasif...', semasa: 'Kontak salah...', selepas: 'Hilang imbangan...' }
+          }
+        }
+      ]
+    };
+
+    /**
+     * =====================================================================
+     * MOCK BACKEND (Hanya digunakan jika google.script.run tiada)
+     * =====================================================================
+     */
+    const MOCK_BACKEND = {
+      login: (payload) => {
+        const pinBenar = CONFIG_KURSUS.pin[payload.role];
+        if (payload.pin !== pinBenar) return { success: false, message: 'PIN salah.' };
+        const label = payload.role === 'PENSYARAH' ? 'Pensyarah' : 'Penilai';
+        return { success: true, role: payload.role, label: label };
+      },
+      getPelajarList: () => [
+        { angkaGiliran: '2023001', nama: 'Ahmad Faiz bin Rosli', kumpulan: 'Kumpulan A' },
+        { angkaGiliran: '2023002', nama: 'Nurul Ain binti Zulkifli', kumpulan: 'Kumpulan A' }
+      ],
+      getPenilaianPelajar: () => {
+        const result = {};
+        CONFIG_KURSUS.kemahiran.forEach(k => result[k.id] = { tahapId: null, markah: null, adaData: false });
+        return result; // Mock sentiasa kosong untuk sesi baru
+      },
+      savePenilaian: () => ({ success: true }),
+      getLaporan: () => [
+        { angkaGiliran: '2023001', nama: 'Ahmad Faiz', status: 'lengkap', totalP1: 45, totalP2: 46, purata: 45.5 },
+        { angkaGiliran: '2023002', nama: 'Nurul Ain', status: 'separuh', totalP1: 50, totalP2: null, purata: null }
+      ]
+    };
+
+    /**
+     * =====================================================================
+     * APP LOGIC & STATE
+     * =====================================================================
+     */
+    const app = {
+      state: {
+        role: null,
+        angkaGiliranSemasa: null,
+        namaPelajarSemasa: null,
+        dataPenilaian: {}
+      },
+
+      /**
+       * Pembungkus Panggilan Backend Berkembar (Dual-Mode Router)
+       * Membolehkan kod berjalan di persekitaran web tempatan (mock) atau GAS sebenar.
+       */
+      gasCall: function(action, payload) {
+        return new Promise((resolve, reject) => {
+          if (typeof google !== 'undefined' && google.script && google.script.run) {
+            google.script.run
+              .withSuccessHandler(resolve)
+              .withFailureHandler(reject)
+              .handleRequest(action, payload);
+          } else {
+            console.warn(`[MOCK MODE] Executing action: ${action}`);
+            setTimeout(() => {
+              try {
+                const response = MOCK_BACKEND[action](payload);
+                resolve(response);
+              } catch (err) {
+                reject(err);
+              }
+            }, 500); // Simulate network latency
+          }
+        });
+      },
+
+      showLoader: (show) => {
+        document.getElementById('loader').classList.toggle('hidden', !show);
+      },
+
+      showView: (viewId) => {
+        ['view-login', 'view-penilai', 'view-borang', 'view-pensyarah'].forEach(id => {
+          document.getElementById(id).classList.add('hidden');
+        });
+        document.getElementById(viewId).classList.remove('hidden');
+      },
+
+      login: async function() {
+        const role = document.getElementById('login-role').value;
+        const pin = document.getElementById('login-pin').value;
+        
+        if (!pin) return alert('Sila masukkan PIN.');
+        
+        this.showLoader(true);
+        try {
+          const res = await this.gasCall('login', { role, pin });
+          if (res.success) {
+            this.state.role = res.role;
+            document.getElementById('user-label').innerText = `${res.label} (${res.role})`;
+            document.getElementById('user-info').classList.remove('hidden');
+            
+            if (res.role === 'PENSYARAH') {
+              this.loadLaporan();
+            } else {
+              this.loadPelajar();
+            }
+          } else {
+            alert(res.message);
+          }
+        } catch (e) {
+          alert('Ralat sistem: ' + e.message);
+        } finally {
+          this.showLoader(false);
+        }
+      },
+
+      logout: function() {
+        this.state.role = null;
+        document.getElementById('user-info').classList.add('hidden');
+        document.getElementById('login-pin').value = '';
+        this.showView('view-login');
+      },
+
+      loadPelajar: async function() {
+        this.showLoader(true);
+        try {
+          const pelajar = await this.gasCall('getPelajarList');
+          const tbody = document.querySelector('#table-pelajar-penilai tbody');
+          tbody.innerHTML = '';
+          
+          pelajar.forEach(p => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td>${p.angkaGiliran}</td>
+              <td>${p.nama}</td>
+              <td>${p.kumpulan}</td>
+              <td><button onclick="app.bukaBorang('${p.angkaGiliran}', '${p.nama}')">Buka Penilaian</button></td>
+            `;
+            tbody.appendChild(tr);
+          });
+          this.showView('view-penilai');
+        } catch (e) {
+          alert('Gagal memuatkan senarai pelajar: ' + e.message);
+        } finally {
+          this.showLoader(false);
+        }
+      },
+
+      binaUIBorang: function() {
+        const container = document.getElementById('rubrik-container');
+        container.innerHTML = '';
+        
+        CONFIG_KURSUS.kemahiran.forEach((k, index) => {
+          let tahapHTML = '';
+          CONFIG_KURSUS.tahapList.forEach(t => {
+            tahapHTML += `
+              <div class="tahap-card" id="card-${k.id}-${t.id}" onclick="app.pilihTahap('${k.id}', '${t.id}')">
+                <h4>${t.nama} (${t.min} - ${t.max})</h4>
+              </div>
+            `;
+          });
+
+          const html = `
+            <div class="rubrik-box" id="kemahiran-${k.id}">
+              <h3>${index + 1}. ${k.nama} <small style="font-weight:normal; color:gray">${k.kod}</small></h3>
+              <div class="tahap-options">${tahapHTML}</div>
+              <div class="mark-input-group hidden" id="input-group-${k.id}">
+                <label>Markah Ditentukan:</label>
+                <input type="number" id="markah-${k.id}" step="0.1" onchange="app.kiraTotal()">
+                <small id="hint-${k.id}" style="color:gray;"></small>
+              </div>
+            </div>
+          `;
+          container.insertAdjacentHTML('beforeend', html);
+        });
+      },
+
+      pilihTahap: function(kemahiranId, tahapId) {
+        this.state.dataPenilaian[kemahiranId] = tahapId;
+        
+        // Reset CSS pilihan
+        CONFIG_KURSUS.tahapList.forEach(t => {
+          document.getElementById(`card-${kemahiranId}-${t.id}`).classList.remove('selected');
+        });
+        document.getElementById(`card-${kemahiranId}-${tahapId}`).classList.add('selected');
+        
+        // Tetapkan had markah (Clamping Layer 1 - UI)
+        const tahapDef = CONFIG_KURSUS.tahapList.find(t => t.id === tahapId);
+        const inputEl = document.getElementById(`markah-${kemahiranId}`);
+        inputEl.min = tahapDef.min;
+        inputEl.max = tahapDef.max;
+        inputEl.value = inputEl.value === "" ? tahapDef.max : Math.max(tahapDef.min, Math.min(tahapDef.max, inputEl.value));
+        
+        document.getElementById(`hint-${kemahiranId}`).innerText = `(Julat Sah: ${tahapDef.min} - ${tahapDef.max})`;
+        document.getElementById(`input-group-${kemahiranId}`).classList.remove('hidden');
+        
+        this.kiraTotal();
+      },
+
+      kiraTotal: function() {
+        let total = 0;
+        CONFIG_KURSUS.kemahiran.forEach(k => {
+          const val = document.getElementById(`markah-${k.id}`)?.value;
+          total += Number(val) || 0;
+        });
+        document.getElementById('borang-total').innerText = total.toFixed(2);
+      },
+
+      bukaBorang: async function(angkaGiliran, nama) {
+        this.state.angkaGiliranSemasa = angkaGiliran;
+        this.state.namaPelajarSemasa = nama;
+        this.state.dataPenilaian = {};
+        
+        document.getElementById('borang-subtitle').innerText = `${nama} (${angkaGiliran}) - Dinilai oleh ${this.state.role}`;
+        this.binaUIBorang();
+        
+        this.showLoader(true);
+        try {
+          const existingData = await this.gasCall('getPenilaianPelajar', { angkaGiliran, penilai: this.state.role });
+          
+          Object.keys(existingData).forEach(kId => {
+            if (existingData[kId].adaData) {
+              this.pilihTahap(kId, existingData[kId].tahapId);
+              document.getElementById(`markah-${kId}`).value = existingData[kId].markah;
+            }
+          });
+          this.kiraTotal();
+          this.showView('view-borang');
+        } catch (e) {
+          alert('Gagal mengambil data penilaian sedia ada.');
+        } finally {
+          this.showLoader(false);
+        }
+      },
+
+      simpanPenilaian: async function() {
+        const payload = {
+          angkaGiliran: this.state.angkaGiliranSemasa,
+          penilai: this.state.role,
+          kemahiran: {}
+        };
+        
+        // Pengumpulan & Pengesahan Data Tempatan
+        for (const k of CONFIG_KURSUS.kemahiran) {
+          const tahapId = this.state.dataPenilaian[k.id];
+          const markah = document.getElementById(`markah-${k.id}`).value;
+          
+          if (!tahapId || !markah) {
+            return alert(`Sila lengkapkan pilihan tahap dan markah untuk kemahiran: ${k.nama}`);
+          }
+          
+          const tahapDef = CONFIG_KURSUS.tahapList.find(t => t.id === tahapId);
+          if (markah < tahapDef.min || markah > tahapDef.max) {
+            return alert(`Markah bagi ${k.nama} mesti dalam julat ${tahapDef.min} hingga ${tahapDef.max}.`);
+          }
+          
+          payload.kemahiran[k.id] = { tahapId, markah: Number(markah) };
+        }
+
+        this.showLoader(true);
+        try {
+          await this.gasCall('savePenilaian', payload);
+          alert('Penilaian berjaya disimpan.');
+          this.showView('view-penilai');
+        } catch (e) {
+          alert('Gagal menyimpan: ' + e.message);
+        } finally {
+          this.showLoader(false);
+        }
+      },
+
+      loadLaporan: async function() {
+        this.showLoader(true);
+        try {
+          const laporan = await this.gasCall('getLaporan');
+          const tbody = document.querySelector('#table-laporan tbody');
+          tbody.innerHTML = '';
+          
+          laporan.forEach(p => {
+            let statusBadge = '';
+            if (p.status === 'lengkap') statusBadge = '<span class="status-badge status-lengkap">Lengkap</span>';
+            else if (p.status === 'separuh') statusBadge = '<span class="status-badge status-separuh">Separuh Lengkap</span>';
+            else statusBadge = '<span class="status-badge status-belum">Belum Dinilai</span>';
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td>${p.angkaGiliran}</td>
+              <td>${p.nama}<br><small>${p.kumpulan}</small></td>
+              <td>${statusBadge}</td>
+              <td>${p.totalP1 !== null ? p.totalP1.toFixed(2) : '-'}</td>
+              <td>${p.totalP2 !== null ? p.totalP2.toFixed(2) : '-'}</td>
+              <td><strong>${p.purata !== null ? p.purata.toFixed(2) : '-'}</strong></td>
+            `;
+            tbody.appendChild(tr);
+          });
+          this.showView('view-pensyarah');
+        } catch (e) {
+          alert('Ralat memuatkan laporan: ' + e.message);
+        } finally {
+          this.showLoader(false);
+        }
+      }
+    };
+  </script>
+</body>
+</html>
