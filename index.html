@@ -3,384 +3,214 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Aplikasi Pemarkahan Sukan MPU3421</title>
+  <title>Portal Sukan MPU3421</title>
+  <!-- Google Fonts: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] }, colors: { brand: '#2563eb' } } }
+    }
+  </script>
   <style>
-    /* ----------------------------------------------------
-       TEMA & GAYA ASAS MOBILE-FIRST SPORTS UI
-       ---------------------------------------------------- */
-    :root {
-      --sports-primary: #0f172a;
-      --sports-accent: #2563eb;
-      --sports-success: #16a34a;
-      --sports-warning: #d97706;
-      --sports-danger: #dc2626;
-      --bg-body: #f8fafc;
-      --surface: #ffffff;
-      --text-main: #0f172a;
-      --text-sub: #64748b;
-      --border: #e2e8f0;
-      --radius: 12px;
-    }
-
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background-color: var(--bg-body);
-      color: var(--text-main);
-      margin: 0;
-      padding: 0;
-      padding-bottom: 80px; /* Space for mobile navigation bar */
-    }
-
-    /* Top App Bar */
-    .top-bar {
-      background: var(--sports-primary);
-      color: white;
-      padding: 16px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
-    }
-
-    .top-bar h1 {
-      margin: 0;
-      font-size: 1.1rem;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-    }
-
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 16px;
-    }
-
-    /* Sports Mobile Cards */
-    .sports-card {
-      background: var(--surface);
-      border-radius: var(--radius);
-      padding: 20px;
-      margin-bottom: 16px;
-      border: 1px solid var(--border);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    }
-
-    /* Buttons & Form Elements (Min Touch Target 48px) */
-    button {
-      background: var(--sports-accent);
-      color: white;
-      border: none;
-      min-height: 48px;
-      padding: 12px 20px;
-      border-radius: var(--radius);
-      font-size: 1rem;
-      font-weight: 600;
-      width: 100%;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    button:active { transform: scale(0.98); }
-    button:disabled { background: #94a3b8; cursor: not-allowed; }
-    button.btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--text-main); }
-    button.btn-success { background: var(--sports-success); }
-
-    input, select, textarea {
-      width: 100%;
-      min-height: 48px;
-      padding: 12px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 1rem;
-      margin-bottom: 12px;
-      background: #f8fafc;
-      color: var(--text-main);
-    }
-
-    textarea { min-height: 100px; resize: vertical; line-height: 1.4; }
-
-    /* Rubric Card Specifics for Mobile */
-    .rubrik-box {
-      background: var(--surface);
-      border-radius: var(--radius);
-      padding: 16px;
-      margin-bottom: 16px;
-      border: 1px solid var(--border);
-    }
-
-    .tahap-options {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin: 12px 0;
-    }
-
-    .tahap-card {
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      padding: 12px 4px;
-      text-align: center;
-      background: #f8fafc;
-      cursor: pointer;
-    }
-
-    .tahap-card h4 { margin: 0; font-size: 0.9rem; }
-    .tahap-card small { font-size: 0.75rem; color: var(--text-sub); }
-
-    .tahap-card.selected {
-      border-color: var(--sports-accent);
-      background: #eff6ff;
-      color: var(--sports-accent);
-      font-weight: bold;
-    }
-
-    /* Profile Image Style */
-    .profile-preview {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 3px solid var(--sports-accent);
-      margin: 10px auto;
-      display: block;
-    }
-
-    /* Tables for Reports */
-    .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    table { width: 100%; border-collapse: collapse; margin-top: 8px; }
-    th, td { padding: 12px 8px; border-bottom: 1px solid var(--border); text-align: left; font-size: 0.9rem; }
-    th { background: #f1f5f9; font-weight: 600; }
-
-    /* Status Badges */
-    .badge {
-      padding: 4px 8px;
-      border-radius: 12px;
-      font-size: 0.75rem;
-      font-weight: 700;
-    }
-    .badge-success { background: #dcfce7; color: var(--sports-success); }
-    .badge-warning { background: #fef3c7; color: var(--sports-warning); }
-    .badge-danger { background: #fee2e2; color: var(--sports-danger); }
-
-    .hidden { display: none !important; }
-
-    /* Loader Modal */
-    #loader {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(15, 23, 42, 0.7);
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-      font-weight: 600;
-    }
+    body { -webkit-tap-highlight-color: transparent; }
+    /* Animasi Transisi Halus */
+    .view-transition { transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; }
+    .hidden { display: none !important; opacity: 0; transform: translateY(10px); }
   </style>
 </head>
-<body>
+<body class="bg-slate-50 text-slate-800 antialiased pb-24">
 
-  <!-- Top App Bar -->
-  <div class="top-bar">
-    <h1>MPU3421 Sepak Takraw</h1>
-    <div id="user-info" class="hidden">
-      <span id="user-label" style="font-size: 0.85rem; margin-right: 8px;"></span>
-      <button onclick="app.logout()" class="btn-outline" style="min-height:32px; padding: 4px 8px; width: auto; color: white; border-color: white; font-size: 0.8rem;">Keluar</button>
+  <!-- AppBar Moden -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm px-5 py-4 flex justify-between items-center">
+    <div class="flex items-center gap-3">
+      <div class="bg-brand text-white w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm">ST</div>
+      <h1 class="font-semibold text-slate-900 tracking-tight text-lg">MPU3421</h1>
     </div>
+    <div id="user-info" class="hidden flex items-center gap-3">
+      <span id="user-label" class="text-xs font-medium text-slate-500 bg-slate-100 px-3 py-1.5 rounded-full"></span>
+      <button onclick="app.logout()" class="text-sm font-medium text-rose-600 hover:bg-rose-50 px-3 py-1.5 rounded-lg transition-colors">Keluar</button>
+    </div>
+  </header>
+
+  <!-- Overlay Loading Selesa -->
+  <div id="loader" class="hidden fixed inset-0 bg-white/80 backdrop-blur-sm z-50 flex flex-col justify-center items-center">
+    <div class="w-10 h-10 border-4 border-brand border-t-transparent rounded-full animate-spin mb-4"></div>
+    <p class="font-medium text-slate-600 animate-pulse">Menghubungi Pelayan...</p>
   </div>
 
-  <div id="loader" class="hidden">Sistem Memproses Data...</div>
-
-  <div class="container">
+  <main class="max-w-2xl mx-auto px-4 mt-6">
     
-    <!-- PANDANGAN 1: LOG MASUK DUA MOD -->
-    <div id="view-login" class="sports-card">
-      <h2 style="margin-top:0; text-align:center;">Log Masuk Portal</h2>
+    <!-- PANDANGAN 1: LOG MASUK (UX Dipertingkat) -->
+    <div id="view-login" class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-slate-100 view-transition">
+      <h2 class="text-2xl font-bold text-slate-900 mb-2">Selamat Datang</h2>
+      <p class="text-slate-500 text-sm mb-8">Pilih peranan anda untuk mengakses sistem pemarkahan.</p>
       
-      <div style="margin-bottom: 20px;">
-        <label style="font-weight:600; font-size:0.9rem;">Pilih Mod Akses:</label>
-        <select id="login-mod" onchange="app.tukarModLogin()">
-          <option value="PELAJAR">Pelajar (Muat Naik Bukti/Gambar)</option>
-          <option value="PENILAI">Penilai / Pensyarah (Pemarkahan)</option>
-        </select>
+      <!-- Segmented Control untuk Mod -->
+      <div class="flex bg-slate-100 p-1 rounded-xl mb-8">
+        <button id="tab-pelajar" onclick="app.setModLogin('PELAJAR')" class="flex-1 py-2.5 text-sm font-medium rounded-lg bg-white shadow text-slate-900 transition-all">Pelajar</button>
+        <button id="tab-penilai" onclick="app.setModLogin('PENILAI')" class="flex-1 py-2.5 text-sm font-medium rounded-lg text-slate-500 hover:text-slate-700 transition-all">Penilai</button>
       </div>
 
       <!-- Form Pelajar -->
-      <div id="form-pelajar">
-        <label style="font-size:0.85rem; color: var(--text-sub);">No. Kad Pengenalan (tanpa sengkang):</label>
-        <input type="text" id="nokp-input" placeholder="Cth: 010101141234">
-        <button onclick="app.loginPelajar()">Log Masuk Pelajar</button>
+      <div id="form-pelajar" class="space-y-5">
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1.5">No. Kad Pengenalan</label>
+          <input type="text" id="nokp-input" class="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all" placeholder="Cth: 010101141234">
+        </div>
+        <button onclick="app.loginPelajar()" class="w-full bg-brand hover:bg-blue-700 text-white font-medium py-3.5 px-4 rounded-xl shadow-sm focus:ring-4 focus:ring-blue-100 transition-all active:scale-[0.98]">Log Masuk Pelajar</button>
       </div>
 
       <!-- Form Penilai -->
-      <div id="form-penilai" class="hidden">
-        <label style="font-size:0.85rem; color: var(--text-sub);">Peranan Penilai:</label>
-        <select id="login-role">
-          <option value="P1">Penilai 1</option>
-          <option value="P2">Penilai 2</option>
-          <option value="PENSYARAH">Pensyarah / Penyelaras</option>
-        </select>
-        <label style="font-size:0.85rem; color: var(--text-sub);">PIN Akses:</label>
-        <input type="password" id="login-pin" placeholder="Masukkan PIN">
-        <button onclick="app.loginKakitangan()">Log Masuk Penilai</button>
+      <div id="form-penilai" class="hidden space-y-5">
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1.5">Peranan Akses</label>
+          <select id="login-role" class="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand bg-white appearance-none transition-all">
+            <option value="P1">Penilai 1</option>
+            <option value="P2">Penilai 2</option>
+            <option value="PENSYARAH">Penyelaras / Pensyarah</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1.5">PIN Keselamatan</label>
+          <input type="password" id="login-pin" class="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand transition-all" placeholder="Masukkan PIN">
+        </div>
+        <button onclick="app.loginKakitangan()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-medium py-3.5 px-4 rounded-xl shadow-sm focus:ring-4 focus:ring-slate-200 transition-all active:scale-[0.98]">Log Masuk Portal</button>
       </div>
     </div>
 
-    <!-- PANDANGAN 2: PROFIL & UPLOAD PELAJAR -->
-    <div id="view-profil" class="sports-card hidden">
-      <h2 style="margin-top:0;">Profil & Gambar Bukti</h2>
-      <div style="margin-bottom: 15px; font-size: 0.95rem;">
-        <p style="margin: 4px 0;"><strong>Nama:</strong> <span id="lbl-nama"></span></p>
-        <p style="margin: 4px 0;"><strong>No. Giliran:</strong> <span id="lbl-giliran"></span></p>
-        <p style="margin: 4px 0;"><strong>Status Upload:</strong> <span id="lbl-status" class="badge badge-warning"></span></p>
-      </div>
+    <!-- PANDANGAN 2: PROFIL (Muat Naik Gambar Moden) -->
+    <div id="view-profil" class="hidden view-transition space-y-6">
+      <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+        <h2 class="text-xl font-bold text-slate-900 mb-4">Profil Pelajar</h2>
+        <div class="grid grid-cols-2 gap-4 text-sm mb-6">
+          <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+            <p class="text-slate-500 mb-1">Nama Penuh</p>
+            <p class="font-semibold text-slate-900" id="lbl-nama"></p>
+          </div>
+          <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+            <p class="text-slate-500 mb-1">Status Muat Naik</p>
+            <p class="font-semibold text-emerald-600" id="lbl-status"></p>
+          </div>
+        </div>
 
-      <div style="text-align: center; border: 1.5px dashed var(--border); padding: 16px; border-radius: var(--radius); background: #ffffff;">
-        <img id="img-preview" src="https://via.placeholder.com/120?text=Bukti+Sukan" class="profile-preview" alt="Bukti Pelajar">
-        <label style="font-size: 0.85rem; font-weight:600; display:block; margin-top:10px;">Ambil/Muat Naik Gambar Aksi Sukan:</label>
-        <input type="file" id="file-input" accept="image/png, image/jpeg" style="margin-top:8px;">
-        <button id="btn-upload" onclick="app.uploadImage()">Simpan Ke Pangkalan Data</button>
-        <p id="upload-status" style="font-size: 0.85rem; margin-top: 8px; font-weight: bold;"></p>
-      </div>
-    </div>
-
-    <!-- PANDANGAN 3: SENARAI PELAJAR (PENILAI) -->
-    <div id="view-penilai" class="sports-card hidden">
-      <h2 style="margin-top:0;">Senarai Pelajar Dinilai</h2>
-      <div class="table-responsive">
-        <table id="table-pelajar-penilai">
-          <thead>
-            <tr>
-              <th>Gambar</th>
-              <th>Nama & No KP</th>
-              <th>Tindakan</th>
-            </tr>
-          </thead>
-          <tbody><!-- Dijana Dinamik --></tbody>
-        </table>
+        <div class="border-2 border-dashed border-slate-200 rounded-2xl p-6 text-center flex flex-col items-center">
+          <img id="img-preview" src="" class="w-28 h-28 rounded-full object-cover border-4 border-white shadow-md mb-4 bg-slate-100">
+          <label class="cursor-pointer bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium py-2.5 px-5 rounded-xl transition-colors inline-block mb-2">
+            Pilih Fail Gambar
+            <input type="file" id="file-input" accept="image/png, image/jpeg" class="hidden">
+          </label>
+          <p class="text-xs text-slate-400 mb-4">JPG atau PNG. Maksimum 2MB.</p>
+          <button id="btn-upload" onclick="app.uploadImage()" class="bg-brand text-white font-medium py-2.5 px-6 rounded-xl shadow-sm w-full transition-all active:scale-[0.98]">Simpan Ke Pangkalan Data</button>
+          <p id="upload-status" class="text-sm mt-3 font-medium"></p>
+        </div>
       </div>
     </div>
 
-    <!-- PANDANGAN 4: RUBRIK PEMARKAHAN SUKAN -->
-    <div id="view-borang" class="sports-card hidden">
-      <button class="btn-outline" onclick="app.showView('view-penilai')" style="margin-bottom: 12px; min-height:36px; padding:6px 12px; width:auto;">&larr; Kembali</button>
-      <h2 id="borang-title" style="margin-top:0;">Rubrik Pemarkahan Amali</h2>
-      <p id="borang-subtitle" style="font-size:0.85rem; color:var(--sports-accent); font-weight:bold; margin-bottom:16px;"></p>
-
-      <div id="rubrik-container"></div>
-
-      <div style="background: #f1f5f9; padding: 16px; border-radius: var(--radius); margin-top: 16px; text-align: center;">
-        <div style="font-size: 0.9rem; color: var(--text-sub);">Jumlah Skor Keseluruhan</div>
-        <div style="font-size: 2rem; font-weight: 800; color: var(--sports-accent);" id="borang-total">0.00 / 60.00</div>
-        <button onclick="app.simpanPenilaian()" class="btn-success" style="margin-top: 12px;">Hantar Pemarkahan</button>
+    <!-- PANDANGAN 3: SENARAI PELAJAR (KAD MODEN) -->
+    <div id="view-penilai" class="hidden view-transition">
+      <h2 class="text-xl font-bold text-slate-900 mb-4">Senarai Pelajar</h2>
+      <div id="student-list-container" class="space-y-3">
+        <!-- Dijana Dinamik -->
       </div>
     </div>
 
-  </div>
+    <!-- PANDANGAN 4: BORANG RUBRIK -->
+    <div id="view-borang" class="hidden view-transition">
+      <button onclick="app.showView('view-penilai')" class="mb-4 text-sm font-medium text-slate-500 hover:text-slate-900 flex items-center gap-1">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg> Kembali
+      </button>
+      
+      <div class="bg-blue-50 border border-blue-100 p-4 rounded-2xl mb-6 flex justify-between items-center">
+        <div>
+          <p class="text-xs text-blue-600 font-semibold uppercase tracking-wider mb-0.5">Penilaian Semasa</p>
+          <h2 id="borang-subtitle" class="font-bold text-slate-900 text-lg"></h2>
+        </div>
+      </div>
+
+      <div id="rubrik-container" class="space-y-6"></div>
+
+      <div class="bg-slate-900 p-6 rounded-3xl mt-8 flex justify-between items-center shadow-lg">
+        <div>
+          <p class="text-slate-400 text-xs uppercase tracking-wider mb-1">Skor Keseluruhan</p>
+          <div class="font-bold text-white text-3xl"><span id="borang-total">0.0</span><span class="text-lg text-slate-500 font-normal"> / 60</span></div>
+        </div>
+        <button onclick="app.simpanPenilaian()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-3 px-6 rounded-xl shadow-sm transition-all active:scale-[0.95]">Hantar</button>
+      </div>
+    </div>
+
+  </main>
 
   <script>
     /**
-     * =====================================================================
-     * KONFIGURASI APLIKASI (GAS Web App Endpoint)
-     * =====================================================================
+     * KONFIGURASI APLIKASI
      */
     const CONFIG_KURSUS = {
       API_URL: 'https://script.google.com/macros/s/AKfycbxIQMBSVJ5xAKBuNlArTkLw5C5-yCaRCHv_g3tug4F4lcphiX8eRMsF0rEILivZzX2A4A/exec',
       tahapList: [
-        { id: 'cemerlang', nama: 'Cemerlang', min: 16.0, max: 20.0 },
-        { id: 'sederhana', nama: 'Sederhana', min: 10.0, max: 15.9 },
-        { id: 'lemah', nama: 'Lemah', min: 0.0, max: 9.99 }
+        { id: 'cemerlang', nama: 'Cemerlang', min: 16.0, max: 20.0, color: 'text-emerald-700 bg-emerald-50 border-emerald-200 ring-emerald-500' },
+        { id: 'sederhana', nama: 'Sederhana', min: 10.0, max: 15.9, color: 'text-amber-700 bg-amber-50 border-amber-200 ring-amber-500' },
+        { id: 'lemah', nama: 'Lemah', min: 0.0, max: 9.99, color: 'text-rose-700 bg-rose-50 border-rose-200 ring-rose-500' }
       ],
       kemahiran: [
-        { 
-          id: 'servis', nama: 'Kemahiran 1: Servis (Sepak Sila)',
-          tahap: {
-            cemerlang: { sebelum: 'kedudukan kaki sokongan berada teguh di dalam bulatan dengan postur bersedia dan fokus mata tepat', semasa: 'mempamerkan teknik sepak sila yang jitu di mana pemindahan berat badan licin, sentuhan bola tepat pada bahagian dalam kaki dengan kawalan kelajuan yang sempurna', selepas: 'menghasilkan pergerakan ikut lajak yang lancar serta pantas kembali ke posisi seimbang' },
-            sederhana: { sebelum: 'kaki sokongan kekal di dalam bulatan dan mata memandang arah datang bola', semasa: 'melakukan perlakuan teknik yang betul dan sentuhan pada bahagian kaki, namun kawalan bola kurang konsisten', selepas: 'melakukan pergerakan ikut lajak asas dan kembali ke kedudukan bersedia dengan memuaskan' },
-            lemah: { sebelum: 'kaki sokongan terkeluar dari bulatan dan mata tidak memandang pergerakan bola', semasa: 'gagal mempamerkan teknik yang stabil, kontak bola tersasar dan imbangan badan goyah', selepas: 'hilang imbangan serta tiada pergerakan ikut lajak yang jelas' }
-          }
-        },
-        { 
-          id: 'mengumpan', nama: 'Kemahiran 2: Mengumpan',
-          tahap: {
-            cemerlang: { sebelum: 'memandang arah pergerakan bola dengan tepat beserta bukaan langkah dan imbangan badan amat kukuh', semasa: 'menampilkan teknik umpanan bersentuhan lembut, kordinasi pemindahan daya yang sangat jitu menghasilkan bola tidak berputar', selepas: 'melaksanakan pergerakan ikut lajak yang kemas dan kekal dalam kesediaan bertindak' },
-            sederhana: { sebelum: 'berdiri buka langkah dengan selesa dan sedia menerima bola', semasa: 'berjaya melakukan teknik hantaran umpanan asas menuju ke arah sasaran jaring walaupun kadangkala kurang kemas', selepas: 'kembali ke kedudukan bersedia selepas hantaran' },
-            lemah: { sebelum: 'bukaan langkah tidak seimbang dan pembacaan bola yang lambat', semasa: 'gagal melakukan umpanan dengan betul, sentuhan tidak tepat menyebabkan bola terlalu rendah atau jauh', selepas: 'tidak bersedia untuk fasa permainan seterusnya' }
-          }
-        },
-        { 
-          id: 'menanduk', nama: 'Kemahiran 3: Menanduk',
-          tahap: {
-            cemerlang: { sebelum: 'mempunyai pembacaan kelajuan dan ketinggian bola yang amat tepat dengan postur badan yang fleksibel', semasa: 'melakukan kontak bola tepat pada bahagian dahi disertai ayunan badan dan leher yang berkuasa dan terkawal', selepas: 'berjaya mendarat dan menyerap daya dengan seimbang, selamat, dan sedia untuk tindakan seterusnya' },
-            sederhana: { sebelum: 'berdiri pada kedudukan selesa mengikut arah bola yang datang', semasa: 'meniru perlakuan menanduk dengan kontak pada kawasan dahi yang memuaskan', selepas: 'mampu menyerap pergerakan dan kembali stabil secara perlahan' },
-            lemah: { sebelum: 'menunjukkan posisi badan yang pasif dan mengelak dari laluan bola', semasa: 'menyentuh bola pada bahagian ubun-ubun atau muka menyebabkan arah tandukan tidak terkawal', selepas: 'hilang imbangan sepenuhnya semasa cuba menanduk' }
-          }
-        }
+        { id: 'servis', nama: 'Servis (Sepak Sila)', tahap: { cemerlang: { sebelum: 'postur stabil', semasa: 'teknik jitu', selepas: 'ikut lajak lancar' }, sederhana: { sebelum: 'kaki di bulatan', semasa: 'teknik betul', selepas: 'kembali sedia' }, lemah: { sebelum: 'hilang postur', semasa: 'sentuhan sasaran lari', selepas: 'hilang imbangan' } } },
+        { id: 'mengumpan', nama: 'Mengumpan', tahap: { cemerlang: { sebelum: 'bukaan selesa', semasa: 'umpanan tepat', selepas: 'kemas' }, sederhana: { sebelum: 'selesa', semasa: 'asas baik', selepas: 'sedia' }, lemah: { sebelum: 'lambat', semasa: 'tersasar', selepas: 'pasif' } } },
+        { id: 'menanduk', nama: 'Menanduk', tahap: { cemerlang: { sebelum: 'bacaan tepat', semasa: 'kontak dahi padu', selepas: 'mendarat kemas' }, sederhana: { sebelum: 'sedia', semasa: 'kontak baik', selepas: 'serap daya' }, lemah: { sebelum: 'pasif', semasa: 'salah kontak', selepas: 'jatuh' } } }
       ]
     };
 
-    /**
-     * =====================================================================
-     * UTUTI LOGIK FRONTEND APP
-     * =====================================================================
-     */
     const app = {
       state: { sesiSemasa: null, dataPelajarSemasa: null, dataPenilaianBorang: {} },
 
       gasCall: async function(action, payload) {
         try {
-          const bodyData = JSON.stringify({ action: action, data: payload });
-          const response = await fetch(CONFIG_KURSUS.API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: bodyData
-          });
-          if (!response.ok) throw new Error("Gagal berhubung dengan pelayan data.");
-          const result = await response.json();
+          const res = await fetch(CONFIG_KURSUS.API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: action, data: payload }) });
+          if (!res.ok) throw new Error("Gagal berhubung dengan pelayan.");
+          const result = await res.json();
           if (result && result.success === false) throw new Error(result.message);
           return result;
-        } catch (error) {
-          throw new Error(error.message);
-        }
+        } catch (e) { throw new Error(e.message); }
       },
 
       showLoader: (s) => document.getElementById('loader').classList.toggle('hidden', !s),
       
       showView: (v) => { 
-        ['view-login', 'view-profil', 'view-penilai', 'view-borang'].forEach(id => document.getElementById(id).classList.add('hidden')); 
-        document.getElementById(v).classList.remove('hidden'); 
+        ['view-login', 'view-profil', 'view-penilai', 'view-borang'].forEach(id => {
+          document.getElementById(id).classList.add('hidden');
+          setTimeout(() => document.getElementById(id).classList.remove('opacity-0', 'translate-y-2'), 50);
+        }); 
+        const target = document.getElementById(v);
+        target.classList.remove('hidden');
       },
 
-      tukarModLogin: function() {
-        const mod = document.getElementById('login-mod').value;
+      setModLogin: function(mod) {
         document.getElementById('form-pelajar').classList.toggle('hidden', mod !== 'PELAJAR');
         document.getElementById('form-penilai').classList.toggle('hidden', mod !== 'PENILAI');
+        const tabPelajar = document.getElementById('tab-pelajar');
+        const tabPenilai = document.getElementById('tab-penilai');
+        
+        if(mod === 'PELAJAR') {
+          tabPelajar.className = "flex-1 py-2.5 text-sm font-medium rounded-lg bg-white shadow text-slate-900 transition-all";
+          tabPenilai.className = "flex-1 py-2.5 text-sm font-medium rounded-lg text-slate-500 hover:text-slate-700 transition-all";
+        } else {
+          tabPenilai.className = "flex-1 py-2.5 text-sm font-medium rounded-lg bg-white shadow text-slate-900 transition-all";
+          tabPelajar.className = "flex-1 py-2.5 text-sm font-medium rounded-lg text-slate-500 hover:text-slate-700 transition-all";
+        }
       },
 
       loginPelajar: async function() {
         const noKP = document.getElementById('nokp-input').value.trim();
-        if (!noKP) return alert("Sila masukkan No. Kad Pengenalan.");
+        if (!noKP) return alert("Sila masukkan No. KP");
         this.showLoader(true);
         try {
           const res = await this.gasCall('loginPelajar', { noKP });
           if (res.success) {
             this.state.sesiSemasa = 'PELAJAR'; this.state.dataPelajarSemasa = res.pelajar;
-            document.getElementById('user-label').innerText = res.pelajar.nama;
-            document.getElementById('user-info').classList.remove('hidden');
-            
-            document.getElementById('lbl-nama').innerText = res.pelajar.nama;
-            document.getElementById('lbl-giliran').innerText = res.pelajar.noGiliran || '-';
-            document.getElementById('lbl-status').innerText = res.pelajar.status || 'Belum Upload';
-            document.getElementById('img-preview').src = res.pelajar.linkGambar || 'https://via.placeholder.com/120?text=Bukti+Sukan';
+            document.getElementById('user-label').innerText = 'Pelajar'; document.getElementById('user-info').classList.remove('hidden');
+            document.getElementById('lbl-nama').innerText = res.pelajar.nama; 
+            document.getElementById('lbl-status').innerText = res.pelajar.status || 'Belum Dimuat Naik';
+            document.getElementById('img-preview').src = res.pelajar.linkGambar || 'https://via.placeholder.com/150';
             this.showView('view-profil');
           }
         } catch (e) { alert(e.message); } finally { this.showLoader(false); }
@@ -388,27 +218,24 @@
 
       uploadImage: function() {
         const fileInput = document.getElementById('file-input');
-        if (fileInput.files.length === 0) return alert("Sila pilih gambar terlebih dahulu.");
-        const file = fileInput.files[0];
-        if (file.size > 2097152) return alert("Saiz imej mestilah kurang daripada 2MB.");
-
-        const statusLbl = document.getElementById('upload-status'), btn = document.getElementById('btn-upload');
-        statusLbl.style.color = "var(--sports-warning)"; statusLbl.innerText = "Memproses imej..."; btn.disabled = true;
+        if (fileInput.files.length === 0) return alert("Pilih fail dahulu.");
+        if (fileInput.files[0].size > 2097152) return alert("Fail mesti bawah 2MB.");
+        
+        const status = document.getElementById('upload-status'), btn = document.getElementById('btn-upload');
+        status.className = "text-sm mt-3 font-medium text-amber-600"; status.innerText = "Memproses..."; btn.disabled = true;
 
         const reader = new FileReader();
         reader.onload = async (e) => {
-          statusLbl.innerText = "Menghantar ke Google Drive...";
+          status.innerText = "Menghantar ke awan...";
           try {
-            const res = await this.gasCall('muatNaikGambar', { base64Data: e.target.result, filename: file.name, noKP: this.state.dataPelajarSemasa.noKP });
+            const res = await this.gasCall('muatNaikGambar', { base64Data: e.target.result, filename: fileInput.files[0].name, noKP: this.state.dataPelajarSemasa.noKP });
             if (res.success) {
-              statusLbl.style.color = "var(--sports-success)"; statusLbl.innerText = "Gambar berjaya disimpan!";
-              document.getElementById('img-preview').src = res.url; 
-              document.getElementById('lbl-status').innerText = 'Selesai';
-              document.getElementById('lbl-status').className = 'badge badge-success';
+              status.className = "text-sm mt-3 font-medium text-emerald-600"; status.innerText = "Berjaya Disimpan!";
+              document.getElementById('img-preview').src = res.url;
             }
-          } catch (err) { statusLbl.style.color = "var(--sports-danger)"; statusLbl.innerText = err.message; } finally { btn.disabled = false; }
+          } catch (err) { status.className = "text-sm mt-3 font-medium text-rose-600"; status.innerText = err.message; } finally { btn.disabled = false; }
         };
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(fileInput.files[0]);
       },
 
       loginKakitangan: async function() {
@@ -418,10 +245,8 @@
         try {
           const res = await this.gasCall('loginKakitangan', { role, pin });
           if (res.success) {
-            this.state.sesiSemasa = role;
-            document.getElementById('user-label').innerText = 'Penilai: ' + role;
-            document.getElementById('user-info').classList.remove('hidden');
-            if (role === 'PENSYARAH') { alert('Mod Penyelaras Pensyarah.'); this.logout(); } else this.muatSenaraiPelajar();
+            this.state.sesiSemasa = role; document.getElementById('user-label').innerText = role; document.getElementById('user-info').classList.remove('hidden');
+            this.muatSenaraiPelajar();
           }
         } catch (e) { alert(e.message); } finally { this.showLoader(false); }
       },
@@ -430,13 +255,19 @@
         this.showLoader(true);
         try {
           const senarai = await this.gasCall('getPelajarList');
-          const tbody = document.querySelector('#table-pelajar-penilai tbody'); tbody.innerHTML = '';
+          const container = document.getElementById('student-list-container'); container.innerHTML = '';
           senarai.forEach(p => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `<td style="text-align:center;"><img src="${p.linkGambar || 'https://via.placeholder.com/40'}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;"></td>
-              <td><strong>${p.nama}</strong><br><small style="color:var(--text-sub);">${p.noKP}</small></td>
-              <td><button onclick="app.bukaBorangPenilaian('${p.noKP}', '${p.nama}')" style="min-height:36px; padding:4px 8px; font-size:0.85rem;">Nilai</button></td>`;
-            tbody.appendChild(tr);
+            container.insertAdjacentHTML('beforeend', `
+              <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                  <img src="${p.linkGambar || 'https://via.placeholder.com/50'}" class="w-12 h-12 rounded-full object-cover border border-slate-200">
+                  <div>
+                    <h3 class="font-bold text-slate-800 text-sm">${p.nama}</h3>
+                    <p class="text-xs text-slate-500">${p.noKP}</p>
+                  </div>
+                </div>
+                <button onclick="app.bukaBorangPenilaian('${p.noKP}', '${p.nama}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold py-2 px-4 rounded-xl transition-colors">Nilai</button>
+              </div>`);
           });
           this.showView('view-penilai');
         } catch (e) { alert(e.message); } finally { this.showLoader(false); }
@@ -444,7 +275,7 @@
 
       bukaBorangPenilaian: async function(noKP, nama) {
         this.state.dataPelajarSemasa = { noKP, nama }; this.state.dataPenilaianBorang = {};
-        document.getElementById('borang-subtitle').innerText = `${nama} (${noKP})`;
+        document.getElementById('borang-subtitle').innerText = nama;
         this.binaUIBorang();
         
         this.showLoader(true);
@@ -466,22 +297,24 @@
         CONFIG_KURSUS.kemahiran.forEach((k, idx) => {
           let tHTML = '';
           CONFIG_KURSUS.tahapList.forEach(t => { 
-            tHTML += `<div class="tahap-card" id="card-${k.id}-${t.id}" onclick="app.pilihTahapRubrik('${k.id}', '${t.id}')">
-                        <h4>${t.nama}</h4><small>${t.min}-${t.max}</small>
+            tHTML += `<div id="card-${k.id}-${t.id}" onclick="app.pilihTahapRubrik('${k.id}', '${t.id}')" class="border border-slate-200 rounded-xl p-3 text-center cursor-pointer hover:border-slate-300 transition-all bg-white">
+                        <h4 class="text-sm font-bold text-slate-700">${t.nama}</h4><p class="text-xs text-slate-400 mt-1">${t.min}-${t.max}</p>
                       </div>`; 
           });
           
           c.insertAdjacentHTML('beforeend', `
-            <div class="rubrik-box">
-              <h3 style="margin-top:0; font-size:1rem;">${idx + 1}. ${k.nama}</h3>
-              <div class="tahap-options">${tHTML}</div>
-              <div class="hidden" id="input-group-${k.id}">
-                <label style="font-size:0.85rem; font-weight:600;">Skor Diberi (Markah):</label>
-                <input type="number" id="markah-${k.id}" step="0.1" onchange="app.kemaskiniInputMarkah('${k.id}')">
+            <div class="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm">
+              <h3 class="font-bold text-slate-800 mb-3 text-sm tracking-tight">${idx + 1}. ${k.nama}</h3>
+              <div class="grid grid-cols-3 gap-2 mb-4">${tHTML}</div>
+              
+              <div id="input-group-${k.id}" class="hidden bg-slate-50 p-4 rounded-2xl border border-slate-100 mb-4">
+                <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Markah Akhir</label>
+                <input type="number" id="markah-${k.id}" step="0.1" onchange="app.kemaskiniInputMarkah('${k.id}')" class="w-full text-lg font-bold text-brand bg-white border border-slate-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent">
               </div>
-              <div class="hidden" id="laporan-group-${k.id}">
-                <label style="font-size:0.85rem; font-weight:600;">Ulasan Analitik Sukan (Automatik):</label>
-                <textarea id="laporan-${k.id}"></textarea>
+              
+              <div id="laporan-group-${k.id}" class="hidden">
+                <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Ulasan AI Pintar</label>
+                <textarea id="laporan-${k.id}" class="w-full text-sm text-slate-700 bg-white border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent" rows="3"></textarea>
               </div>
             </div>`);
         });
@@ -489,65 +322,59 @@
 
       pilihTahapRubrik: function(kId, tId) {
         this.state.dataPenilaianBorang[kId] = tId;
-        CONFIG_KURSUS.tahapList.forEach(t => document.getElementById(`card-${kId}-${t.id}`).classList.remove('selected'));
-        document.getElementById(`card-${kId}-${tId}`).classList.add('selected');
         
-        const tahapDef = CONFIG_KURSUS.tahapList.find(t => t.id === tId), inputEl = document.getElementById(`markah-${kId}`);
+        // Reset styles
+        CONFIG_KURSUS.tahapList.forEach(t => {
+           const el = document.getElementById(`card-${kId}-${t.id}`);
+           el.className = "border border-slate-200 rounded-xl p-3 text-center cursor-pointer hover:border-slate-300 transition-all bg-white";
+        });
+        
+        const tahapDef = CONFIG_KURSUS.tahapList.find(t => t.id === tId);
+        const selEl = document.getElementById(`card-${kId}-${tId}`);
+        selEl.className = `border rounded-xl p-3 text-center cursor-pointer transition-all ring-2 ${tahapDef.color}`;
+        
+        const inputEl = document.getElementById(`markah-${kId}`);
         inputEl.min = tahapDef.min; inputEl.max = tahapDef.max;
-        
         let cur = Number(inputEl.value); 
         if (!inputEl.value || cur < tahapDef.min || cur > tahapDef.max) inputEl.value = tahapDef.max;
         
-        document.getElementById(`input-group-${kId}`).classList.remove('hidden'); 
-        document.getElementById(`laporan-group-${kId}`).classList.remove('hidden');
-        
+        document.getElementById(`input-group-${kId}`).classList.remove('hidden'); document.getElementById(`laporan-group-${kId}`).classList.remove('hidden');
         this.kiraJumlahMarkah(); this.janaUlasanAutomatik(kId, tId, inputEl.value);
       },
 
       kemaskiniInputMarkah: function(kId) {
-        const tId = this.state.dataPenilaianBorang[kId], inputEl = document.getElementById(`markah-${kId}`), tahapDef = CONFIG_KURSUS.tahapList.find(t => t.id === tId);
+        const tId = this.state.dataPenilaianBorang[kId], inputEl = document.getElementById(`markah-${kId}`), tDef = CONFIG_KURSUS.tahapList.find(t => t.id === tId);
         let val = Number(inputEl.value);
-        if (val < tahapDef.min) inputEl.value = tahapDef.min; if (val > tahapDef.max) inputEl.value = tahapDef.max;
+        if (val < tDef.min) inputEl.value = tDef.min; if (val > tDef.max) inputEl.value = tDef.max;
         this.kiraJumlahMarkah(); this.janaUlasanAutomatik(kId, tId, inputEl.value);
       },
 
-      janaUlasanAutomatik: function(kemahiranId, tahapId, markahDiberi) {
-        const kDef = CONFIG_KURSUS.kemahiran.find(k => k.id === kemahiranId), tDef = CONFIG_KURSUS.tahapList.find(t => t.id === tahapId), ulasanDef = kDef.tahap[tahapId];
-        let ulasan = "", peratusKedudukan = (Number(markahDiberi) - tDef.min) / (tDef.max - tDef.min);
-        
-        if (tahapId === 'cemerlang') ulasan += (peratusKedudukan > 0.7) ? "Pencapaian amali sangat cemerlang. " : "Berjaya mencapai penguasaan cemerlang. ";
-        else if (tahapId === 'sederhana') ulasan += (peratusKedudukan > 0.5) ? "Pencapaian memuaskan. " : "Mempamerkan keupayaan tahap sederhana. ";
-        else ulasan += "Penguasaan kemahiran di tahap lemah. ";
-
-        ulasan += `Fasa persediaan: ${ulasanDef.sebelum}. Fasa pelaksanaan: ${ulasanDef.semasa}. Fasa lajak/pemulihan: ${ulasanDef.selepas}.`;
-        document.getElementById(`laporan-${kemahiranId}`).value = ulasan;
+      janaUlasanAutomatik: function(kId, tId, m) {
+        const u = CONFIG_KURSUS.kemahiran.find(k => k.id === kId).tahap[tId];
+        document.getElementById(`laporan-${kId}`).value = `Fasa Persediaan: ${u.sebelum}. Fasa Perlaksanaan: ${u.semasa}. Fasa Akhir: ${u.selepas}.`;
       },
 
       kiraJumlahMarkah: function() {
         let t = 0; CONFIG_KURSUS.kemahiran.forEach(k => { t += Number(document.getElementById(`markah-${k.id}`)?.value) || 0; });
-        document.getElementById('borang-total').innerText = t.toFixed(2) + ' / 60.00';
+        document.getElementById('borang-total').innerText = t.toFixed(1);
       },
 
       simpanPenilaian: async function() {
         const payload = { noKP: this.state.dataPelajarSemasa.noKP, penilai: this.state.sesiSemasa, kemahiran: {} };
         for (const k of CONFIG_KURSUS.kemahiran) {
-          const tId = this.state.dataPenilaianBorang[k.id], m = document.getElementById(`markah-${k.id}`).value, laporan = document.getElementById(`laporan-${k.id}`).value;
+          const tId = this.state.dataPenilaianBorang[k.id], m = document.getElementById(`markah-${k.id}`).value, l = document.getElementById(`laporan-${k.id}`).value;
           if (!tId || !m) return alert(`Lengkapkan pemarkahan: ${k.nama}`);
-          payload.kemahiran[k.id] = { tahapId: tId, markah: Number(m), laporan: laporan };
+          payload.kemahiran[k.id] = { tahapId: tId, markah: Number(m), laporan: l };
         }
         this.showLoader(true);
-        try { 
-          await this.gasCall('savePenilaian', payload); 
-          alert('Pemarkahan berjaya dihantar!'); 
-          this.showView('view-penilai'); 
-        } catch (e) { alert(e.message); } finally { this.showLoader(false); }
+        try { await this.gasCall('savePenilaian', payload); alert('Pemarkahan dihantar!'); this.showView('view-penilai'); } 
+        catch (e) { alert(e.message); } finally { this.showLoader(false); }
       },
 
       logout: function() {
         this.state.sesiSemasa = null; this.state.dataPelajarSemasa = null;
         ['nokp-input', 'login-pin'].forEach(id => document.getElementById(id).value = '');
-        document.getElementById('user-info').classList.add('hidden');
-        this.showView('view-login');
+        document.getElementById('user-info').classList.add('hidden'); this.showView('view-login');
       }
     };
   </script>
