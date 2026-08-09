@@ -4,139 +4,142 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Portal Sukan MPU3421</title>
-  <!-- Google Fonts: Inter -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Font Moden: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
-      theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] }, colors: { brand: '#2563eb' } } }
+      theme: { 
+        extend: { 
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: { brand: '#0f172a', accent: '#3b82f6' }
+        } 
+      }
     }
   </script>
   <style>
-    body { -webkit-tap-highlight-color: transparent; }
+    /* Mengelakkan highlight biru apabila disentuh di telefon */
+    body { -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
+    /* Sembunyikan scrollbar untuk paparan lebih bersih */
+    ::-webkit-scrollbar { width: 0px; background: transparent; }
     /* Animasi Transisi Halus */
-    .view-transition { transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; }
-    .hidden { display: none !important; opacity: 0; transform: translateY(10px); }
+    .view-transition { transition: opacity 0.4s ease, transform 0.4s ease; }
+    .hidden-view { display: none !important; opacity: 0; transform: translateY(15px); }
+    /* Efek Floating Action Bottom Bar */
+    .floating-bar { padding-bottom: env(safe-area-inset-bottom); }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased pb-24">
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen relative pb-32 selection:bg-accent selection:text-white">
 
-  <!-- AppBar Moden -->
-  <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm px-5 py-4 flex justify-between items-center">
+  <!-- AppBar (Header Moden) -->
+  <header class="bg-white/80 backdrop-blur-md sticky top-0 z-40 border-b border-slate-200/60 px-5 py-4 flex justify-between items-center transition-all">
     <div class="flex items-center gap-3">
-      <div class="bg-brand text-white w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm">ST</div>
-      <h1 class="font-semibold text-slate-900 tracking-tight text-lg">MPU3421</h1>
+      <div class="bg-brand text-white w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm shadow-md shadow-slate-300">ST</div>
+      <h1 class="font-bold text-slate-900 tracking-tight text-lg">MPU3421</h1>
     </div>
-    <div id="user-info" class="hidden flex items-center gap-3">
-      <span id="user-label" class="text-xs font-medium text-slate-500 bg-slate-100 px-3 py-1.5 rounded-full"></span>
-      <button onclick="app.logout()" class="text-sm font-medium text-rose-600 hover:bg-rose-50 px-3 py-1.5 rounded-lg transition-colors">Keluar</button>
+    <div id="user-info" class="hidden-view flex items-center gap-2">
+      <span id="user-label" class="text-xs font-semibold text-slate-600 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200"></span>
+      <button onclick="app.logout()" class="text-sm font-semibold text-rose-500 hover:text-rose-600 bg-rose-50 px-3 py-1.5 rounded-full transition-all">Keluar</button>
     </div>
   </header>
 
-  <!-- Overlay Loading Selesa -->
-  <div id="loader" class="hidden fixed inset-0 bg-white/80 backdrop-blur-sm z-50 flex flex-col justify-center items-center">
-    <div class="w-10 h-10 border-4 border-brand border-t-transparent rounded-full animate-spin mb-4"></div>
-    <p class="font-medium text-slate-600 animate-pulse">Menghubungi Pelayan...</p>
+  <!-- Overlay Loading (Minimalist Spinner) -->
+  <div id="loader" class="hidden-view fixed inset-0 bg-white/90 backdrop-blur-sm z-50 flex flex-col justify-center items-center transition-all duration-300">
+    <div class="w-12 h-12 border-4 border-slate-200 border-t-accent rounded-full animate-spin mb-4 shadow-sm"></div>
+    <p class="font-semibold text-slate-600 animate-pulse text-sm">Menyegerak Data...</p>
   </div>
 
-  <main class="max-w-2xl mx-auto px-4 mt-6">
+  <!-- Container Utama Terhad untuk rasa "Mobile App" -->
+  <main class="max-w-lg mx-auto px-4 mt-6">
     
-    <!-- PANDANGAN 1: LOG MASUK (UX Dipertingkat) -->
-    <div id="view-login" class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-slate-100 view-transition">
-      <h2 class="text-2xl font-bold text-slate-900 mb-2">Selamat Datang</h2>
-      <p class="text-slate-500 text-sm mb-8">Pilih peranan anda untuk mengakses sistem pemarkahan.</p>
+    <!-- ================= PANDANGAN 1: LOG MASUK ================= -->
+    <div id="view-login" class="view-transition">
+      <div class="text-center mb-8 mt-4">
+        <h2 class="text-3xl font-extrabold text-slate-900 mb-2">Selamat Datang</h2>
+        <p class="text-slate-500 text-sm font-medium">Log masuk untuk memulakan penilaian.</p>
+      </div>
       
-      <!-- Segmented Control untuk Mod -->
-      <div class="flex bg-slate-100 p-1 rounded-xl mb-8">
-        <button id="tab-pelajar" onclick="app.setModLogin('PELAJAR')" class="flex-1 py-2.5 text-sm font-medium rounded-lg bg-white shadow text-slate-900 transition-all">Pelajar</button>
-        <button id="tab-penilai" onclick="app.setModLogin('PENILAI')" class="flex-1 py-2.5 text-sm font-medium rounded-lg text-slate-500 hover:text-slate-700 transition-all">Penilai</button>
+      <!-- Toggle Mod (Gaya iOS Switcher) -->
+      <div class="flex bg-slate-200/70 p-1.5 rounded-2xl mb-8 relative">
+        <button id="tab-pelajar" onclick="app.setModLogin('PELAJAR')" class="flex-1 py-3 text-sm font-semibold rounded-xl bg-white shadow-sm text-slate-900 transition-all z-10 relative">Pelajar</button>
+        <button id="tab-penilai" onclick="app.setModLogin('PENILAI')" class="flex-1 py-3 text-sm font-semibold rounded-xl text-slate-500 hover:text-slate-700 transition-all z-10 relative">Kakitangan</button>
       </div>
 
-      <!-- Form Pelajar -->
-      <div id="form-pelajar" class="space-y-5">
-        <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1.5">No. Kad Pengenalan</label>
-          <input type="text" id="nokp-input" class="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all" placeholder="Cth: 010101141234">
-        </div>
-        <button onclick="app.loginPelajar()" class="w-full bg-brand hover:bg-blue-700 text-white font-medium py-3.5 px-4 rounded-xl shadow-sm focus:ring-4 focus:ring-blue-100 transition-all active:scale-[0.98]">Log Masuk Pelajar</button>
-      </div>
-
-      <!-- Form Penilai -->
-      <div id="form-penilai" class="hidden space-y-5">
-        <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1.5">Peranan Akses</label>
-          <select id="login-role" class="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand bg-white appearance-none transition-all">
-            <option value="P1">Penilai 1</option>
-            <option value="P2">Penilai 2</option>
-            <option value="PENSYARAH">Penyelaras / Pensyarah</option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1.5">PIN Keselamatan</label>
-          <input type="password" id="login-pin" class="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand transition-all" placeholder="Masukkan PIN">
-        </div>
-        <button onclick="app.loginKakitangan()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-medium py-3.5 px-4 rounded-xl shadow-sm focus:ring-4 focus:ring-slate-200 transition-all active:scale-[0.98]">Log Masuk Portal</button>
-      </div>
-    </div>
-
-    <!-- PANDANGAN 2: PROFIL (Muat Naik Gambar Moden) -->
-    <div id="view-profil" class="hidden view-transition space-y-6">
-      <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
-        <h2 class="text-xl font-bold text-slate-900 mb-4">Profil Pelajar</h2>
-        <div class="grid grid-cols-2 gap-4 text-sm mb-6">
-          <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-            <p class="text-slate-500 mb-1">Nama Penuh</p>
-            <p class="font-semibold text-slate-900" id="lbl-nama"></p>
+      <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100">
+        <!-- Form Pelajar -->
+        <div id="form-pelajar" class="space-y-5">
+          <div>
+            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 ml-1">No. Kad Pengenalan</label>
+            <input type="number" id="nokp-input" class="w-full bg-slate-50 border-0 ring-1 ring-slate-200 rounded-2xl px-5 py-4 text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-accent transition-shadow placeholder:font-normal placeholder:text-slate-400" placeholder="010101141234">
           </div>
-          <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-            <p class="text-slate-500 mb-1">Status Muat Naik</p>
-            <p class="font-semibold text-emerald-600" id="lbl-status"></p>
-          </div>
+          <button onclick="app.loginPelajar()" class="w-full bg-accent hover:bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-500/30 transition-transform active:scale-95">Log Masuk</button>
         </div>
 
-        <div class="border-2 border-dashed border-slate-200 rounded-2xl p-6 text-center flex flex-col items-center">
-          <img id="img-preview" src="" class="w-28 h-28 rounded-full object-cover border-4 border-white shadow-md mb-4 bg-slate-100">
-          <label class="cursor-pointer bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium py-2.5 px-5 rounded-xl transition-colors inline-block mb-2">
-            Pilih Fail Gambar
-            <input type="file" id="file-input" accept="image/png, image/jpeg" class="hidden">
-          </label>
-          <p class="text-xs text-slate-400 mb-4">JPG atau PNG. Maksimum 2MB.</p>
-          <button id="btn-upload" onclick="app.uploadImage()" class="bg-brand text-white font-medium py-2.5 px-6 rounded-xl shadow-sm w-full transition-all active:scale-[0.98]">Simpan Ke Pangkalan Data</button>
-          <p id="upload-status" class="text-sm mt-3 font-medium"></p>
+        <!-- Form Penilai -->
+        <div id="form-penilai" class="hidden-view space-y-5">
+          <div>
+            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 ml-1">Peranan</label>
+            <select id="login-role" class="w-full bg-slate-50 border-0 ring-1 ring-slate-200 rounded-2xl px-5 py-4 text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-accent appearance-none transition-shadow">
+              <option value="P1">Penilai 1</option>
+              <option value="P2">Penilai 2</option>
+              <option value="PENSYARAH">Penyelaras</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 ml-1">PIN Akses</label>
+            <input type="password" id="login-pin" class="w-full bg-slate-50 border-0 ring-1 ring-slate-200 rounded-2xl px-5 py-4 text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-accent transition-shadow placeholder:font-normal placeholder:text-slate-400" placeholder="****">
+          </div>
+          <button onclick="app.loginKakitangan()" class="w-full bg-brand hover:bg-slate-800 text-white font-bold py-4 rounded-2xl shadow-lg shadow-slate-900/20 transition-transform active:scale-95">Masuk Portal</button>
         </div>
       </div>
     </div>
 
-    <!-- PANDANGAN 3: SENARAI PELAJAR (KAD MODEN) -->
-    <div id="view-penilai" class="hidden view-transition">
-      <h2 class="text-xl font-bold text-slate-900 mb-4">Senarai Pelajar</h2>
-      <div id="student-list-container" class="space-y-3">
+    <!-- ================= PANDANGAN 2: SENARAI PELAJAR ================= -->
+    <div id="view-penilai" class="hidden-view view-transition">
+      <h2 class="text-2xl font-extrabold text-slate-900 mb-5">Senarai Pelajar</h2>
+      <div id="student-list-container" class="space-y-4">
         <!-- Dijana Dinamik -->
       </div>
     </div>
 
-    <!-- PANDANGAN 4: BORANG RUBRIK -->
-    <div id="view-borang" class="hidden view-transition">
-      <button onclick="app.showView('view-penilai')" class="mb-4 text-sm font-medium text-slate-500 hover:text-slate-900 flex items-center gap-1">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg> Kembali
+    <!-- ================= PANDANGAN 3: BORANG RUBRIK ================= -->
+    <div id="view-borang" class="hidden-view view-transition">
+      <button onclick="app.showView('view-penilai')" class="mb-5 text-sm font-bold text-slate-500 hover:text-slate-800 flex items-center gap-1.5 bg-white py-2 px-4 rounded-full border border-slate-200 shadow-sm w-fit transition-all active:scale-95">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg> Kembali
       </button>
       
-      <div class="bg-blue-50 border border-blue-100 p-4 rounded-2xl mb-6 flex justify-between items-center">
+      <!-- Info Pelajar -->
+      <div class="bg-white border border-slate-100 p-5 rounded-[2rem] shadow-sm mb-6 flex items-center gap-4">
+        <div class="w-12 h-12 bg-accent/10 rounded-full flex items-center justify-center text-accent">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+        </div>
         <div>
-          <p class="text-xs text-blue-600 font-semibold uppercase tracking-wider mb-0.5">Penilaian Semasa</p>
-          <h2 id="borang-subtitle" class="font-bold text-slate-900 text-lg"></h2>
+          <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-0.5">Menilai Pelajar</p>
+          <h2 id="borang-subtitle" class="font-extrabold text-slate-900 text-lg leading-tight"></h2>
         </div>
       </div>
 
-      <div id="rubrik-container" class="space-y-6"></div>
+      <!-- Ruangan Rubrik Dinamik -->
+      <div id="rubrik-container" class="space-y-6 pb-6"></div>
 
-      <div class="bg-slate-900 p-6 rounded-3xl mt-8 flex justify-between items-center shadow-lg">
-        <div>
-          <p class="text-slate-400 text-xs uppercase tracking-wider mb-1">Skor Keseluruhan</p>
-          <div class="font-bold text-white text-3xl"><span id="borang-total">0.0</span><span class="text-lg text-slate-500 font-normal"> / 60</span></div>
+      <!-- Floating Action Bar (Sticky Bottom) untuk hantar borang -->
+      <div class="fixed bottom-0 left-0 right-0 z-30 pointer-events-none floating-bar">
+        <div class="max-w-lg mx-auto pointer-events-auto px-4 pb-6 pt-8 bg-gradient-to-t from-slate-50 via-slate-50/90 to-transparent">
+          <div class="bg-brand p-2 rounded-[2rem] shadow-2xl flex justify-between items-center ring-1 ring-slate-800/50">
+            <div class="pl-6 py-2">
+              <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-0.5">Jumlah Skor</p>
+              <div class="font-black text-white text-2xl leading-none flex items-baseline gap-1">
+                <span id="borang-total">0.0</span><span class="text-sm font-semibold text-slate-500">/60</span>
+              </div>
+            </div>
+            <button onclick="app.simpanPenilaian()" class="bg-accent hover:bg-blue-600 text-white font-bold py-4 px-8 rounded-full shadow-lg shadow-blue-500/40 transition-transform active:scale-95 h-full">Hantar</button>
+          </div>
         </div>
-        <button onclick="app.simpanPenilaian()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-3 px-6 rounded-xl shadow-sm transition-all active:scale-[0.95]">Hantar</button>
       </div>
     </div>
 
@@ -147,11 +150,12 @@
      * KONFIGURASI APLIKASI
      */
     const CONFIG_KURSUS = {
+      // PERHATIAN: Masukkan API_URL anda
       API_URL: 'https://script.google.com/macros/s/AKfycbxIQMBSVJ5xAKBuNlArTkLw5C5-yCaRCHv_g3tug4F4lcphiX8eRMsF0rEILivZzX2A4A/exec',
       tahapList: [
-        { id: 'cemerlang', nama: 'Cemerlang', min: 16.0, max: 20.0, color: 'text-emerald-700 bg-emerald-50 border-emerald-200 ring-emerald-500' },
-        { id: 'sederhana', nama: 'Sederhana', min: 10.0, max: 15.9, color: 'text-amber-700 bg-amber-50 border-amber-200 ring-amber-500' },
-        { id: 'lemah', nama: 'Lemah', min: 0.0, max: 9.99, color: 'text-rose-700 bg-rose-50 border-rose-200 ring-rose-500' }
+        { id: 'cemerlang', nama: 'Cemerlang', min: 16.0, max: 20.0, baseClass: 'bg-slate-50 border-slate-200 text-slate-600', activeClass: 'bg-emerald-50 border-emerald-500 text-emerald-700 ring-4 ring-emerald-500/20' },
+        { id: 'sederhana', nama: 'Sederhana', min: 10.0, max: 15.9, baseClass: 'bg-slate-50 border-slate-200 text-slate-600', activeClass: 'bg-amber-50 border-amber-500 text-amber-700 ring-4 ring-amber-500/20' },
+        { id: 'lemah', nama: 'Lemah', min: 0.0, max: 9.99, baseClass: 'bg-slate-50 border-slate-200 text-slate-600', activeClass: 'bg-rose-50 border-rose-500 text-rose-700 ring-4 ring-rose-500/20' }
       ],
       kemahiran: [
         { id: 'servis', nama: 'Servis (Sepak Sila)', tahap: { cemerlang: { sebelum: 'postur stabil', semasa: 'teknik jitu', selepas: 'ikut lajak lancar' }, sederhana: { sebelum: 'kaki di bulatan', semasa: 'teknik betul', selepas: 'kembali sedia' }, lemah: { sebelum: 'hilang postur', semasa: 'sentuhan sasaran lari', selepas: 'hilang imbangan' } } },
@@ -160,42 +164,50 @@
       ]
     };
 
+    /**
+     * LOGIK APLIKASI FRONTEND
+     */
     const app = {
       state: { sesiSemasa: null, dataPelajarSemasa: null, dataPenilaianBorang: {} },
 
+      /**
+       * Fungsi utama perhubungan ke Google Apps Script (Backend)
+       */
       gasCall: async function(action, payload) {
         try {
-          const res = await fetch(CONFIG_KURSUS.API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: action, data: payload }) });
-          if (!res.ok) throw new Error("Gagal berhubung dengan pelayan.");
+          const res = await fetch(CONFIG_KURSUS.API_URL, { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
+            body: JSON.stringify({ action: action, data: payload }) 
+          });
+          if (!res.ok) throw new Error("Gagal berhubung dengan pelayan data.");
           const result = await res.json();
           if (result && result.success === false) throw new Error(result.message);
           return result;
         } catch (e) { throw new Error(e.message); }
       },
 
-      showLoader: (s) => document.getElementById('loader').classList.toggle('hidden', !s),
+      showLoader: (s) => document.getElementById('loader').classList.toggle('hidden-view', !s),
       
       showView: (v) => { 
-        ['view-login', 'view-profil', 'view-penilai', 'view-borang'].forEach(id => {
-          document.getElementById(id).classList.add('hidden');
-          setTimeout(() => document.getElementById(id).classList.remove('opacity-0', 'translate-y-2'), 50);
+        ['view-login', 'view-penilai', 'view-borang'].forEach(id => {
+          document.getElementById(id).classList.add('hidden-view');
         }); 
-        const target = document.getElementById(v);
-        target.classList.remove('hidden');
+        setTimeout(() => document.getElementById(v).classList.remove('hidden-view'), 50);
       },
 
       setModLogin: function(mod) {
-        document.getElementById('form-pelajar').classList.toggle('hidden', mod !== 'PELAJAR');
-        document.getElementById('form-penilai').classList.toggle('hidden', mod !== 'PENILAI');
+        document.getElementById('form-pelajar').classList.toggle('hidden-view', mod !== 'PELAJAR');
+        document.getElementById('form-penilai').classList.toggle('hidden-view', mod !== 'PENILAI');
         const tabPelajar = document.getElementById('tab-pelajar');
         const tabPenilai = document.getElementById('tab-penilai');
         
         if(mod === 'PELAJAR') {
-          tabPelajar.className = "flex-1 py-2.5 text-sm font-medium rounded-lg bg-white shadow text-slate-900 transition-all";
-          tabPenilai.className = "flex-1 py-2.5 text-sm font-medium rounded-lg text-slate-500 hover:text-slate-700 transition-all";
+          tabPelajar.className = "flex-1 py-3 text-sm font-semibold rounded-xl bg-white shadow-sm text-slate-900 transition-all z-10 relative";
+          tabPenilai.className = "flex-1 py-3 text-sm font-semibold rounded-xl text-slate-500 hover:text-slate-700 transition-all z-10 relative";
         } else {
-          tabPenilai.className = "flex-1 py-2.5 text-sm font-medium rounded-lg bg-white shadow text-slate-900 transition-all";
-          tabPelajar.className = "flex-1 py-2.5 text-sm font-medium rounded-lg text-slate-500 hover:text-slate-700 transition-all";
+          tabPenilai.className = "flex-1 py-3 text-sm font-semibold rounded-xl bg-white shadow-sm text-slate-900 transition-all z-10 relative";
+          tabPelajar.className = "flex-1 py-3 text-sm font-semibold rounded-xl text-slate-500 hover:text-slate-700 transition-all z-10 relative";
         }
       },
 
@@ -206,47 +218,25 @@
         try {
           const res = await this.gasCall('loginPelajar', { noKP });
           if (res.success) {
-            this.state.sesiSemasa = 'PELAJAR'; this.state.dataPelajarSemasa = res.pelajar;
-            document.getElementById('user-label').innerText = 'Pelajar'; document.getElementById('user-info').classList.remove('hidden');
-            document.getElementById('lbl-nama').innerText = res.pelajar.nama; 
-            document.getElementById('lbl-status').innerText = res.pelajar.status || 'Belum Dimuat Naik';
-            document.getElementById('img-preview').src = res.pelajar.linkGambar || 'https://via.placeholder.com/150';
-            this.showView('view-profil');
+            alert("Modul Profil Pelajar akan menyusul di kemaskini seterusnya.");
+            // Ruangan ini disimpan untuk implementasi muat naik pelajar pada fail HTML
           }
         } catch (e) { alert(e.message); } finally { this.showLoader(false); }
       },
 
-      uploadImage: function() {
-        const fileInput = document.getElementById('file-input');
-        if (fileInput.files.length === 0) return alert("Pilih fail dahulu.");
-        if (fileInput.files[0].size > 2097152) return alert("Fail mesti bawah 2MB.");
-        
-        const status = document.getElementById('upload-status'), btn = document.getElementById('btn-upload');
-        status.className = "text-sm mt-3 font-medium text-amber-600"; status.innerText = "Memproses..."; btn.disabled = true;
-
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-          status.innerText = "Menghantar ke awan...";
-          try {
-            const res = await this.gasCall('muatNaikGambar', { base64Data: e.target.result, filename: fileInput.files[0].name, noKP: this.state.dataPelajarSemasa.noKP });
-            if (res.success) {
-              status.className = "text-sm mt-3 font-medium text-emerald-600"; status.innerText = "Berjaya Disimpan!";
-              document.getElementById('img-preview').src = res.url;
-            }
-          } catch (err) { status.className = "text-sm mt-3 font-medium text-rose-600"; status.innerText = err.message; } finally { btn.disabled = false; }
-        };
-        reader.readAsDataURL(fileInput.files[0]);
-      },
-
       loginKakitangan: async function() {
         const role = document.getElementById('login-role').value, pin = document.getElementById('login-pin').value.trim();
-        if (!pin) return alert("Sila masukkan PIN.");
+        if (!pin) return alert("Sila masukkan PIN Keselamatan.");
         this.showLoader(true);
         try {
           const res = await this.gasCall('loginKakitangan', { role, pin });
           if (res.success) {
-            this.state.sesiSemasa = role; document.getElementById('user-label').innerText = role; document.getElementById('user-info').classList.remove('hidden');
-            this.muatSenaraiPelajar();
+            this.state.sesiSemasa = role; 
+            document.getElementById('user-label').innerText = role; 
+            document.getElementById('user-info').classList.remove('hidden-view');
+            
+            if (role === 'PENSYARAH') { alert('Panel Pensyarah. (Fasa seterusnya).'); this.logout(); } 
+            else this.muatSenaraiPelajar();
           }
         } catch (e) { alert(e.message); } finally { this.showLoader(false); }
       },
@@ -258,15 +248,15 @@
           const container = document.getElementById('student-list-container'); container.innerHTML = '';
           senarai.forEach(p => {
             container.insertAdjacentHTML('beforeend', `
-              <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between gap-4">
+              <div class="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm flex items-center justify-between gap-4 transition-transform active:scale-[0.98]">
                 <div class="flex items-center gap-4">
-                  <img src="${p.linkGambar || 'https://via.placeholder.com/50'}" class="w-12 h-12 rounded-full object-cover border border-slate-200">
+                  <img src="${p.linkGambar || 'https://via.placeholder.com/60'}" class="w-14 h-14 rounded-full object-cover border-2 border-slate-100 bg-slate-50">
                   <div>
-                    <h3 class="font-bold text-slate-800 text-sm">${p.nama}</h3>
-                    <p class="text-xs text-slate-500">${p.noKP}</p>
+                    <h3 class="font-extrabold text-slate-800 text-sm md:text-base leading-tight mb-1">${p.nama}</h3>
+                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-widest">${p.noKP}</p>
                   </div>
                 </div>
-                <button onclick="app.bukaBorangPenilaian('${p.noKP}', '${p.nama}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold py-2 px-4 rounded-xl transition-colors">Nilai</button>
+                <button onclick="app.bukaBorangPenilaian('${p.noKP}', '${p.nama}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-bold py-3 px-5 rounded-2xl transition-colors shrink-0">Nilai</button>
               </div>`);
           });
           this.showView('view-penilai');
@@ -297,24 +287,35 @@
         CONFIG_KURSUS.kemahiran.forEach((k, idx) => {
           let tHTML = '';
           CONFIG_KURSUS.tahapList.forEach(t => { 
-            tHTML += `<div id="card-${k.id}-${t.id}" onclick="app.pilihTahapRubrik('${k.id}', '${t.id}')" class="border border-slate-200 rounded-xl p-3 text-center cursor-pointer hover:border-slate-300 transition-all bg-white">
-                        <h4 class="text-sm font-bold text-slate-700">${t.nama}</h4><p class="text-xs text-slate-400 mt-1">${t.min}-${t.max}</p>
+            tHTML += `<div id="card-${k.id}-${t.id}" onclick="app.pilihTahapRubrik('${k.id}', '${t.id}')" 
+                        class="border-2 rounded-2xl p-4 text-center cursor-pointer transition-all ${t.baseClass} active:scale-95">
+                        <h4 class="text-sm font-bold">${t.nama}</h4>
+                        <p class="text-xs font-semibold mt-1 opacity-70">${t.min} - ${t.max}</p>
                       </div>`; 
           });
           
           c.insertAdjacentHTML('beforeend', `
-            <div class="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm">
-              <h3 class="font-bold text-slate-800 mb-3 text-sm tracking-tight">${idx + 1}. ${k.nama}</h3>
-              <div class="grid grid-cols-3 gap-2 mb-4">${tHTML}</div>
-              
-              <div id="input-group-${k.id}" class="hidden bg-slate-50 p-4 rounded-2xl border border-slate-100 mb-4">
-                <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Markah Akhir</label>
-                <input type="number" id="markah-${k.id}" step="0.1" onchange="app.kemaskiniInputMarkah('${k.id}')" class="w-full text-lg font-bold text-brand bg-white border border-slate-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent">
+            <div class="bg-white rounded-[2rem] p-6 border border-slate-100 shadow-sm relative overflow-hidden">
+              <div class="absolute top-0 left-0 w-1.5 h-full bg-accent/20"></div>
+              <div class="flex items-center gap-3 mb-5">
+                <span class="bg-accent text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">${idx + 1}</span>
+                <h3 class="font-extrabold text-slate-900 text-lg tracking-tight">${k.nama}</h3>
               </div>
               
-              <div id="laporan-group-${k.id}" class="hidden">
-                <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Ulasan AI Pintar</label>
-                <textarea id="laporan-${k.id}" class="w-full text-sm text-slate-700 bg-white border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent" rows="3"></textarea>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">${tHTML}</div>
+              
+              <div id="input-group-${k.id}" class="hidden-view bg-slate-50 p-5 rounded-2xl border border-slate-100 mb-4 transition-all">
+                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Markah Muktamad</label>
+                <div class="flex items-center gap-3">
+                  <input type="number" id="markah-${k.id}" step="0.1" onchange="app.kemaskiniInputMarkah('${k.id}')" 
+                    class="w-32 text-2xl font-black text-brand bg-white border-2 border-slate-200 rounded-xl px-4 py-2 focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/20 transition-all text-center">
+                  <span id="hint-${k.id}" class="text-xs font-semibold text-slate-400 uppercase"></span>
+                </div>
+              </div>
+              
+              <div id="laporan-group-${k.id}" class="hidden-view transition-all">
+                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Ulasan Pintar (Boleh Disunting)</label>
+                <textarea id="laporan-${k.id}" class="w-full text-sm font-medium text-slate-700 bg-white border-2 border-slate-200 rounded-2xl px-5 py-4 focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/20 transition-all leading-relaxed shadow-sm" rows="3"></textarea>
               </div>
             </div>`);
         });
@@ -323,22 +324,25 @@
       pilihTahapRubrik: function(kId, tId) {
         this.state.dataPenilaianBorang[kId] = tId;
         
-        // Reset styles
+        // Tetapan Gaya "Kaca/Bercahaya" pada elemen yang aktif
         CONFIG_KURSUS.tahapList.forEach(t => {
            const el = document.getElementById(`card-${kId}-${t.id}`);
-           el.className = "border border-slate-200 rounded-xl p-3 text-center cursor-pointer hover:border-slate-300 transition-all bg-white";
+           el.className = `border-2 rounded-2xl p-4 text-center cursor-pointer transition-all ${t.baseClass} active:scale-95`;
         });
         
         const tahapDef = CONFIG_KURSUS.tahapList.find(t => t.id === tId);
         const selEl = document.getElementById(`card-${kId}-${tId}`);
-        selEl.className = `border rounded-xl p-3 text-center cursor-pointer transition-all ring-2 ${tahapDef.color}`;
+        selEl.className = `border-2 rounded-2xl p-4 text-center cursor-pointer transition-all active:scale-95 ${tahapDef.activeClass} shadow-md`;
         
         const inputEl = document.getElementById(`markah-${kId}`);
         inputEl.min = tahapDef.min; inputEl.max = tahapDef.max;
         let cur = Number(inputEl.value); 
         if (!inputEl.value || cur < tahapDef.min || cur > tahapDef.max) inputEl.value = tahapDef.max;
         
-        document.getElementById(`input-group-${kId}`).classList.remove('hidden'); document.getElementById(`laporan-group-${kId}`).classList.remove('hidden');
+        document.getElementById(`hint-${kId}`).innerText = `(Had: ${tahapDef.min} - ${tahapDef.max})`;
+        document.getElementById(`input-group-${kId}`).classList.remove('hidden-view'); 
+        document.getElementById(`laporan-group-${kId}`).classList.remove('hidden-view');
+        
         this.kiraJumlahMarkah(); this.janaUlasanAutomatik(kId, tId, inputEl.value);
       },
 
@@ -351,7 +355,7 @@
 
       janaUlasanAutomatik: function(kId, tId, m) {
         const u = CONFIG_KURSUS.kemahiran.find(k => k.id === kId).tahap[tId];
-        document.getElementById(`laporan-${kId}`).value = `Fasa Persediaan: ${u.sebelum}. Fasa Perlaksanaan: ${u.semasa}. Fasa Akhir: ${u.selepas}.`;
+        document.getElementById(`laporan-${kId}`).value = `Analisis Perlakuan: Semasa fasa persediaan, pemerhatian mendapati ${u.sebelum}. Seterusnya pada fasa pelaksanaan, didapati ${u.semasa}. Pada fasa akhir (pemulihan), pelajar ${u.selepas}.`;
       },
 
       kiraJumlahMarkah: function() {
@@ -363,18 +367,18 @@
         const payload = { noKP: this.state.dataPelajarSemasa.noKP, penilai: this.state.sesiSemasa, kemahiran: {} };
         for (const k of CONFIG_KURSUS.kemahiran) {
           const tId = this.state.dataPenilaianBorang[k.id], m = document.getElementById(`markah-${k.id}`).value, l = document.getElementById(`laporan-${k.id}`).value;
-          if (!tId || !m) return alert(`Lengkapkan pemarkahan: ${k.nama}`);
+          if (!tId || !m) return alert(`Lengkapkan pemarkahan untuk: ${k.nama}`);
           payload.kemahiran[k.id] = { tahapId: tId, markah: Number(m), laporan: l };
         }
         this.showLoader(true);
-        try { await this.gasCall('savePenilaian', payload); alert('Pemarkahan dihantar!'); this.showView('view-penilai'); } 
+        try { await this.gasCall('savePenilaian', payload); alert('Pemarkahan Berjaya Disimpan!'); this.showView('view-penilai'); } 
         catch (e) { alert(e.message); } finally { this.showLoader(false); }
       },
 
       logout: function() {
         this.state.sesiSemasa = null; this.state.dataPelajarSemasa = null;
         ['nokp-input', 'login-pin'].forEach(id => document.getElementById(id).value = '');
-        document.getElementById('user-info').classList.add('hidden'); this.showView('view-login');
+        document.getElementById('user-info').classList.add('hidden-view'); this.showView('view-login');
       }
     };
   </script>
