@@ -73,13 +73,11 @@
     </div>
   </header>
 
-  <!-- Loader -->
   <div id="loader" class="hidden-view fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex flex-col justify-center items-center transition-all duration-300 no-print">
     <div class="w-14 h-14 border-4 border-white/30 border-t-accent rounded-full animate-spin mb-4 shadow-xl"></div>
     <p class="font-bold text-white tracking-widest text-sm uppercase" id="loader-text">Menyegerak Data...</p>
   </div>
 
-  <!-- MODAL: LAPORAN PENSYARAH -->
   <div id="modal-laporan" class="hidden-view fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex justify-center items-end sm:items-center p-4 transition-all duration-300">
     <div class="bg-white/95 backdrop-blur-xl w-full max-w-2xl max-h-[90vh] overflow-hidden rounded-[2.5rem] shadow-2xl flex flex-col modal-enter border border-white/50 print-area">
       <div class="p-6 border-b border-slate-200/50 flex justify-between items-center bg-white/50 rounded-t-[2.5rem] no-print">
@@ -92,10 +90,8 @@
     </div>
   </div>
   
-  <!-- BULK PRINT CONTAINER -->
   <div id="bulk-print-container" class="hidden-view bg-white text-slate-900 absolute top-0 left-0 w-full z-50"></div>
 
-  <!-- MODAL: RUJUKAN RUBRIK UNTUK PENILAI -->
   <div id="modal-rubrik" class="hidden-view fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex justify-center items-end sm:items-center p-4 transition-all duration-300 no-print">
     <div class="bg-white/95 backdrop-blur-xl w-full max-w-xl max-h-[85vh] overflow-hidden rounded-[2.5rem] shadow-2xl flex flex-col modal-enter border border-white/50">
       <div class="p-6 border-b border-slate-200/50 flex justify-between items-center bg-brand text-white rounded-t-[2.5rem]">
@@ -110,7 +106,6 @@
 
   <main class="max-w-xl mx-auto px-4 mt-8 no-print">
     
-    <!-- PANDANGAN 1: LOG MASUK -->
     <div id="view-login" class="view-transition">
       <div class="text-center mb-10 mt-6 text-white">
         <h2 class="text-4xl font-black mb-2 drop-shadow-md">Amali MPU3421</h2>
@@ -149,13 +144,11 @@
       </div>
     </div>
 
-    <!-- PANDANGAN 2: SENARAI PELAJAR -->
     <div id="view-penilai" class="hidden-view view-transition">
       <h2 class="text-3xl font-black text-white mb-6 drop-shadow-md">Calon Amali</h2>
       <div id="student-list-container" class="space-y-5"></div>
     </div>
 
-    <!-- PANDANGAN 3: BORANG RUBRIK -->
     <div id="view-borang" class="hidden-view view-transition">
       <button onclick="app.showView('view-penilai')" class="mb-6 text-sm font-bold text-white/90 hover:text-white flex items-center gap-1.5 glass-panel py-2 px-5 rounded-full w-fit transition-all active:scale-95">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"></path></svg> Kembali
