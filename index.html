@@ -47,13 +47,16 @@
     .checklist-cb:checked { background-color: #ef4444; border-color: #ef4444; }
     .checklist-cb:checked::after { content: '✕'; position: absolute; color: white; font-size: 0.85rem; font-weight: bold; left: 50%; top: 50%; transform: translate(-50%, -50%); }
     
-    /* GAYA KHAS UNTUK CETAKAN (PRINT) */
+    /* GAYA KANVAS TANDATANGAN */
+    #sig-canvas { background-color: #ffffff; border: 2px dashed #94a3b8; border-radius: 1rem; cursor: crosshair; touch-action: none; width: 100%; height: 150px; }
+    
+    /* GAYA KHAS CETAKAN */
     @media print {
       body { background: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       body * { visibility: hidden; }
       #modal-laporan, #modal-laporan * { visibility: visible; }
       #modal-laporan { position: absolute; left: 0; top: 0; width: 100%; height: auto; background: white; border: none; overflow: visible; display: block !important; padding: 0; margin: 0; }
-      .bg-white\/95 { background: white !important; box-shadow: none !important; border: none !important; border-radius: 0 !important; max-w-full; }
+      .bg-white\/95 { background: white !important; box-shadow: none !important; border: none !important; border-radius: 0 !important; max-width: 100% !important; }
       .modal-enter { animation: none !important; transform: none !important; }
       .no-print { display: none !important; }
     }
@@ -92,7 +95,7 @@
     </div>
   </div>
 
-  <!-- MODAL: RUJUKAN RUBRIK UNTUK PENILAI -->
+  <!-- MODAL: RUJUKAN RUBRIK -->
   <div id="modal-rubrik" class="hidden-view fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex justify-center items-end sm:items-center p-4 transition-all duration-300 no-print">
     <div class="bg-white/95 backdrop-blur-xl w-full max-w-xl max-h-[85vh] overflow-hidden rounded-[2.5rem] shadow-2xl flex flex-col modal-enter border border-white/50">
       <div class="p-6 border-b border-slate-200/50 flex justify-between items-center bg-brand text-white rounded-t-[2.5rem]">
@@ -116,7 +119,7 @@
       
       <div class="glass-panel p-2 rounded-3xl mb-8 flex relative shadow-xl">
         <button id="tab-pelajar" onclick="app.setModLogin('PELAJAR')" class="flex-1 py-3.5 text-sm font-bold rounded-2xl bg-white text-brand shadow transition-all z-10">Pelajar</button>
-        <button id="tab-penilai" onclick="app.setModLogin('PENILAI')" class="flex-1 py-3.5 text-sm font-bold rounded-2xl text-slate-600 hover:text-slate-900 transition-all z-10">Kakitangan</button>
+        <button id="tab-penilai" onclick="app.setModLogin('PENILAI')" class="flex-1 py-3.5 text-sm font-bold rounded-2xl text-slate-600 hover:text-slate-900 transition-all z-10">Penilai / Pensyarah</button>
       </div>
 
       <div class="glass-panel p-8 rounded-[2.5rem]">
@@ -175,20 +178,23 @@
 
       <div id="rubrik-container" class="space-y-8 pb-4"></div>
 
-      <!-- Bahagian Tandatangan (Hanya Kelihatan Untuk P1) -->
-      <div id="signature-section" class="hidden-view glass-panel rounded-[2.5rem] p-6 mb-8 border-2 border-brand/20 relative overflow-hidden">
+      <!-- Bahagian Kanvas Tandatangan (Untuk P1 & P2) -->
+      <div id="signature-section" class="glass-panel rounded-[2.5rem] p-6 mb-8 border-2 border-brand/20 relative overflow-hidden">
         <div class="absolute top-0 left-0 w-2 h-full bg-brand"></div>
-        <h3 class="font-extrabold text-slate-900 text-lg mb-1">Pengesahan Penilai Utama</h3>
-        <p class="text-xs font-semibold text-slate-500 mb-5">Sila muat naik tandatangan digital anda untuk mengesahkan laporan analisis amali ini.</p>
+        <h3 class="font-extrabold text-slate-900 text-lg mb-1">Pengesahan Penilai</h3>
+        <p class="text-xs font-semibold text-slate-500 mb-5">Sila turunkan tandatangan digital anda pada ruangan di bawah.</p>
         
-        <label class="cursor-pointer bg-white border border-slate-200 hover:bg-slate-50 text-brand font-bold py-3 px-5 rounded-2xl transition-colors inline-block shadow-sm">
-          Pilih Fail Tandatangan
-          <input type="file" id="sig-input" accept="image/png, image/jpeg" class="hidden" onchange="app.paparPreviewTandatangan(event)">
-        </label>
-        <img id="sig-preview" class="h-20 mt-4 object-contain hidden border border-slate-200 p-2 rounded-lg bg-white shadow-sm" />
+        <div class="relative">
+          <canvas id="sig-canvas"></canvas>
+          <button onclick="app.padamTandatangan()" class="absolute bottom-2 right-2 bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold py-1.5 px-3 rounded-lg shadow-sm transition-colors">Padam</button>
+        </div>
+        
+        <div id="sig-saved-preview" class="hidden-view mt-4">
+          <p class="text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-2">Tandatangan Tersimpan:</p>
+          <img id="sig-image-preview" src="" class="h-16 object-contain bg-white border border-slate-200 p-1 rounded-lg" />
+        </div>
       </div>
 
-      <!-- Ruangan kosong untuk scroll bawah floating bar -->
       <div class="h-32"></div>
 
       <div class="fixed bottom-0 left-0 right-0 z-30 pointer-events-none floating-bar">
@@ -227,49 +233,68 @@
       ],
       kemahiran: [
         { 
-          id: 'servis', 
-          nama: 'Servis (10 Markah)', 
-          senaraiSemak: [
-            "Kedudukan kaki sokongan stabil di dalam bulatan",
-            "Postur bersedia dan fokus mata tepat pada bola",
-            "Teknik sepak sila tepat; pemindahan berat badan lancar",
-            "Sentuhan bola tepat pada bahagian dalam / kekura kaki",
-            "Kawalan ketinggian, kelajuan, dan sasaran sempurna",
-            "Pergerakan ikut lajak lancar & kembali ke posisi seimbang"
-          ],
+          id: 'servis', nama: 'Servis (20 Markah)', 
+          senaraiSemak: ["Kedudukan kaki sokongan stabil di dalam bulatan", "Postur bersedia dan fokus mata tepat pada bola", "Teknik sepak sila tepat; pemindahan berat badan lancar", "Sentuhan bola tepat pada bahagian dalam / kekura kaki", "Kawalan ketinggian, kelajuan, dan sasaran sempurna", "Pergerakan ikut lajak lancar & kembali ke posisi seimbang"],
           tahap: { cemerlang: { sebelum: 'kedudukan kaki sokongan stabil di dalam bulatan; postur bersedia dan fokus mata tepat pada bola', semasa: 'meniru dan mempamerkan perlakuan teknik sepak sila secara tepat; pemindahan berat badan lancar; sentuhan bola tepat pada bahagian dalam atau kekura kaki dengan kawalan ketinggian, kelajuan, dan sasaran yang sempurna', selepas: 'pergerakan ikut lajak lancar serta merta kembali ke posisi bersedia secara seimbang' }, sederhana: { sebelum: 'kaki sokongan kekal di dalam bulatan; mata memandang arah bola', semasa: 'meniru perlakuan servis dengan teknik yang betul; imbangan memuaskan; kontak bola pada bahagian dalam atau kekura kaki tetapi kelajuan atau ketinggian bola tidak konsisten', selepas: 'melakukan pergerakan ikut lajak asas dan kembali kepada kedudukan bersedia' }, lemah: { sebelum: 'kaki sokongan keluar dari bulatan; mata tidak memandang pergerakan bola', semasa: 'gagal meniru/mempamerkan teknik servis dengan betul; imbangan badan tidak stabil, kontak bola bukan pada bahagian dalam kaki (tersasar/tidak lancar)', selepas: 'tiada pergerakan ikut lajak; hilang imbangan dan lambat kembali ke kedudukan bersedia' } } 
         },
         { 
-          id: 'mengumpan', 
-          nama: 'Mengumpan (10 Markah)', 
-          senaraiSemak: [
-            "Memandang arah pergerakan bola dengan tepat",
-            "Bukaan langkah dan kawalan imbangan badan amat kukuh",
-            "Sentuhan lancar dan terkawal",
-            "Kordinasi pemindahan daya tepat (bola tidak berputar ideal)",
-            "Pergerakan ikut lajak kemas serta merta bersedia"
-          ],
+          id: 'mengumpan', nama: 'Mengumpan (20 Markah)', 
+          senaraiSemak: ["Memandang arah pergerakan bola dengan tepat", "Bukaan langkah dan kawalan imbangan badan amat kukuh", "Sentuhan lancar dan terkawal", "Kordinasi pemindahan daya tepat (bola tidak berputar ideal)", "Pergerakan ikut lajak kemas serta merta bersedia"],
           tahap: { cemerlang: { sebelum: 'memandang arah pergerakan bola tepat; bukaan langkah dan kawalan imbangan badan amat kukuh', semasa: 'meniru dan mempamerkan teknik umpanan dengan sentuhan yang lancar dan terkawal; kordinasi pemindahan daya tepat menghasilkan umpanan bola tidak berputar yang ideal di atas jaring', selepas: 'pergerakan ikut lajak kemas serta merta berada dalam kesediaan bertindak' }, sederhana: { sebelum: 'berdiri buka langkah dengan selesa; mata memandang pergerakan bola', semasa: 'meniru teknik hantaran umpanan; berat badan diimbang di atas kaki sokongan; hantaran bola menuju ke arah zon hantaran di jaring', selepas: 'melakukan ikut lajak pergerakan asas dan kembali ke kedudukan bersedia' }, lemah: { sebelum: 'bukaan langkah tidak seimbang; mata tidak mengikut penerbangan bola', semasa: 'gagal mempamerkan perlakuan mengumpan dengan betul; sentuhan bola tidak tepat, umpanan terlalu rendah atau terlalu jauh dari jaring', selepas: 'tiada ikut lajak dan tidak bersedia untuk fasa permainan seterusnya' } } 
         },
         { 
-          id: 'menanduk', 
-          nama: 'Menanduk (10 Markah)', 
-          senaraiSemak: [
-            "Memastikan kelajuan dan ketinggian bola sangat tepat",
-            "Postur badan fleksibel dan bersedia untuk rejaman",
-            "Kontak bola tepat pada bahagian dahi",
-            "Ayunan leher/dada pantas; kawalan arah dan kelajuan amat baik",
-            "Mendarat/bergerak secara seimbang dan selamat",
-            "Serta-merta sedia untuk tindakan seterusnya"
-          ],
+          id: 'menanduk', nama: 'Menanduk (20 Markah)', 
+          senaraiSemak: ["Memastikan kelajuan dan ketinggian bola sangat tepat", "Postur badan fleksibel dan bersedia untuk rejaman", "Kontak bola tepat pada bahagian dahi", "Ayunan leher/dada pantas; kawalan arah dan kelajuan amat baik", "Mendarat/bergerak secara seimbang dan selamat", "Serta-merta sedia untuk tindakan seterusnya"],
           tahap: { cemerlang: { sebelum: 'dapat memastikan kelajuan dan ketinggian bola sangat tepat; postur badan fleksibel dan bersedia untuk rejaman', semasa: 'meniru dan mempamerkan perlakuan merejam dengan kontak bola tepat pada bahagian dahi disertai ayunan leher/dada yang pantas; kawalan arah dan kelajuan tandukan amat baik', selepas: 'mendarat/bergerak secara seimbang, selamat, dan serta-merta sedia untuk tindakan seterusnya' }, sederhana: { sebelum: 'berdiri selesa mengikut arah bola; mata memandang kedatangan bola', semasa: 'meniru perlakuan menanduk; kontak bola pada kawasan dahi dengan kilasan leher/badan yang baik untuk mengarah bola', selepas: 'menyerap daya pergerakan dan kembali ke kedudukan bersedia' }, lemah: { sebelum: 'posisi badan pasif; mata tidak memandang bola di udara', semasa: 'gagal mempamerkan perlakuan menanduk yang betul; sentuhan bola bukan pada dahi (terkena ubun-ubun/muka) dan arah tandukan tidak terkawal', selepas: 'hilang imbangan semasa mendarat/bergerak' } } 
         }
       ]
     };
 
     /**
-     * KAWALAN LOGIK STATE & API
+     * LOGIK KANVAS TANDATANGAN (Canvas Drawing Logic)
      */
+    let canvas, ctx, isDrawing = false, hasDrawn = false;
+    
+    function initSignaturePad() {
+      canvas = document.getElementById('sig-canvas');
+      if(!canvas) return;
+      ctx = canvas.getContext('2d');
+      // Melaraskan resolusi kanvas agar tajam
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = 150;
+      
+      ctx.lineWidth = 3;
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = '#0f172a';
+
+      // Acara Tetikus
+      canvas.addEventListener('mousedown', (e) => { isDrawing = true; hasDrawn = true; ctx.beginPath(); ctx.moveTo(e.offsetX, e.offsetY); });
+      canvas.addEventListener('mousemove', (e) => { if (isDrawing) { ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke(); } });
+      canvas.addEventListener('mouseup', () => { isDrawing = false; });
+      canvas.addEventListener('mouseout', () => { isDrawing = false; });
+
+      // Acara Sentuhan (Touch) untuk Telefon Mudah Alih
+      canvas.addEventListener('touchstart', (e) => {
+        if(e.target === canvas) e.preventDefault();
+        const touch = e.touches[0];
+        const rect = canvas.getBoundingClientRect();
+        isDrawing = true; hasDrawn = true;
+        ctx.beginPath(); ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+      }, { passive: false });
+      
+      canvas.addEventListener('touchmove', (e) => {
+        if(e.target === canvas) e.preventDefault();
+        if (isDrawing) {
+          const touch = e.touches[0];
+          const rect = canvas.getBoundingClientRect();
+          ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top); ctx.stroke();
+        }
+      }, { passive: false });
+      
+      canvas.addEventListener('touchend', () => { isDrawing = false; });
+    }
+
     const app = {
       state: { sesiSemasa: null, dataPelajarSemasa: null, dataPenilaianBorang: {}, senaraiLaporanPensyarah: [] },
 
@@ -306,9 +331,7 @@
         }
       },
 
-      loginPelajar: async function() {
-        alert("Modul Profil Pelajar tidak aktif di paparan ini.");
-      },
+      loginPelajar: async function() { alert("Modul Pelajar tidak aktif di paparan ini."); },
 
       loginKakitangan: async function() {
         const role = document.getElementById('login-role').value, pin = document.getElementById('login-pin').value.trim();
@@ -347,16 +370,19 @@
         } catch (e) { alert(e.message); } finally { this.showLoader(false); }
       },
 
+      padamTandatangan: function() {
+        if(!ctx || !canvas) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        hasDrawn = false;
+      },
+
       bukaBorangPenilaian: async function(idSistem, noKP, nama) {
         this.state.dataPelajarSemasa = { idSistem, noKP, nama }; this.state.dataPenilaianBorang = {};
-        document.getElementById('borang-subtitle').innerText = nama; this.binaUIBorang();
+        document.getElementById('borang-subtitle').innerText = nama; 
+        this.binaUIBorang();
         
-        // P1 sahaja boleh nampak bahagian muat naik tandatangan
-        if (this.state.sesiSemasa === 'P1') {
-           document.getElementById('signature-section').classList.remove('hidden-view');
-        } else {
-           document.getElementById('signature-section').classList.add('hidden-view');
-        }
+        // Memastikan kanvas dimulakan
+        setTimeout(() => { initSignaturePad(); this.padamTandatangan(); }, 100);
 
         this.showLoader(true);
         try {
@@ -380,15 +406,14 @@
             } 
           });
 
-          // Memuatkan tandatangan jika sudah pernah dimuat naik
+          // Papar tandatangan lama jika wujud
           if (rekod.tandatangan) {
             this.state.dataPenilaianBorang.tandatangan = rekod.tandatangan;
-            document.getElementById('sig-preview').src = rekod.tandatangan;
-            document.getElementById('sig-preview').classList.remove('hidden');
+            document.getElementById('sig-image-preview').src = rekod.tandatangan;
+            document.getElementById('sig-saved-preview').classList.remove('hidden-view');
           } else {
             this.state.dataPenilaianBorang.tandatangan = "";
-            document.getElementById('sig-preview').src = "";
-            document.getElementById('sig-preview').classList.add('hidden');
+            document.getElementById('sig-saved-preview').classList.add('hidden-view');
           }
 
           this.kiraJumlahMarkah(); this.showView('view-borang');
@@ -413,8 +438,7 @@
               <label class="flex items-start gap-3 p-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 cursor-pointer transition-colors shadow-sm">
                 <input type="checkbox" id="cb-${k.id}-${cIdx}" value="${cIdx}" onchange="app.kemaskiniSemakan('${k.id}')" class="checklist-cb mt-0.5">
                 <span class="text-sm font-medium text-slate-700 leading-tight">${item}</span>
-              </label>
-            `;
+              </label>`;
           });
           
           c.insertAdjacentHTML('beforeend', `
@@ -456,19 +480,17 @@
           if(el) el.className = `border-2 border-transparent rounded-2xl p-4 text-center cursor-pointer transition-all hover:-translate-y-1 ${t.baseClass} active:scale-95 flex flex-col justify-center min-h-[90px]`; 
         });
         
-        const tahapDef = CONFIG_KURSUS.tahapList.find(t => t.id === tId);
-        if(!tahapDef) return; 
+        const tDef = CONFIG_KURSUS.tahapList.find(t => t.id === tId);
+        if(!tDef) return; 
 
         const selEl = document.getElementById(`card-${kId}-${tId}`);
-        if(selEl) selEl.className = `border-2 rounded-2xl p-4 text-center cursor-pointer transition-all active:scale-95 flex flex-col justify-center min-h-[90px] shadow-lg ${tahapDef.activeClass} -translate-y-1`;
+        if(selEl) selEl.className = `border-2 rounded-2xl p-4 text-center cursor-pointer transition-all active:scale-95 flex flex-col justify-center min-h-[90px] shadow-lg ${tDef.activeClass} -translate-y-1`;
         
-        const inputEl = document.getElementById(`markah-${kId}`); inputEl.min = tahapDef.min; inputEl.max = tahapDef.max;
-        let cur = Number(inputEl.value); if (!inputEl.value || cur < tahapDef.min || cur > tahapDef.max) inputEl.value = tahapDef.max;
+        const inputEl = document.getElementById(`markah-${kId}`); inputEl.min = tDef.min; inputEl.max = tDef.max;
+        let cur = Number(inputEl.value); if (!inputEl.value || cur < tDef.min || cur > tDef.max) inputEl.value = tDef.max;
         
-        document.getElementById(`hint-${kId}`).innerText = `(Had: ${tahapDef.min} - ${tahapDef.max})`;
-        document.getElementById(`input-group-${kId}`).classList.remove('hidden-view'); 
-        document.getElementById(`checklist-group-${kId}`).classList.remove('hidden-view');
-        document.getElementById(`laporan-group-${kId}`).classList.remove('hidden-view');
+        document.getElementById(`hint-${kId}`).innerText = `(Had: ${tDef.min} - ${tDef.max})`;
+        document.getElementById(`input-group-${kId}`).classList.remove('hidden-view'); document.getElementById(`checklist-group-${kId}`).classList.remove('hidden-view'); document.getElementById(`laporan-group-${kId}`).classList.remove('hidden-view');
         
         this.kiraJumlahMarkah(); this.janaUlasanAutomatik(kId);
       },
@@ -493,7 +515,7 @@
 
         let ulasan = `Analisis Perlakuan:\n`;
         if (checkedText.length === 0) {
-          ulasan += `Secara keseluruhannya, pelajar berjaya mempamerkan kriteria perlakuan kemahiran ${kDef.nama} dengan sangat cemerlang.`;
+          ulasan += `Secara keseluruhannya, pelajar berjaya mempamerkan kriteria perlakuan kemahiran ${kDef.nama.split(' (')[0]} dengan sangat cemerlang.`;
         } else {
           ulasan += `Berdasarkan pemerhatian, pelajar gagal melaksanakan perlakuan berikut:\n`;
           checkedText.forEach((item, index) => { ulasan += `${index + 1}. ${item}\n`; });
@@ -504,18 +526,6 @@
       kiraJumlahMarkah: function() {
         let t = 0; CONFIG_KURSUS.kemahiran.forEach(k => { t += Number(document.getElementById(`markah-${k.id}`)?.value) || 0; });
         document.getElementById('borang-total').innerText = t.toFixed(1);
-      },
-
-      paparPreviewTandatangan: function(event) {
-        const file = event.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = function(e) {
-            document.getElementById('sig-preview').src = e.target.result;
-            document.getElementById('sig-preview').classList.remove('hidden');
-          }
-          reader.readAsDataURL(file);
-        }
       },
 
       simpanPenilaian: async function() {
@@ -541,27 +551,25 @@
         
         let sigUrl = this.state.dataPenilaianBorang.tandatangan || "";
         
-        // Logik Memuat Naik Tandatangan Jika Fail Dipilih (Khas Untuk P1)
-        if (this.state.sesiSemasa === 'P1') {
-          const sigFile = document.getElementById('sig-input').files[0];
-          if (sigFile) {
-            this.showLoader(true, "Memuat Naik Tandatangan...");
-            try {
-              const base64 = await new Promise((resolve) => {
-                const r = new FileReader(); r.onload = (e) => resolve(e.target.result); r.readAsDataURL(sigFile);
-              });
-              const resSig = await this.gasCall('muatNaikTandatangan', { base64Data: base64, filename: sigFile.name, idSistem: this.state.dataPelajarSemasa.idSistem });
-              if (resSig.success) sigUrl = resSig.url;
-            } catch(e) {
-              alert('Gagal muat naik tandatangan. Sila cuba lagi.');
-              this.showLoader(false); return;
-            }
+        // Logik Simpan Canvas Tandatangan (Kini untuk P1 & P2)
+        if (hasDrawn && canvas) {
+          this.showLoader(true, "Mengesahkan Tandatangan...");
+          try {
+            const base64 = canvas.toDataURL('image/png');
+            const resSig = await this.gasCall('muatNaikTandatangan', { base64Data: base64, penilai: this.state.sesiSemasa, idSistem: this.state.dataPelajarSemasa.idSistem });
+            if (resSig.success) sigUrl = resSig.url;
+          } catch(e) {
+            alert('Gagal menyimpan tandatangan. Sila cuba lagi.');
+            this.showLoader(false); return;
           }
+        } else if (!sigUrl) {
+          return alert('Sila turunkan tandatangan digital anda pada kanvas yang disediakan sebelum menghantar.');
         }
+
         payload.tandatangan = sigUrl;
 
         this.showLoader(true, "Menyimpan Borang...");
-        try { await this.gasCall('savePenilaian', payload); alert('Pemarkahan Disimpan!'); this.showView('view-penilai'); } 
+        try { await this.gasCall('savePenilaian', payload); alert('Pemarkahan & Tandatangan Disimpan!'); this.showView('view-penilai'); } 
         catch (e) { alert(e.message); } finally { this.showLoader(false); }
       },
 
@@ -617,7 +625,7 @@
         } catch (e) { alert(e.message); } finally { this.showLoader(false); }
       },
 
-      /* PAPARAN MODAL PENSYARAH UNTUK CETAKAN */
+      /* PAPARAN MODAL PENSYARAH UNTUK CETAKAN (P1 & P2 Signatures) */
       paparModalLaporan: function(index) {
         const p = this.state.senaraiLaporanPensyarah[index];
         const body = document.getElementById('modal-body');
@@ -663,18 +671,23 @@
           html += `<p class="text-sm font-medium text-slate-500 italic mb-8">Laporan analitik belum dimasukkan oleh Penilai Utama.</p>`; 
         }
 
-        // Bahagian Tandatangan
+        // Ruangan Cetakan Tandatangan P1 dan P2
         html += `
-          <div class="mt-16 flex justify-end">
-            <div class="text-center w-48">
-              <img src="${p.tandatanganP1 || ''}" class="h-20 object-contain mx-auto mb-2 ${!p.tandatanganP1 ? 'hidden-view' : ''}" />
-              <div class="w-full border-b border-slate-800 mx-auto ${!p.tandatanganP1 ? 'mt-20' : ''}"></div>
+          <div class="mt-16 grid grid-cols-2 gap-8">
+            <div class="text-center">
+              <img src="${p.tandatanganP1 || ''}" class="h-24 object-contain mx-auto mb-2 ${!p.tandatanganP1 ? 'hidden-view' : ''}" />
+              <div class="w-48 border-b border-slate-800 mx-auto ${!p.tandatanganP1 ? 'mt-24' : ''}"></div>
               <p class="mt-2 text-xs font-bold text-slate-600 uppercase">Tandatangan Penilai 1</p>
+            </div>
+            <div class="text-center">
+              <img src="${p.tandatanganP2 || ''}" class="h-24 object-contain mx-auto mb-2 ${!p.tandatanganP2 ? 'hidden-view' : ''}" />
+              <div class="w-48 border-b border-slate-800 mx-auto ${!p.tandatanganP2 ? 'mt-24' : ''}"></div>
+              <p class="mt-2 text-xs font-bold text-slate-600 uppercase">Tandatangan Penilai 2</p>
             </div>
           </div>
         `;
 
-        // Butang Cetak (Hanya dipaparkan di skrin, disembunyikan semasa cetakan)
+        // Butang Cetak
         html += `
           <div class="mt-10 flex justify-end no-print">
             <button onclick="window.print()" class="bg-brand text-white font-bold py-3 px-8 rounded-full shadow-lg hover:opacity-90 transition-transform active:scale-95 flex items-center gap-2">
@@ -691,7 +704,7 @@
 
       logout: function() {
         this.state.sesiSemasa = null; this.state.dataPelajarSemasa = null;
-        ['nokp-input', 'login-pin', 'sig-input'].forEach(id => { if(document.getElementById(id)) document.getElementById(id).value = ''; });
+        ['nokp-input', 'login-pin'].forEach(id => { if(document.getElementById(id)) document.getElementById(id).value = ''; });
         document.getElementById('user-info').classList.add('hidden-view'); this.showView('view-login');
       }
     };
