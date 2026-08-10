@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Aplikasi Pemarkahan Futsal MPU3421</title>
+  <title>Aplikasi Pemarkahan Sepak Takraw MPU3421</title>
   
   <!-- Font Moden: Outfit -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,7 +17,7 @@
       theme: { 
         extend: { 
           fontFamily: { sans: ['Outfit', 'sans-serif'] },
-          colors: { brand: '#4f46e5', accent: '#ec4899' },
+          colors: { brand: '#2563eb', accent: '#06b6d4' },
           animation: { 'gradient-x': 'gradient-x 15s ease infinite' },
           keyframes: {
             'gradient-x': {
@@ -49,16 +49,19 @@
       backdrop-filter: blur(4px);
       border: 1px solid rgba(255, 255, 255, 0.8);
     }
+    
+    /* Animasi Modal */
+    .modal-enter { animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    @keyframes modalSlideUp { from { opacity: 0; transform: translateY(30px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
   </style>
 </head>
-<!-- Latar Belakang Warna Bertenaga (Vibrant Animated Gradient) -->
-<body class="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 animate-gradient-x text-slate-800 antialiased min-h-screen relative pb-32 selection:bg-accent selection:text-white">
+<body class="bg-gradient-to-br from-blue-600 via-indigo-600 to-cyan-500 animate-gradient-x text-slate-800 antialiased min-h-screen relative pb-32 selection:bg-accent selection:text-white">
 
   <!-- AppBar Glassmorphism -->
   <header class="glass-panel sticky top-0 z-40 px-5 py-4 flex justify-between items-center transition-all rounded-b-3xl">
     <div class="flex items-center gap-3">
-      <div class="bg-gradient-to-tr from-brand to-accent text-white w-10 h-10 rounded-2xl flex items-center justify-center font-black text-sm shadow-lg">FT</div>
-      <h1 class="font-extrabold text-slate-900 tracking-tight text-xl">FUTSAL MPU3421</h1>
+      <div class="bg-gradient-to-tr from-brand to-accent text-white w-10 h-10 rounded-2xl flex items-center justify-center font-black text-sm shadow-lg">ST</div>
+      <h1 class="font-extrabold text-slate-900 tracking-tight text-xl">SEPAK TAKRAW</h1>
     </div>
     <div id="user-info" class="hidden-view flex items-center gap-2">
       <span id="user-label" class="text-xs font-bold text-brand bg-white/80 px-3 py-1.5 rounded-full shadow-sm"></span>
@@ -72,13 +75,26 @@
     <p class="font-bold text-white tracking-widest text-sm uppercase">Menyegerak Data...</p>
   </div>
 
+  <!-- MODAL LAPORAN PENSYARAH -->
+  <div id="modal-laporan" class="hidden-view fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex justify-center items-end sm:items-center p-4 transition-all duration-300">
+    <div class="bg-white/95 backdrop-blur-xl w-full max-w-xl max-h-[85vh] overflow-hidden rounded-[2.5rem] shadow-2xl flex flex-col modal-enter border border-white/50">
+      <div class="p-6 border-b border-slate-200/50 flex justify-between items-center bg-white/50 rounded-t-[2.5rem]">
+        <h3 class="font-black text-slate-900 text-xl tracking-tight">Analitik Laporan</h3>
+        <button onclick="app.tutupModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-full p-2.5 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+      <div id="modal-body" class="p-6 overflow-y-auto space-y-8"></div>
+    </div>
+  </div>
+
   <main class="max-w-xl mx-auto px-4 mt-8">
     
     <!-- ================= PANDANGAN 1: LOG MASUK ================= -->
     <div id="view-login" class="view-transition">
       <div class="text-center mb-10 mt-6 text-white">
-        <h2 class="text-4xl font-black mb-2 drop-shadow-md">Sistem Penilaian</h2>
-        <p class="text-white/80 text-sm font-medium">Log masuk untuk memulakan pentaksiran.</p>
+        <h2 class="text-4xl font-black mb-2 drop-shadow-md">Amali MPU3421</h2>
+        <p class="text-white/80 text-sm font-medium">Log masuk portal pemarkahan Sepak Takraw.</p>
       </div>
       
       <div class="glass-panel p-2 rounded-3xl mb-8 flex relative shadow-xl">
@@ -90,9 +106,9 @@
         <div id="form-pelajar" class="space-y-6">
           <div>
             <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Kad Pengenalan</label>
-            <input type="number" id="nokp-input" class="w-full glass-input rounded-2xl px-5 py-4 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-brand focus:bg-white transition-all placeholder:font-medium placeholder:text-slate-400" placeholder="Cth: 010101141234">
+            <input type="number" id="nokp-input" class="w-full glass-input rounded-2xl px-5 py-4 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-brand focus:bg-white transition-all placeholder:font-medium placeholder:text-slate-400" placeholder="Tanpa Sengkang (Cth: 010101)">
           </div>
-          <button onclick="app.loginPelajar()" class="w-full bg-gradient-to-r from-brand to-accent hover:opacity-90 text-white font-bold py-4 rounded-2xl shadow-lg transition-transform active:scale-95 text-lg">Log Masuk</button>
+          <button onclick="app.loginPelajar()" class="w-full bg-gradient-to-r from-brand to-accent hover:opacity-90 text-white font-bold py-4 rounded-2xl shadow-lg transition-transform active:scale-95 text-lg">Akses Pelajar</button>
         </div>
 
         <div id="form-penilai" class="hidden-view space-y-6">
@@ -101,27 +117,52 @@
             <select id="login-role" class="w-full glass-input rounded-2xl px-5 py-4 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-brand focus:bg-white appearance-none transition-all">
               <option value="P1">Penilai 1</option>
               <option value="P2">Penilai 2</option>
-              <option value="PENSYARAH">Penyelaras</option>
+              <option value="PENSYARAH">Pensyarah / Penyelaras</option>
             </select>
           </div>
           <div>
             <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">PIN Keselamatan</label>
             <input type="password" id="login-pin" class="w-full glass-input rounded-2xl px-5 py-4 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-brand focus:bg-white transition-all placeholder:font-medium placeholder:text-slate-400" placeholder="****">
           </div>
-          <button onclick="app.loginKakitangan()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 rounded-2xl shadow-xl transition-transform active:scale-95 text-lg">Akses Portal</button>
+          <button onclick="app.loginKakitangan()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 rounded-2xl shadow-xl transition-transform active:scale-95 text-lg">Masuk Portal</button>
         </div>
       </div>
     </div>
 
-    <!-- ================= PANDANGAN 2: SENARAI PELAJAR ================= -->
-    <div id="view-penilai" class="hidden-view view-transition">
-      <h2 class="text-3xl font-black text-white mb-6 drop-shadow-md">Calon Futsal</h2>
-      <div id="student-list-container" class="space-y-5">
-        <!-- Kad pelajar dijana secara dinamik -->
+    <!-- ================= PANDANGAN 2: PROFIL PELAJAR ================= -->
+    <div id="view-profil" class="hidden-view view-transition space-y-6">
+      <div class="glass-panel p-8 rounded-[2.5rem]">
+        <h2 class="text-2xl font-black text-slate-900 mb-6">Profil Ujian</h2>
+        <div class="grid grid-cols-2 gap-4 text-sm mb-8">
+          <div class="glass-input p-5 rounded-2xl">
+            <p class="text-slate-500 text-xs uppercase tracking-wider font-black mb-1">Nama</p>
+            <p class="font-bold text-slate-900 leading-tight" id="lbl-nama"></p>
+          </div>
+          <div class="glass-input p-5 rounded-2xl">
+            <p class="text-slate-500 text-xs uppercase tracking-wider font-black mb-1">Status</p>
+            <p class="font-black text-accent" id="lbl-status"></p>
+          </div>
+        </div>
+        <div class="border-2 border-dashed border-slate-300/50 rounded-3xl p-6 text-center flex flex-col items-center bg-white/40">
+          <img id="img-preview" src="" class="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg mb-5">
+          <label class="cursor-pointer bg-white hover:bg-slate-50 text-slate-800 font-bold py-3.5 px-6 rounded-2xl transition-all inline-block mb-2 shadow-sm border border-slate-200 w-full">
+            Muat Naik Gambar Aksi
+            <input type="file" id="file-input" accept="image/png, image/jpeg" class="hidden">
+          </label>
+          <p class="text-xs font-semibold text-slate-500 mb-5 uppercase tracking-widest">Sokongan: JPG/PNG (Max 2MB)</p>
+          <button id="btn-upload" onclick="app.uploadImage()" class="bg-gradient-to-r from-brand to-accent text-white font-bold py-4 px-6 rounded-2xl shadow-lg w-full transition-all active:scale-95">Simpan Data</button>
+          <p id="upload-status" class="text-sm mt-4 font-bold tracking-wide"></p>
+        </div>
       </div>
     </div>
 
-    <!-- ================= PANDANGAN 3: BORANG RUBRIK (GLASSMORPHISM) ================= -->
+    <!-- ================= PANDANGAN 3: SENARAI PELAJAR ================= -->
+    <div id="view-penilai" class="hidden-view view-transition">
+      <h2 class="text-3xl font-black text-white mb-6 drop-shadow-md">Calon Amali</h2>
+      <div id="student-list-container" class="space-y-5"></div>
+    </div>
+
+    <!-- ================= PANDANGAN 4: BORANG RUBRIK ================= -->
     <div id="view-borang" class="hidden-view view-transition">
       <button onclick="app.showView('view-penilai')" class="mb-6 text-sm font-bold text-white/90 hover:text-white flex items-center gap-1.5 glass-panel py-2 px-5 rounded-full w-fit transition-all active:scale-95">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"></path></svg> Kembali
@@ -139,87 +180,63 @@
 
       <div id="rubrik-container" class="space-y-8 pb-10"></div>
 
-      <!-- Floating Bar -->
       <div class="fixed bottom-0 left-0 right-0 z-30 pointer-events-none floating-bar">
         <div class="max-w-xl mx-auto pointer-events-auto px-4 pb-6 pt-10 bg-gradient-to-t from-slate-900/80 via-slate-900/50 to-transparent">
           <div class="glass-panel p-3 rounded-[2.5rem] shadow-2xl flex justify-between items-center border border-white/20 bg-slate-900/80 backdrop-blur-xl">
             <div class="pl-6 py-2">
               <p class="text-white/60 text-[11px] font-black uppercase tracking-widest mb-0.5">Jumlah Markah</p>
               <div class="font-black text-white text-3xl leading-none flex items-baseline gap-1">
-                <span id="borang-total">0.0</span><span class="text-base font-semibold text-white/50">/50</span>
+                <span id="borang-total">0.0</span><span class="text-base font-semibold text-white/50">/60</span>
               </div>
             </div>
-            <button onclick="app.simpanPenilaian()" class="bg-gradient-to-r from-emerald-400 to-emerald-500 hover:from-emerald-500 hover:to-emerald-600 text-white font-extrabold py-4 px-10 rounded-full shadow-lg shadow-emerald-500/30 transition-transform active:scale-95 text-lg">Hantar</button>
+            <button onclick="app.simpanPenilaian()" class="bg-gradient-to-r from-emerald-400 to-teal-500 hover:opacity-90 text-white font-extrabold py-4 px-10 rounded-full shadow-lg shadow-emerald-500/30 transition-transform active:scale-95 text-lg">Hantar</button>
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- ================= PANDANGAN 5: PAPAN PEMUKA PENSYARAH ================= -->
+    <div id="view-pensyarah" class="hidden-view view-transition">
+      <h2 class="text-3xl font-black text-white mb-6 drop-shadow-md">Analisis Keseluruhan</h2>
+      <div id="laporan-list-container" class="space-y-6"></div>
     </div>
 
   </main>
 
   <script>
     /**
-     * KONFIGURASI RUBRIK FUTSAL MPU3421
+     * KONFIGURASI RUBRIK SEPAK TAKRAW MPU3421
      */
     const CONFIG_KURSUS = {
-      // GANTIKAN URL ANDA DI SINI
       API_URL: 'https://script.google.com/macros/s/AKfycbxIQMBSVJ5xAKBuNlArTkLw5C5-yCaRCHv_g3tug4F4lcphiX8eRMsF0rEILivZzX2A4A/exec',
       tahapList: [
-        { id: 'amat_cemerlang', nama: 'Amat Cemerlang', min: 9.0, max: 10.0, baseClass: 'glass-input text-slate-700', activeClass: 'bg-emerald-100/90 border-emerald-500 text-emerald-800 ring-4 ring-emerald-500/30' },
-        { id: 'cemerlang', nama: 'Cemerlang', min: 7.5, max: 8.9, baseClass: 'glass-input text-slate-700', activeClass: 'bg-blue-100/90 border-blue-500 text-blue-800 ring-4 ring-blue-500/30' },
-        { id: 'kepujian', nama: 'Kepujian', min: 6.0, max: 7.4, baseClass: 'glass-input text-slate-700', activeClass: 'bg-indigo-100/90 border-indigo-500 text-indigo-800 ring-4 ring-indigo-500/30' },
-        { id: 'lulus', nama: 'Lulus', min: 5.0, max: 5.9, baseClass: 'glass-input text-slate-700', activeClass: 'bg-amber-100/90 border-amber-500 text-amber-800 ring-4 ring-amber-500/30' },
-        { id: 'lemah', nama: 'Lemah', min: 0.0, max: 4.99, baseClass: 'glass-input text-slate-700', activeClass: 'bg-rose-100/90 border-rose-500 text-rose-800 ring-4 ring-rose-500/30' }
+        { id: 'cemerlang', nama: 'Cemerlang', min: 16.0, max: 20.0, baseClass: 'glass-input text-slate-700 hover:bg-emerald-50', activeClass: 'bg-emerald-100/90 border-emerald-500 text-emerald-800 ring-4 ring-emerald-500/30' },
+        { id: 'sederhana', nama: 'Sederhana', min: 10.0, max: 15.9, baseClass: 'glass-input text-slate-700 hover:bg-amber-50', activeClass: 'bg-amber-100/90 border-amber-500 text-amber-800 ring-4 ring-amber-500/30' },
+        { id: 'lemah', nama: 'Lemah', min: 0.0, max: 9.99, baseClass: 'glass-input text-slate-700 hover:bg-rose-50', activeClass: 'bg-rose-100/90 border-rose-500 text-rose-800 ring-4 ring-rose-500/30' }
       ],
       kemahiran: [
         { 
-          id: 'sepakan', nama: 'Sepakan 10 m', 
+          id: 'servis', nama: 'Servis (Sepak Sila)', 
           tahap: { 
-            amat_cemerlang: 'Menunjukkan imbangan badan yang baik, sepakan kuat dan tepat mencapai sasaran. Kaki yang sesuai digunakan.', 
-            cemerlang: 'Posisi badan stabil. Sepakan biasanya tepat tetapi kadang-kala kurang kekuatan.', 
-            kepujian: 'Imbangan kadang kala tidak stabil, menyebabkan sepakan kurang tepat dan kurang kekuatan.', 
-            lulus: 'Imbangan badan lemah. Sepakan tidak tepat dan jarang mencapai sasaran.', 
-            lemah: 'Imbangan badan sangat lemah. Sepakan tiada kekuatan langsung dan salah teknik kaki.' 
+            cemerlang: { sebelum: 'kedudukan kaki sokongan stabil di dalam bulatan; postur bersedia dan fokus mata tepat pada bola', semasa: 'meniru dan mempamerkan perlakuan teknik sepak sila secara tepat; pemindahan berat badan lancar; sentuhan bola tepat pada bahagian dalam atau kekura kaki dengan kawalan ketinggian, kelajuan, dan sasaran yang sempurna', selepas: 'pergerakan ikut lajak lancar serta merta kembali ke posisi bersedia secara seimbang' }, 
+            sederhana: { sebelum: 'kaki sokongan kekal di dalam bulatan; mata memandang arah bola', semasa: 'meniru perlakuan servis dengan teknik yang betul; imbangan memuaskan; kontak bola pada bahagian dalam atau kekura kaki tetapi kelajuan atau ketinggian bola tidak konsisten', selepas: 'melakukan pergerakan ikut lajak asas dan kembali kepada kedudukan bersedia' }, 
+            lemah: { sebelum: 'kaki sokongan keluar dari bulatan; mata tidak memandang pergerakan bola', semasa: 'gagal meniru/mempamerkan teknik servis dengan betul; imbangan badan tidak stabil, kontak bola bukan pada bahagian dalam kaki (tersasar/tidak lancar)', selepas: 'tiada pergerakan ikut lajak; hilang imbangan dan lambat kembali ke kedudukan bersedia' } 
           } 
         },
         { 
-          id: 'hantaran', nama: 'Hantaran Pendek 10 m', 
+          id: 'mengumpan', nama: 'Mengumpan', 
           tahap: { 
-            amat_cemerlang: 'Posisi sempurna, hantaran tepat, kawalan bola baik, dan komunikasi cemerlang.', 
-            cemerlang: 'Posisi biasanya betul, hantaran majoriti tepat tetapi boleh diperbaiki untuk kawalan lebih baik.', 
-            kepujian: 'Hantaran kurang tepat dan kadangkala melencung. Komunikasi lemah.', 
-            lulus: 'Posisi sering salah, hantaran terlalu lemah/kuat dan tidak berkesan.', 
-            lemah: 'Posisi sangat lemah, hantaran gagal sepenuhnya dan tiada komunikasi.' 
+            cemerlang: { sebelum: 'memandang arah pergerakan bola tepat; bukaan langkah dan kawalan imbangan badan amat kukuh', semasa: 'meniru dan mempamerkan teknik umpanan dengan sentuhan yang lancar dan terkawal; kordinasi pemindahan daya tepat menghasilkan umpanan bola tidak berputar yang ideal di atas jaring', selepas: 'pergerakan ikut lajak kemas serta merta berada dalam kesediaan bertindak' }, 
+            sederhana: { sebelum: 'berdiri buka langkah dengan selesa; mata memandang pergerakan bola', semasa: 'meniru teknik hantaran umpanan; berat badan diimbang di atas kaki sokongan; hantaran bola menuju ke arah zon hantaran di jaring', selepas: 'melakukan ikut lajak pergerakan asas dan kembali ke kedudukan bersedia' }, 
+            lemah: { sebelum: 'bukaan langkah tidak seimbang; mata tidak mengikut penerbangan bola', semasa: 'gagal mempamerkan perlakuan mengumpan dengan betul; sentuhan bola tidak tepat, umpanan terlalu rendah atau terlalu jauh dari jaring', selepas: 'tiada ikut lajak dan tidak bersedia untuk fasa permainan seterusnya' } 
           } 
         },
         { 
-          id: 'menjaring', nama: 'Menjaring 10 m', 
+          id: 'menanduk', nama: 'Menanduk', 
           tahap: { 
-            amat_cemerlang: 'Imbangan badan baik, mengelecek cemerlang mengelirukan lawan, mampu bertukar arah pantas untuk 5 percubaan.', 
-            cemerlang: 'Mengelecek terkawal, bertukar arah baik, mampu membuat 4 percubaan.', 
-            kepujian: 'Imbangan kadang terganggu, gerakan kurang meyakinkan, mampu membuat 3 percubaan sederhana.', 
-            lulus: 'Kawalan bola sangat lemah, sukar bertukar arah, hanya mampu 1-2 percubaan.', 
-            lemah: 'Gagal mengawal imbangan, mudah kehilangan bola, tiada percubaan tepat.' 
-          } 
-        },
-        { 
-          id: 'jaga_gol', nama: 'Menjaga Gol 10 m', 
-          tahap: { 
-            amat_cemerlang: 'Posisi sentiasa sedia, membaca bola dengan baik, tangkapan kemas, cekap membuat terjunan, komunikasi cemerlang.', 
-            cemerlang: 'Posisi bersedia, tangkapan baik walau terlepas sedikit, terjunan memuaskan.', 
-            kepujian: 'Keputusan agak lambat, tangkapan kadang terlepas, terjunan kurang meyakinkan.', 
-            lulus: 'Sering tersalah posisi, sukar membaca pergerakan, banyak bola terlepas.', 
-            lemah: 'Gagal membaca permainan, tangkapan sangat lemah, tiada terjunan.' 
-          } 
-        },
-        { 
-          id: 'pegawai', nama: 'Kepegawaian (Undang-undang & Teknikal)', 
-          tahap: { 
-            amat_cemerlang: 'Mengenal pasti undang-undang dengan terperinci, mengambil keputusan tepat dan kefahaman sangat baik.', 
-            cemerlang: 'Mengenal pasti undang-undang dengan tepat, keputusan cukup baik.', 
-            kepujian: 'Penguasaan cukup. Masih perlu meningkatkan kemampuan teknikal dan keputusan.', 
-            lulus: 'Penguasaan sederhana dan kurang meyakinkan. Memerlukan banyak latihan.', 
-            lemah: 'Tidak memahami undang-undang. Penguasaan sangat lemah.' 
+            cemerlang: { sebelum: 'dapat memastikan kelajuan dan ketinggian bola sangat tepat; postur badan fleksibel dan bersedia untuk rejaman', semasa: 'meniru dan mempamerkan perlakuan merejam dengan kontak bola tepat pada bahagian dahi disertai ayunan leher/dada yang pantas; kawalan arah dan kelajuan tandukan amat baik', selepas: 'mendarat/bergerak secara seimbang, selamat, dan serta-merta sedia untuk tindakan seterusnya' }, 
+            sederhana: { sebelum: 'berdiri selesa mengikut arah bola; mata memandang kedatangan bola', semasa: 'meniru perlakuan menanduk; kontak bola pada kawasan dahi dengan kilasan leher/badan yang baik untuk mengarah bola', selepas: 'menyerap daya pergerakan dan kembali ke kedudukan bersedia' }, 
+            lemah: { sebelum: 'posisi badan pasif; mata tidak memandang bola di udara', semasa: 'gagal mempamerkan perlakuan menanduk yang betul; sentuhan bola bukan pada dahi (terkena ubun-ubun/muka) dan arah tandukan tidak terkawal', selepas: 'hilang imbangan semasa mendarat/bergerak' } 
           } 
         }
       ]
@@ -229,9 +246,8 @@
      * KAWALAN LOGIK STATE & API
      */
     const app = {
-      state: { sesiSemasa: null, dataPelajarSemasa: null, dataPenilaianBorang: {} },
+      state: { sesiSemasa: null, dataPelajarSemasa: null, dataPenilaianBorang: {}, senaraiLaporanPensyarah: [] },
 
-      /** Memanggil Endpoint App Script dengan error handling selamat */
       gasCall: async function(action, payload) {
         try {
           const res = await fetch(CONFIG_KURSUS.API_URL, { 
@@ -239,7 +255,7 @@
             headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
             body: JSON.stringify({ action: action, data: payload }) 
           });
-          if (!res.ok) throw new Error("Gagal menyambung ke pangkalan data.");
+          if (!res.ok) throw new Error("Gagal menyambung ke pelayan.");
           const result = await res.json();
           if (result && result.success === false) throw new Error(result.message);
           return result;
@@ -249,7 +265,7 @@
       showLoader: (s) => document.getElementById('loader').classList.toggle('hidden-view', !s),
       
       showView: (v) => { 
-        ['view-login', 'view-penilai', 'view-borang'].forEach(id => {
+        ['view-login', 'view-profil', 'view-penilai', 'view-borang', 'view-pensyarah'].forEach(id => {
           document.getElementById(id).classList.add('hidden-view');
         }); 
         setTimeout(() => document.getElementById(v).classList.remove('hidden-view'), 50);
@@ -259,9 +275,7 @@
       setModLogin: function(mod) {
         document.getElementById('form-pelajar').classList.toggle('hidden-view', mod !== 'PELAJAR');
         document.getElementById('form-penilai').classList.toggle('hidden-view', mod !== 'PENILAI');
-        const tabPelajar = document.getElementById('tab-pelajar');
-        const tabPenilai = document.getElementById('tab-penilai');
-        
+        const tabPelajar = document.getElementById('tab-pelajar'), tabPenilai = document.getElementById('tab-penilai');
         if(mod === 'PELAJAR') {
           tabPelajar.className = "flex-1 py-3.5 text-sm font-bold rounded-2xl bg-white text-brand shadow transition-all z-10";
           tabPenilai.className = "flex-1 py-3.5 text-sm font-bold rounded-2xl text-slate-600 hover:text-slate-900 transition-all z-10";
@@ -271,7 +285,45 @@
         }
       },
 
-      loginPelajar: async function() { alert("Antaramuka Profil Pelajar dalam penyelenggaraan Glassmorphism."); },
+      loginPelajar: async function() {
+        const noKP = document.getElementById('nokp-input').value.trim();
+        if (!noKP) return alert("Sila masukkan No. KP");
+        this.showLoader(true);
+        try {
+          const res = await this.gasCall('loginPelajar', { noKP });
+          if (res.success) {
+            this.state.sesiSemasa = 'PELAJAR'; this.state.dataPelajarSemasa = res.pelajar;
+            document.getElementById('user-label').innerText = 'Pelajar'; document.getElementById('user-info').classList.remove('hidden-view');
+            document.getElementById('lbl-nama').innerText = res.pelajar.nama; 
+            document.getElementById('lbl-status').innerText = res.pelajar.status || 'Belum Muat Naik';
+            document.getElementById('img-preview').src = res.pelajar.linkGambar || 'https://via.placeholder.com/150?text=Gambar';
+            this.showView('view-profil');
+          }
+        } catch (e) { alert(e.message); } finally { this.showLoader(false); }
+      },
+
+      uploadImage: function() {
+        const fileInput = document.getElementById('file-input');
+        if (fileInput.files.length === 0) return alert("Pilih fail dahulu.");
+        if (fileInput.files[0].size > 2097152) return alert("Fail mesti bawah 2MB.");
+        
+        const status = document.getElementById('upload-status'), btn = document.getElementById('btn-upload');
+        status.className = "text-sm mt-4 font-bold text-amber-500 tracking-wide"; status.innerText = "Memproses..."; btn.disabled = true;
+
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          status.innerText = "Menghantar ke awan...";
+          try {
+            const res = await this.gasCall('muatNaikGambar', { base64Data: e.target.result, filename: fileInput.files[0].name, noKP: this.state.dataPelajarSemasa.noKP });
+            if (res.success) {
+              status.className = "text-sm mt-4 font-bold text-emerald-500 tracking-wide"; status.innerText = "Berjaya Disimpan!";
+              document.getElementById('img-preview').src = res.url;
+              document.getElementById('lbl-status').innerText = 'Selesai';
+            }
+          } catch (err) { status.className = "text-sm mt-4 font-bold text-rose-500 tracking-wide"; status.innerText = err.message; } finally { btn.disabled = false; }
+        };
+        reader.readAsDataURL(fileInput.files[0]);
+      },
 
       loginKakitangan: async function() {
         const role = document.getElementById('login-role').value, pin = document.getElementById('login-pin').value.trim();
@@ -284,8 +336,7 @@
             document.getElementById('user-label').innerText = role; 
             document.getElementById('user-info').classList.remove('hidden-view');
             
-            if (role === 'PENSYARAH') { alert('Panel Pensyarah sedang dimuatkan...'); this.logout(); } 
-            else this.muatSenaraiPelajar();
+            if (role === 'PENSYARAH') this.muatLaporanPensyarah(); else this.muatSenaraiPelajar();
           }
         } catch (e) { alert(e.message); } finally { this.showLoader(false); }
       },
@@ -299,12 +350,10 @@
             container.insertAdjacentHTML('beforeend', `
               <div class="glass-panel p-5 rounded-[2.5rem] flex items-center justify-between gap-4 hover:-translate-y-1 transition-all duration-300">
                 <div class="flex items-center gap-4">
-                  <div class="w-14 h-14 rounded-full bg-gradient-to-br from-slate-200 to-slate-100 flex items-center justify-center font-bold text-slate-400 border-2 border-white shadow-inner">
-                    ${p.nama.charAt(0)}
-                  </div>
+                  <img src="${p.linkGambar || 'https://via.placeholder.com/60?text=P'}" class="w-16 h-16 rounded-full object-cover border-2 border-white shadow-sm bg-white/50">
                   <div>
                     <h3 class="font-bold text-slate-900 text-sm md:text-base leading-tight mb-1">${p.nama}</h3>
-                    <p class="text-xs font-black text-brand/80 uppercase tracking-widest">${p.noKP}</p>
+                    <p class="text-xs font-black text-brand uppercase tracking-widest opacity-80">${p.noKP}</p>
                   </div>
                 </div>
                 <button onclick="app.bukaBorangPenilaian('${p.idSistem}', '${p.noKP}', '${p.nama}')" class="bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold py-3 px-6 rounded-2xl transition-transform active:scale-95 shadow-md shrink-0">Nilai</button>
@@ -340,31 +389,28 @@
           CONFIG_KURSUS.tahapList.forEach(t => { 
             tHTML += `<div id="card-${k.id}-${t.id}" onclick="app.pilihTahapRubrik('${k.id}', '${t.id}')" 
                         class="border-2 border-transparent rounded-2xl p-4 text-center cursor-pointer transition-all hover:-translate-y-1 ${t.baseClass} active:scale-95 flex flex-col justify-center min-h-[90px]">
-                        <h4 class="text-sm font-bold leading-tight">${t.nama}</h4>
-                        <p class="text-xs font-semibold mt-1.5 opacity-60">${t.min} - ${t.max}</p>
+                        <h4 class="text-sm font-extrabold leading-tight">${t.nama}</h4>
+                        <p class="text-[10px] font-black tracking-wider uppercase mt-1.5 opacity-60">${t.min} - ${t.max}</p>
                       </div>`; 
           });
           
           c.insertAdjacentHTML('beforeend', `
             <div class="glass-panel rounded-[2.5rem] p-6 relative overflow-hidden">
               <div class="flex items-center gap-3 mb-6">
-                <span class="bg-slate-900 text-white w-7 h-7 rounded-full flex items-center justify-center text-xs font-black shadow-md">${idx + 1}</span>
+                <span class="bg-slate-900 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-black shadow-md">${idx + 1}</span>
                 <h3 class="font-extrabold text-slate-900 text-lg tracking-tight">${k.nama}</h3>
               </div>
-              
-              <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mb-6">${tHTML}</div>
-              
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">${tHTML}</div>
               <div id="input-group-${k.id}" class="hidden-view glass-input p-5 rounded-2xl mb-4 transition-all">
-                <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-3">Penetapan Markah (Max: 10)</label>
+                <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Penetapan Skor (Max: 20)</label>
                 <div class="flex items-center gap-4">
                   <input type="number" id="markah-${k.id}" step="0.1" onchange="app.kemaskiniInputMarkah('${k.id}')" 
                     class="w-32 text-2xl font-black text-brand bg-white border-0 ring-2 ring-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-brand/30 transition-all text-center shadow-sm">
                   <span id="hint-${k.id}" class="text-xs font-bold text-slate-400 uppercase tracking-wider bg-white/50 px-3 py-1.5 rounded-lg"></span>
                 </div>
               </div>
-              
               <div id="laporan-group-${k.id}" class="hidden-view transition-all">
-                <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-3">Justifikasi Pencapaian</label>
+                <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Analisis Automatik (Boleh Disunting)</label>
                 <textarea id="laporan-${k.id}" class="w-full text-sm font-medium text-slate-700 bg-white/70 border-0 ring-1 ring-slate-200 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-brand/50 transition-all leading-relaxed shadow-sm" rows="3"></textarea>
               </div>
             </div>`);
@@ -373,40 +419,28 @@
 
       pilihTahapRubrik: function(kId, tId) {
         this.state.dataPenilaianBorang[kId] = tId;
-        
-        // Tetapan Gaya Glassmorphism Aktif
-        CONFIG_KURSUS.tahapList.forEach(t => {
-           const el = document.getElementById(`card-${kId}-${t.id}`);
-           el.className = `border-2 border-transparent rounded-2xl p-4 text-center cursor-pointer transition-all hover:-translate-y-1 ${t.baseClass} active:scale-95 flex flex-col justify-center min-h-[90px]`;
-        });
-        
+        CONFIG_KURSUS.tahapList.forEach(t => { document.getElementById(`card-${kId}-${t.id}`).className = `border-2 border-transparent rounded-2xl p-4 text-center cursor-pointer transition-all hover:-translate-y-1 ${t.baseClass} active:scale-95 flex flex-col justify-center min-h-[90px]`; });
         const tahapDef = CONFIG_KURSUS.tahapList.find(t => t.id === tId);
-        const selEl = document.getElementById(`card-${kId}-${tId}`);
-        selEl.className = `border-2 rounded-2xl p-4 text-center cursor-pointer transition-all active:scale-95 flex flex-col justify-center min-h-[90px] shadow-lg ${tahapDef.activeClass} -translate-y-1`;
+        document.getElementById(`card-${kId}-${tId}`).className = `border-2 rounded-2xl p-4 text-center cursor-pointer transition-all active:scale-95 flex flex-col justify-center min-h-[90px] shadow-lg ${tahapDef.activeClass} -translate-y-1`;
         
         const inputEl = document.getElementById(`markah-${kId}`);
         inputEl.min = tahapDef.min; inputEl.max = tahapDef.max;
-        let cur = Number(inputEl.value); 
-        if (!inputEl.value || cur < tahapDef.min || cur > tahapDef.max) inputEl.value = tahapDef.max;
+        let cur = Number(inputEl.value); if (!inputEl.value || cur < tahapDef.min || cur > tahapDef.max) inputEl.value = tahapDef.max;
         
         document.getElementById(`hint-${kId}`).innerText = `(Had: ${tahapDef.min} - ${tahapDef.max})`;
-        document.getElementById(`input-group-${kId}`).classList.remove('hidden-view'); 
-        document.getElementById(`laporan-group-${kId}`).classList.remove('hidden-view');
-        
+        document.getElementById(`input-group-${kId}`).classList.remove('hidden-view'); document.getElementById(`laporan-group-${kId}`).classList.remove('hidden-view');
         this.kiraJumlahMarkah(); this.janaUlasanAutomatik(kId, tId, inputEl.value);
       },
 
       kemaskiniInputMarkah: function(kId) {
         const tId = this.state.dataPenilaianBorang[kId], inputEl = document.getElementById(`markah-${kId}`), tDef = CONFIG_KURSUS.tahapList.find(t => t.id === tId);
-        let val = Number(inputEl.value);
-        if (val < tDef.min) inputEl.value = tDef.min; if (val > tDef.max) inputEl.value = tDef.max;
+        let val = Number(inputEl.value); if (val < tDef.min) inputEl.value = tDef.min; if (val > tDef.max) inputEl.value = tDef.max;
         this.kiraJumlahMarkah(); this.janaUlasanAutomatik(kId, tId, inputEl.value);
       },
 
-      // Fungsi Laporan Berdasarkan Rubrik Futsal
       janaUlasanAutomatik: function(kId, tId, m) {
         const u = CONFIG_KURSUS.kemahiran.find(k => k.id === kId).tahap[tId];
-        document.getElementById(`laporan-${kId}`).value = `Laporan Pemerhatian: ${u}`;
+        document.getElementById(`laporan-${kId}`).value = `Analisis Perlakuan: Semasa fasa persediaan, pemerhatian mendapati ${u.sebelum}. Seterusnya pada fasa pelaksanaan, didapati ${u.semasa}. Pada fasa akhir (pemulihan), ${u.selepas}.`;
       },
 
       kiraJumlahMarkah: function() {
@@ -425,6 +459,91 @@
         try { await this.gasCall('savePenilaian', payload); alert('Pemarkahan Berjaya Disimpan!'); this.showView('view-penilai'); } 
         catch (e) { alert(e.message); } finally { this.showLoader(false); }
       },
+
+      muatLaporanPensyarah: async function() {
+        this.showLoader(true);
+        try {
+          const laporan = await this.gasCall('getLaporan', {});
+          this.state.senaraiLaporanPensyarah = laporan;
+          const container = document.getElementById('laporan-list-container'); container.innerHTML = '';
+          
+          laporan.forEach((p, idx) => {
+            let badgeStyle = "bg-rose-100 text-rose-700 border border-rose-200";
+            if (p.status === 'Lengkap') badgeStyle = "bg-emerald-100 text-emerald-700 border border-emerald-200";
+            else if (p.status === 'Separuh') badgeStyle = "bg-amber-100 text-amber-700 border border-amber-200";
+
+            container.insertAdjacentHTML('beforeend', `
+              <div class="glass-panel p-6 rounded-[2.5rem] flex flex-col gap-5 hover:-translate-y-1 transition-all duration-300">
+                <div class="flex items-center justify-between border-b border-slate-200/50 pb-5">
+                  <div>
+                    <h3 class="font-black text-slate-900 text-lg leading-tight">${p.nama}</h3>
+                    <p class="text-xs font-bold text-slate-500 mt-1 uppercase tracking-widest">${p.noKP}</p>
+                  </div>
+                  <span class="text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl shadow-sm ${badgeStyle}">${p.status}</span>
+                </div>
+                
+                <div class="flex justify-between items-center bg-white/40 p-4 rounded-2xl">
+                  <div class="text-center"><p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Skor P1</p><p class="font-black text-slate-700 text-xl">${p.totalP1 !== null ? p.totalP1 : '-'}</p></div>
+                  <div class="w-px h-8 bg-slate-200"></div>
+                  <div class="text-center"><p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Skor P2</p><p class="font-black text-slate-700 text-xl">${p.totalP2 !== null ? p.totalP2 : '-'}</p></div>
+                  <div class="w-px h-8 bg-slate-200"></div>
+                  <div class="text-center"><p class="text-[10px] font-black text-brand uppercase tracking-widest mb-1">Purata</p><p class="font-black text-brand text-2xl">${p.purata !== null ? p.purata.toFixed(1) : '-'}</p></div>
+                </div>
+                
+                <button onclick="app.paparModalLaporan(${idx})" class="w-full bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold py-3.5 rounded-2xl transition-all shadow-md active:scale-95">Buka Analitik Laporan</button>
+              </div>
+            `);
+          });
+          this.showView('view-pensyarah');
+        } catch (e) { alert(e.message); } finally { this.showLoader(false); }
+      },
+
+      paparModalLaporan: function(index) {
+        const p = this.state.senaraiLaporanPensyarah[index];
+        const body = document.getElementById('modal-body');
+        
+        let html = `
+          <div class="flex items-center gap-4 mb-8 bg-slate-50/50 p-5 rounded-[2rem] border border-slate-100">
+            <img src="${p.linkGambar || 'https://via.placeholder.com/80?text=ST'}" class="w-20 h-20 rounded-full object-cover border-4 border-white shadow-md bg-white">
+            <div>
+              <h4 class="font-black text-slate-900 text-lg leading-tight mb-1">${p.nama}</h4>
+              <p class="text-xs font-bold text-brand uppercase tracking-widest bg-blue-50 w-fit px-2 py-1 rounded-md border border-blue-100">${p.noKP}</p>
+            </div>
+          </div>
+        `;
+
+        html += `<div class="bg-blue-50/50 p-5 rounded-[2rem] border border-blue-100 mb-6">
+                  <h4 class="font-black text-brand text-sm uppercase tracking-widest mb-4 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-brand"></span> Penilai 1 (Jumlah: ${p.totalP1 || '-'})</h4>`;
+        if (Object.keys(p.butiranP1).length > 0) {
+          CONFIG_KURSUS.kemahiran.forEach(k => {
+            if(p.butiranP1[k.id]) {
+              html += `<div class="mb-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+                        <div class="flex justify-between items-center mb-2"><p class="text-xs font-black text-slate-800 uppercase tracking-widest">${k.nama}</p><span class="font-black text-brand bg-blue-50 px-2 py-1 rounded-lg text-xs">${p.butiranP1[k.id].markah} M</span></div>
+                        <p class="text-sm font-medium text-slate-600 leading-relaxed">${p.butiranP1[k.id].laporan}</p>
+                       </div>`;
+            }
+          });
+        } else { html += `<p class="text-sm font-medium text-rose-500 bg-rose-50 p-4 rounded-2xl border border-rose-100">Belum dinilai.</p>`; }
+        html += `</div>`;
+
+        html += `<div class="bg-emerald-50/50 p-5 rounded-[2rem] border border-emerald-100 mb-4">
+                  <h4 class="font-black text-emerald-600 text-sm uppercase tracking-widest mb-4 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Penilai 2 (Jumlah: ${p.totalP2 || '-'})</h4>`;
+        if (Object.keys(p.butiranP2).length > 0) {
+          CONFIG_KURSUS.kemahiran.forEach(k => {
+            if(p.butiranP2[k.id]) {
+              html += `<div class="mb-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+                        <div class="flex justify-between items-center mb-2"><p class="text-xs font-black text-slate-800 uppercase tracking-widest">${k.nama}</p><span class="font-black text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg text-xs">${p.butiranP2[k.id].markah} M</span></div>
+                        <p class="text-sm font-medium text-slate-600 leading-relaxed">${p.butiranP2[k.id].laporan}</p>
+                       </div>`;
+            }
+          });
+        } else { html += `<p class="text-sm font-medium text-rose-500 bg-rose-50 p-4 rounded-2xl border border-rose-100">Belum dinilai.</p>`; }
+        html += `</div>`;
+
+        body.innerHTML = html; document.getElementById('modal-laporan').classList.remove('hidden-view');
+      },
+
+      tutupModal: function() { document.getElementById('modal-laporan').classList.add('hidden-view'); },
 
       logout: function() {
         this.state.sesiSemasa = null; this.state.dataPelajarSemasa = null;
