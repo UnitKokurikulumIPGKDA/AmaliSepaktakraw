@@ -5,12 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Aplikasi Pemarkahan Sepak Takraw MPU3421</title>
   
-  <!-- Font Moden: Outfit -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -35,43 +33,36 @@
     .view-transition { transition: opacity 0.5s ease, transform 0.5s ease; }
     .hidden-view { display: none !important; opacity: 0; transform: translateY(20px); }
     .floating-bar { padding-bottom: env(safe-area-inset-bottom); }
-    
-    /* GLASSMORPHISM UTILITIES */
     .glass-panel {
       background: rgba(255, 255, 255, 0.75);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(255, 255, 255, 0.5);
       box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
     }
-    .glass-input {
-      background: rgba(255, 255, 255, 0.6);
-      backdrop-filter: blur(4px);
-      border: 1px solid rgba(255, 255, 255, 0.8);
-    }
-    
-    /* Animasi Modal */
+    .glass-input { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(4px); border: 1px solid rgba(255, 255, 255, 0.8); }
     .modal-enter { animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     @keyframes modalSlideUp { from { opacity: 0; transform: translateY(30px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
     
-    /* Custom Checkbox Style */
-    .checklist-cb {
-        appearance: none; width: 1.25rem; height: 1.25rem;
-        border: 2px solid #cbd5e1; border-radius: 0.375rem;
-        outline: none; cursor: pointer; transition: all 0.2s ease;
-        position: relative; flex-shrink: 0;
-    }
+    .checklist-cb { appearance: none; width: 1.25rem; height: 1.25rem; border: 2px solid #cbd5e1; border-radius: 0.375rem; outline: none; cursor: pointer; transition: all 0.2s ease; position: relative; flex-shrink: 0; }
     .checklist-cb:checked { background-color: #ef4444; border-color: #ef4444; }
-    .checklist-cb:checked::after {
-        content: '✕'; position: absolute; color: white; font-size: 0.85rem; font-weight: bold;
-        left: 50%; top: 50%; transform: translate(-50%, -50%);
+    .checklist-cb:checked::after { content: '✕'; position: absolute; color: white; font-size: 0.85rem; font-weight: bold; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+    
+    /* GAYA KHAS UNTUK CETAKAN (PRINT) */
+    @media print {
+      body { background: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      body * { visibility: hidden; }
+      #modal-laporan, #modal-laporan * { visibility: visible; }
+      #modal-laporan { position: absolute; left: 0; top: 0; width: 100%; height: auto; background: white; border: none; overflow: visible; display: block !important; padding: 0; margin: 0; }
+      .bg-white\/95 { background: white !important; box-shadow: none !important; border: none !important; border-radius: 0 !important; max-w-full; }
+      .modal-enter { animation: none !important; transform: none !important; }
+      .no-print { display: none !important; }
     }
   </style>
 </head>
 <body class="bg-gradient-to-br from-blue-600 via-indigo-600 to-cyan-500 animate-gradient-x text-slate-800 antialiased min-h-screen relative pb-32 selection:bg-accent selection:text-white">
 
   <!-- AppBar -->
-  <header class="glass-panel sticky top-0 z-40 px-5 py-4 flex justify-between items-center transition-all rounded-b-3xl">
+  <header class="glass-panel sticky top-0 z-40 px-5 py-4 flex justify-between items-center transition-all rounded-b-3xl no-print">
     <div class="flex items-center gap-3">
       <div class="bg-gradient-to-tr from-brand to-accent text-white w-10 h-10 rounded-2xl flex items-center justify-center font-black text-sm shadow-lg">ST</div>
       <h1 class="font-extrabold text-slate-900 tracking-tight text-xl">SEPAK TAKRAW</h1>
@@ -83,25 +74,38 @@
   </header>
 
   <!-- Loader -->
-  <div id="loader" class="hidden-view fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex flex-col justify-center items-center transition-all duration-300">
+  <div id="loader" class="hidden-view fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex flex-col justify-center items-center transition-all duration-300 no-print">
     <div class="w-14 h-14 border-4 border-white/30 border-t-accent rounded-full animate-spin mb-4 shadow-xl"></div>
-    <p class="font-bold text-white tracking-widest text-sm uppercase">Menyegerak Data...</p>
+    <p class="font-bold text-white tracking-widest text-sm uppercase" id="loader-text">Menyegerak Data...</p>
   </div>
 
-  <!-- MODAL: LAPORAN PENSYARAH -->
+  <!-- MODAL: LAPORAN PENSYARAH (Sedia untuk Cetakan) -->
   <div id="modal-laporan" class="hidden-view fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex justify-center items-end sm:items-center p-4 transition-all duration-300">
-    <div class="bg-white/95 backdrop-blur-xl w-full max-w-xl max-h-[85vh] overflow-hidden rounded-[2.5rem] shadow-2xl flex flex-col modal-enter border border-white/50">
-      <div class="p-6 border-b border-slate-200/50 flex justify-between items-center bg-white/50 rounded-t-[2.5rem]">
-        <h3 class="font-black text-slate-900 text-xl tracking-tight">Analitik Laporan</h3>
+    <div class="bg-white/95 backdrop-blur-xl w-full max-w-2xl max-h-[90vh] overflow-hidden rounded-[2.5rem] shadow-2xl flex flex-col modal-enter border border-white/50 print:max-h-none print:h-auto print:rounded-none">
+      <div class="p-6 border-b border-slate-200/50 flex justify-between items-center bg-white/50 rounded-t-[2.5rem] no-print">
+        <h3 class="font-black text-slate-900 text-xl tracking-tight">Cetak Keputusan</h3>
         <button onclick="app.tutupModalLaporan()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-full p-2.5 transition-colors">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
       </div>
-      <div id="modal-body" class="p-6 overflow-y-auto space-y-8"></div>
+      <div id="modal-body" class="p-8 overflow-y-auto print:overflow-visible"></div>
     </div>
   </div>
 
-  <main class="max-w-xl mx-auto px-4 mt-8">
+  <!-- MODAL: RUJUKAN RUBRIK UNTUK PENILAI -->
+  <div id="modal-rubrik" class="hidden-view fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex justify-center items-end sm:items-center p-4 transition-all duration-300 no-print">
+    <div class="bg-white/95 backdrop-blur-xl w-full max-w-xl max-h-[85vh] overflow-hidden rounded-[2.5rem] shadow-2xl flex flex-col modal-enter border border-white/50">
+      <div class="p-6 border-b border-slate-200/50 flex justify-between items-center bg-brand text-white rounded-t-[2.5rem]">
+        <h3 class="font-black text-white text-xl tracking-tight">Rujukan Rubrik</h3>
+        <button onclick="app.tutupModalRubrik()" class="bg-white/20 hover:bg-white/30 text-white rounded-full p-2.5 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+      <div id="modal-rubrik-body" class="p-6 overflow-y-auto space-y-6"></div>
+    </div>
+  </div>
+
+  <main class="max-w-xl mx-auto px-4 mt-8 no-print">
     
     <!-- PANDANGAN 1: LOG MASUK -->
     <div id="view-login" class="view-transition">
@@ -128,7 +132,7 @@
           <div>
             <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Peranan</label>
             <select id="login-role" class="w-full glass-input rounded-2xl px-5 py-4 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-brand focus:bg-white appearance-none transition-all">
-              <option value="P1">Penilai 1</option>
+              <option value="P1">Penilai 1 (Penilai Utama)</option>
               <option value="P2">Penilai 2</option>
               <option value="PENSYARAH">Pensyarah / Penyelaras</option>
             </select>
@@ -142,40 +146,13 @@
       </div>
     </div>
 
-    <!-- PANDANGAN 2: PROFIL PELAJAR -->
-    <div id="view-profil" class="hidden-view view-transition space-y-6">
-      <div class="glass-panel p-8 rounded-[2.5rem]">
-        <h2 class="text-2xl font-black text-slate-900 mb-6">Profil Ujian</h2>
-        <div class="grid grid-cols-2 gap-4 text-sm mb-8">
-          <div class="glass-input p-5 rounded-2xl">
-            <p class="text-slate-500 text-xs uppercase tracking-wider font-black mb-1">Nama</p>
-            <p class="font-bold text-slate-900 leading-tight" id="lbl-nama"></p>
-          </div>
-          <div class="glass-input p-5 rounded-2xl">
-            <p class="text-slate-500 text-xs uppercase tracking-wider font-black mb-1">Status</p>
-            <p class="font-black text-accent" id="lbl-status"></p>
-          </div>
-        </div>
-        <div class="border-2 border-dashed border-slate-300/50 rounded-3xl p-6 text-center flex flex-col items-center bg-white/40">
-          <img id="img-preview" src="" class="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg mb-5">
-          <label class="cursor-pointer bg-white hover:bg-slate-50 text-slate-800 font-bold py-3.5 px-6 rounded-2xl transition-all inline-block mb-2 shadow-sm border border-slate-200 w-full">
-            Muat Naik Gambar Aksi
-            <input type="file" id="file-input" accept="image/png, image/jpeg" class="hidden">
-          </label>
-          <p class="text-xs font-semibold text-slate-500 mb-5 uppercase tracking-widest">Sokongan: JPG/PNG (Max 2MB)</p>
-          <button id="btn-upload" onclick="app.uploadImage()" class="bg-gradient-to-r from-brand to-accent text-white font-bold py-4 px-6 rounded-2xl shadow-lg w-full transition-all active:scale-95">Simpan Data</button>
-          <p id="upload-status" class="text-sm mt-4 font-bold tracking-wide"></p>
-        </div>
-      </div>
-    </div>
-
-    <!-- PANDANGAN 3: SENARAI PELAJAR -->
+    <!-- PANDANGAN 2: SENARAI PELAJAR -->
     <div id="view-penilai" class="hidden-view view-transition">
       <h2 class="text-3xl font-black text-white mb-6 drop-shadow-md">Calon Amali</h2>
       <div id="student-list-container" class="space-y-5"></div>
     </div>
 
-    <!-- PANDANGAN 4: BORANG RUBRIK -->
+    <!-- PANDANGAN 3: BORANG RUBRIK & SENARAI SEMAK PINTAR -->
     <div id="view-borang" class="hidden-view view-transition">
       <button onclick="app.showView('view-penilai')" class="mb-6 text-sm font-bold text-white/90 hover:text-white flex items-center gap-1.5 glass-panel py-2 px-5 rounded-full w-fit transition-all active:scale-95">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"></path></svg> Kembali
@@ -191,9 +168,28 @@
             <h2 id="borang-subtitle" class="font-extrabold text-slate-900 text-xl leading-tight line-clamp-1"></h2>
           </div>
         </div>
+        <button onclick="app.bukaModalRubrik()" class="shrink-0 bg-white border border-slate-200 shadow-sm text-brand p-3 rounded-2xl hover:bg-slate-50 transition-transform active:scale-95" title="Lihat Spesifikasi Rubrik">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </button>
       </div>
 
-      <div id="rubrik-container" class="space-y-8 pb-10"></div>
+      <div id="rubrik-container" class="space-y-8 pb-4"></div>
+
+      <!-- Bahagian Tandatangan (Hanya Kelihatan Untuk P1) -->
+      <div id="signature-section" class="hidden-view glass-panel rounded-[2.5rem] p-6 mb-8 border-2 border-brand/20 relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-2 h-full bg-brand"></div>
+        <h3 class="font-extrabold text-slate-900 text-lg mb-1">Pengesahan Penilai Utama</h3>
+        <p class="text-xs font-semibold text-slate-500 mb-5">Sila muat naik tandatangan digital anda untuk mengesahkan laporan analisis amali ini.</p>
+        
+        <label class="cursor-pointer bg-white border border-slate-200 hover:bg-slate-50 text-brand font-bold py-3 px-5 rounded-2xl transition-colors inline-block shadow-sm">
+          Pilih Fail Tandatangan
+          <input type="file" id="sig-input" accept="image/png, image/jpeg" class="hidden" onchange="app.paparPreviewTandatangan(event)">
+        </label>
+        <img id="sig-preview" class="h-20 mt-4 object-contain hidden border border-slate-200 p-2 rounded-lg bg-white shadow-sm" />
+      </div>
+
+      <!-- Ruangan kosong untuk scroll bawah floating bar -->
+      <div class="h-32"></div>
 
       <div class="fixed bottom-0 left-0 right-0 z-30 pointer-events-none floating-bar">
         <div class="max-w-xl mx-auto pointer-events-auto px-4 pb-6 pt-10 bg-gradient-to-t from-slate-900/80 via-slate-900/50 to-transparent">
@@ -220,9 +216,7 @@
 
   <script>
     /**
-     * =====================================================================
      * KONFIGURASI PANGKALAN DATA & RUBRIK
-     * =====================================================================
      */
     const CONFIG_KURSUS = {
       API_URL: 'https://script.google.com/macros/s/AKfycbxIQMBSVJ5xAKBuNlArTkLw5C5-yCaRCHv_g3tug4F4lcphiX8eRMsF0rEILivZzX2A4A/exec',
@@ -242,7 +236,8 @@
             "Sentuhan bola tepat pada bahagian dalam / kekura kaki",
             "Kawalan ketinggian, kelajuan, dan sasaran sempurna",
             "Pergerakan ikut lajak lancar & kembali ke posisi seimbang"
-          ]
+          ],
+          tahap: { cemerlang: { sebelum: 'kedudukan kaki sokongan stabil di dalam bulatan; postur bersedia dan fokus mata tepat pada bola', semasa: 'meniru dan mempamerkan perlakuan teknik sepak sila secara tepat; pemindahan berat badan lancar; sentuhan bola tepat pada bahagian dalam atau kekura kaki dengan kawalan ketinggian, kelajuan, dan sasaran yang sempurna', selepas: 'pergerakan ikut lajak lancar serta merta kembali ke posisi bersedia secara seimbang' }, sederhana: { sebelum: 'kaki sokongan kekal di dalam bulatan; mata memandang arah bola', semasa: 'meniru perlakuan servis dengan teknik yang betul; imbangan memuaskan; kontak bola pada bahagian dalam atau kekura kaki tetapi kelajuan atau ketinggian bola tidak konsisten', selepas: 'melakukan pergerakan ikut lajak asas dan kembali kepada kedudukan bersedia' }, lemah: { sebelum: 'kaki sokongan keluar dari bulatan; mata tidak memandang pergerakan bola', semasa: 'gagal meniru/mempamerkan teknik servis dengan betul; imbangan badan tidak stabil, kontak bola bukan pada bahagian dalam kaki (tersasar/tidak lancar)', selepas: 'tiada pergerakan ikut lajak; hilang imbangan dan lambat kembali ke kedudukan bersedia' } } 
         },
         { 
           id: 'mengumpan', 
@@ -253,7 +248,8 @@
             "Sentuhan lancar dan terkawal",
             "Kordinasi pemindahan daya tepat (bola tidak berputar ideal)",
             "Pergerakan ikut lajak kemas serta merta bersedia"
-          ]
+          ],
+          tahap: { cemerlang: { sebelum: 'memandang arah pergerakan bola tepat; bukaan langkah dan kawalan imbangan badan amat kukuh', semasa: 'meniru dan mempamerkan teknik umpanan dengan sentuhan yang lancar dan terkawal; kordinasi pemindahan daya tepat menghasilkan umpanan bola tidak berputar yang ideal di atas jaring', selepas: 'pergerakan ikut lajak kemas serta merta berada dalam kesediaan bertindak' }, sederhana: { sebelum: 'berdiri buka langkah dengan selesa; mata memandang pergerakan bola', semasa: 'meniru teknik hantaran umpanan; berat badan diimbang di atas kaki sokongan; hantaran bola menuju ke arah zon hantaran di jaring', selepas: 'melakukan ikut lajak pergerakan asas dan kembali ke kedudukan bersedia' }, lemah: { sebelum: 'bukaan langkah tidak seimbang; mata tidak mengikut penerbangan bola', semasa: 'gagal mempamerkan perlakuan mengumpan dengan betul; sentuhan bola tidak tepat, umpanan terlalu rendah atau terlalu jauh dari jaring', selepas: 'tiada ikut lajak dan tidak bersedia untuk fasa permainan seterusnya' } } 
         },
         { 
           id: 'menanduk', 
@@ -265,22 +261,18 @@
             "Ayunan leher/dada pantas; kawalan arah dan kelajuan amat baik",
             "Mendarat/bergerak secara seimbang dan selamat",
             "Serta-merta sedia untuk tindakan seterusnya"
-          ]
+          ],
+          tahap: { cemerlang: { sebelum: 'dapat memastikan kelajuan dan ketinggian bola sangat tepat; postur badan fleksibel dan bersedia untuk rejaman', semasa: 'meniru dan mempamerkan perlakuan merejam dengan kontak bola tepat pada bahagian dahi disertai ayunan leher/dada yang pantas; kawalan arah dan kelajuan tandukan amat baik', selepas: 'mendarat/bergerak secara seimbang, selamat, dan serta-merta sedia untuk tindakan seterusnya' }, sederhana: { sebelum: 'berdiri selesa mengikut arah bola; mata memandang kedatangan bola', semasa: 'meniru perlakuan menanduk; kontak bola pada kawasan dahi dengan kilasan leher/badan yang baik untuk mengarah bola', selepas: 'menyerap daya pergerakan dan kembali ke kedudukan bersedia' }, lemah: { sebelum: 'posisi badan pasif; mata tidak memandang bola di udara', semasa: 'gagal mempamerkan perlakuan menanduk yang betul; sentuhan bola bukan pada dahi (terkena ubun-ubun/muka) dan arah tandukan tidak terkawal', selepas: 'hilang imbangan semasa mendarat/bergerak' } } 
         }
       ]
     };
 
     /**
-     * =====================================================================
-     * KAWALAN LOGIK STATE & API (Frontend)
-     * =====================================================================
+     * KAWALAN LOGIK STATE & API
      */
     const app = {
       state: { sesiSemasa: null, dataPelajarSemasa: null, dataPenilaianBorang: {}, senaraiLaporanPensyarah: [] },
 
-      /** 
-       * Fungsi komunikasi utama menggunakan Fetch API dengan pengendalian ralat (try/catch). 
-       */
       gasCall: async function(action, payload) {
         try {
           const res = await fetch(CONFIG_KURSUS.API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: action, data: payload }) });
@@ -291,10 +283,13 @@
         } catch (e) { throw new Error(e.message); }
       },
 
-      showLoader: (s) => document.getElementById('loader').classList.toggle('hidden-view', !s),
+      showLoader: (s, text = "Menyegerak Data...") => {
+        document.getElementById('loader-text').innerText = text;
+        document.getElementById('loader').classList.toggle('hidden-view', !s);
+      },
       
       showView: (v) => { 
-        ['view-login', 'view-profil', 'view-penilai', 'view-borang', 'view-pensyarah'].forEach(id => document.getElementById(id).classList.add('hidden-view')); 
+        ['view-login', 'view-penilai', 'view-borang', 'view-pensyarah'].forEach(id => document.getElementById(id).classList.add('hidden-view')); 
         setTimeout(() => document.getElementById(v).classList.remove('hidden-view'), 50); window.scrollTo(0, 0);
       },
 
@@ -312,42 +307,7 @@
       },
 
       loginPelajar: async function() {
-        const noKP = document.getElementById('nokp-input').value.trim();
-        if (!noKP) return alert("Sila masukkan No. KP");
-        this.showLoader(true);
-        try {
-          const res = await this.gasCall('loginPelajar', { noKP });
-          if (res.success) {
-            this.state.sesiSemasa = 'PELAJAR'; this.state.dataPelajarSemasa = res.pelajar;
-            document.getElementById('user-label').innerText = 'Pelajar'; document.getElementById('user-info').classList.remove('hidden-view');
-            document.getElementById('lbl-nama').innerText = res.pelajar.nama; 
-            document.getElementById('lbl-status').innerText = res.pelajar.status || 'Belum Muat Naik';
-            document.getElementById('img-preview').src = res.pelajar.linkGambar || 'https://via.placeholder.com/150?text=Gambar';
-            this.showView('view-profil');
-          }
-        } catch (e) { alert(e.message); } finally { this.showLoader(false); }
-      },
-
-      uploadImage: function() {
-        const fileInput = document.getElementById('file-input');
-        if (fileInput.files.length === 0) return alert("Pilih fail dahulu.");
-        if (fileInput.files[0].size > 2097152) return alert("Fail mesti bawah 2MB.");
-        
-        const status = document.getElementById('upload-status'), btn = document.getElementById('btn-upload');
-        status.className = "text-sm mt-4 font-bold text-amber-500 tracking-wide"; status.innerText = "Memproses..."; btn.disabled = true;
-
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-          status.innerText = "Menghantar ke awan...";
-          try {
-            const res = await this.gasCall('muatNaikGambar', { base64Data: e.target.result, filename: fileInput.files[0].name, noKP: this.state.dataPelajarSemasa.noKP });
-            if (res.success) {
-              status.className = "text-sm mt-4 font-bold text-emerald-500 tracking-wide"; status.innerText = "Berjaya Disimpan!";
-              document.getElementById('img-preview').src = res.url; document.getElementById('lbl-status').innerText = 'Selesai';
-            }
-          } catch (err) { status.className = "text-sm mt-4 font-bold text-rose-500 tracking-wide"; status.innerText = err.message; } finally { btn.disabled = false; }
-        };
-        reader.readAsDataURL(fileInput.files[0]);
+        alert("Modul Profil Pelajar tidak aktif di paparan ini.");
       },
 
       loginKakitangan: async function() {
@@ -391,6 +351,13 @@
         this.state.dataPelajarSemasa = { idSistem, noKP, nama }; this.state.dataPenilaianBorang = {};
         document.getElementById('borang-subtitle').innerText = nama; this.binaUIBorang();
         
+        // P1 sahaja boleh nampak bahagian muat naik tandatangan
+        if (this.state.sesiSemasa === 'P1') {
+           document.getElementById('signature-section').classList.remove('hidden-view');
+        } else {
+           document.getElementById('signature-section').classList.add('hidden-view');
+        }
+
         this.showLoader(true);
         try {
           const rekod = await this.gasCall('getPenilaianPelajar', { idSistem, penilai: this.state.sesiSemasa });
@@ -412,11 +379,22 @@
               else this.janaUlasanAutomatik(kId);
             } 
           });
+
+          // Memuatkan tandatangan jika sudah pernah dimuat naik
+          if (rekod.tandatangan) {
+            this.state.dataPenilaianBorang.tandatangan = rekod.tandatangan;
+            document.getElementById('sig-preview').src = rekod.tandatangan;
+            document.getElementById('sig-preview').classList.remove('hidden');
+          } else {
+            this.state.dataPenilaianBorang.tandatangan = "";
+            document.getElementById('sig-preview').src = "";
+            document.getElementById('sig-preview').classList.add('hidden');
+          }
+
           this.kiraJumlahMarkah(); this.showView('view-borang');
         } catch (e) { alert(e.message); } finally { this.showLoader(false); }
       },
 
-      /** Membina HTML borang dan senarai semak berdasarkan CONFIG_KURSUS */
       binaUIBorang: function() {
         const c = document.getElementById('rubrik-container'); c.innerHTML = '';
         CONFIG_KURSUS.kemahiran.forEach((k, idx) => {
@@ -445,7 +423,6 @@
                 <span class="bg-slate-900 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-black shadow-md">${idx + 1}</span>
                 <h3 class="font-extrabold text-slate-900 text-lg tracking-tight">${k.nama}</h3>
               </div>
-              
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">${tHTML}</div>
               
               <div id="checklist-group-${k.id}" class="hidden-view bg-rose-50/50 p-5 rounded-3xl border border-rose-100 mb-6 transition-all">
@@ -464,9 +441,8 @@
                   <span id="hint-${k.id}" class="text-xs font-bold text-slate-400 uppercase tracking-wider bg-white/50 px-3 py-1.5 rounded-lg"></span>
                 </div>
               </div>
-              
               <div id="laporan-group-${k.id}" class="hidden-view transition-all">
-                <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Analisis Pintar Berdasarkan Senarai Semak</label>
+                <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Analisis Automatik (Boleh Disunting)</label>
                 <textarea id="laporan-${k.id}" class="w-full text-sm font-medium text-slate-700 bg-white/70 border-0 ring-1 ring-slate-200 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-brand/50 transition-all leading-relaxed shadow-sm" rows="5"></textarea>
               </div>
             </div>`);
@@ -477,15 +453,14 @@
         this.state.dataPenilaianBorang[kId] = tId;
         CONFIG_KURSUS.tahapList.forEach(t => { 
           const el = document.getElementById(`card-${kId}-${t.id}`);
-          if (el) el.className = `border-2 border-transparent rounded-2xl p-4 text-center cursor-pointer transition-all hover:-translate-y-1 ${t.baseClass} active:scale-95 flex flex-col justify-center min-h-[90px]`; 
+          if(el) el.className = `border-2 border-transparent rounded-2xl p-4 text-center cursor-pointer transition-all hover:-translate-y-1 ${t.baseClass} active:scale-95 flex flex-col justify-center min-h-[90px]`; 
         });
         
         const tahapDef = CONFIG_KURSUS.tahapList.find(t => t.id === tId);
-        // Null check sekiranya pangkalan data simpan ID tahap lama yang telah dibuang
-        if (!tahapDef) return; 
+        if(!tahapDef) return; 
 
         const selEl = document.getElementById(`card-${kId}-${tId}`);
-        if (selEl) selEl.className = `border-2 rounded-2xl p-4 text-center cursor-pointer transition-all active:scale-95 flex flex-col justify-center min-h-[90px] shadow-lg ${tahapDef.activeClass} -translate-y-1`;
+        if(selEl) selEl.className = `border-2 rounded-2xl p-4 text-center cursor-pointer transition-all active:scale-95 flex flex-col justify-center min-h-[90px] shadow-lg ${tahapDef.activeClass} -translate-y-1`;
         
         const inputEl = document.getElementById(`markah-${kId}`); inputEl.min = tahapDef.min; inputEl.max = tahapDef.max;
         let cur = Number(inputEl.value); if (!inputEl.value || cur < tahapDef.min || cur > tahapDef.max) inputEl.value = tahapDef.max;
@@ -499,53 +474,48 @@
       },
 
       kemaskiniInputMarkah: function(kId) {
-        const tId = this.state.dataPenilaianBorang[kId];
-        const inputEl = document.getElementById(`markah-${kId}`);
-        const tDef = CONFIG_KURSUS.tahapList.find(t => t.id === tId);
-        
-        if (!tDef) return;
-
-        let val = Number(inputEl.value); 
-        if (val < tDef.min) inputEl.value = tDef.min; 
-        if (val > tDef.max) inputEl.value = tDef.max;
-        
+        const tId = this.state.dataPenilaianBorang[kId], inputEl = document.getElementById(`markah-${kId}`), tDef = CONFIG_KURSUS.tahapList.find(t => t.id === tId);
+        if(!tDef) return;
+        let val = Number(inputEl.value); if (val < tDef.min) inputEl.value = tDef.min; if (val > tDef.max) inputEl.value = tDef.max;
         this.kiraJumlahMarkah();
       },
 
-      kemaskiniSemakan: function(kId) {
-        this.janaUlasanAutomatik(kId);
-      },
+      kemaskiniSemakan: function(kId) { this.janaUlasanAutomatik(kId); },
 
-      /** Menjana Ulasan Pintar Berdasarkan Senarai Semak Yang DITANDA */
       janaUlasanAutomatik: function(kId) {
         const kDef = CONFIG_KURSUS.kemahiran.find(k => k.id === kId);
         if(!kDef) return;
-
-        const checklistItems = kDef.senaraiSemak;
         let checkedText = [];
-        
-        checklistItems.forEach((item, idx) => {
+        kDef.senaraiSemak.forEach((item, idx) => {
           const cb = document.getElementById(`cb-${kId}-${idx}`);
           if (cb && cb.checked) checkedText.push(item);
         });
 
         let ulasan = `Analisis Perlakuan:\n`;
-        
         if (checkedText.length === 0) {
-          ulasan += `Secara keseluruhannya, pelajar berjaya mempamerkan kriteria perlakuan kemahiran dengan sangat cemerlang.`;
+          ulasan += `Secara keseluruhannya, pelajar berjaya mempamerkan kriteria perlakuan kemahiran ${kDef.nama} dengan sangat cemerlang.`;
         } else {
           ulasan += `Berdasarkan pemerhatian, pelajar gagal melaksanakan perlakuan berikut:\n`;
-          checkedText.forEach((item, index) => {
-             ulasan += `${index + 1}. ${item}\n`;
-          });
+          checkedText.forEach((item, index) => { ulasan += `${index + 1}. ${item}\n`; });
         }
-        
         document.getElementById(`laporan-${kId}`).value = ulasan;
       },
 
       kiraJumlahMarkah: function() {
         let t = 0; CONFIG_KURSUS.kemahiran.forEach(k => { t += Number(document.getElementById(`markah-${k.id}`)?.value) || 0; });
         document.getElementById('borang-total').innerText = t.toFixed(1);
+      },
+
+      paparPreviewTandatangan: function(event) {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            document.getElementById('sig-preview').src = e.target.result;
+            document.getElementById('sig-preview').classList.remove('hidden');
+          }
+          reader.readAsDataURL(file);
+        }
       },
 
       simpanPenilaian: async function() {
@@ -564,22 +534,52 @@
               if (cb && cb.checked) semakanDitanda.push(idx);
             });
           }
-          const semakanString = semakanDitanda.join(',');
-          
-          if (tId && m) {
-            payload.kemahiran[k.id] = { tahapId: tId, markah: Number(m), semakan: semakanString, laporan: l }; 
-            adaIsi = true;
-          } else { 
-            payload.kemahiran[k.id] = { tahapId: '', markah: '', semakan: '', laporan: '' }; 
-          }
+          if (tId && m) { payload.kemahiran[k.id] = { tahapId: tId, markah: Number(m), semakan: semakanDitanda.join(','), laporan: l }; adaIsi = true; } 
+          else { payload.kemahiran[k.id] = { tahapId: '', markah: '', semakan: '', laporan: '' }; }
         }
-        
         if (!adaIsi) return alert('Sila isi sekurang-kurangnya satu kemahiran.');
         
-        this.showLoader(true);
+        let sigUrl = this.state.dataPenilaianBorang.tandatangan || "";
+        
+        // Logik Memuat Naik Tandatangan Jika Fail Dipilih (Khas Untuk P1)
+        if (this.state.sesiSemasa === 'P1') {
+          const sigFile = document.getElementById('sig-input').files[0];
+          if (sigFile) {
+            this.showLoader(true, "Memuat Naik Tandatangan...");
+            try {
+              const base64 = await new Promise((resolve) => {
+                const r = new FileReader(); r.onload = (e) => resolve(e.target.result); r.readAsDataURL(sigFile);
+              });
+              const resSig = await this.gasCall('muatNaikTandatangan', { base64Data: base64, filename: sigFile.name, idSistem: this.state.dataPelajarSemasa.idSistem });
+              if (resSig.success) sigUrl = resSig.url;
+            } catch(e) {
+              alert('Gagal muat naik tandatangan. Sila cuba lagi.');
+              this.showLoader(false); return;
+            }
+          }
+        }
+        payload.tandatangan = sigUrl;
+
+        this.showLoader(true, "Menyimpan Borang...");
         try { await this.gasCall('savePenilaian', payload); alert('Pemarkahan Disimpan!'); this.showView('view-penilai'); } 
         catch (e) { alert(e.message); } finally { this.showLoader(false); }
       },
+
+      /* FUNGSI MODAL RUJUKAN RUBRIK */
+      bukaModalRubrik: function() {
+        let html = '';
+        CONFIG_KURSUS.kemahiran.forEach((k, idx) => {
+          html += `<div class="mb-8"><h4 class="font-extrabold text-slate-800 text-lg mb-4 flex items-center gap-2"><span class="bg-brand text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">${idx+1}</span>${k.nama}</h4><div class="space-y-3">`;
+          CONFIG_KURSUS.tahapList.forEach(t => {
+            const u = k.tahap[t.id];
+            let badgeClass = t.id === 'cemerlang' ? 'bg-emerald-100 text-emerald-800' : (t.id === 'sederhana' ? 'bg-amber-100 text-amber-800' : 'bg-rose-100 text-rose-800');
+            html += `<div class="bg-slate-50 border border-slate-200 p-4 rounded-2xl"><div class="flex justify-between items-center mb-3"><span class="text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full ${badgeClass}">${t.nama}</span><span class="text-xs font-bold text-slate-500">${t.min} - ${t.max}</span></div><div class="text-sm text-slate-600 space-y-2"><p><strong>Sebelum:</strong> ${u.sebelum}</p><p><strong>Semasa:</strong> ${u.semasa}</p><p><strong>Selepas:</strong> ${u.selepas}</p></div></div>`;
+          });
+          html += `</div></div>`;
+        });
+        document.getElementById('modal-rubrik-body').innerHTML = html; document.getElementById('modal-rubrik').classList.remove('hidden-view');
+      },
+      tutupModalRubrik: function() { document.getElementById('modal-rubrik').classList.add('hidden-view'); },
 
       muatLaporanPensyarah: async function() {
         this.showLoader(true);
@@ -609,7 +609,7 @@
                   <div class="w-px h-8 bg-slate-200"></div>
                   <div class="text-center"><p class="text-[10px] font-black text-brand uppercase tracking-widest mb-1">Purata</p><p class="font-black text-brand text-2xl">${p.purata !== null ? p.purata.toFixed(1) : '-'}</p></div>
                 </div>
-                <button onclick="app.paparModalLaporan(${idx})" class="w-full bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold py-3.5 rounded-2xl transition-all shadow-md active:scale-95">Buka Analitik Laporan</button>
+                <button onclick="app.paparModalLaporan(${idx})" class="w-full bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold py-3.5 rounded-2xl transition-all shadow-md active:scale-95">Cetak Keputusan Rasmi</button>
               </div>
             `);
           });
@@ -617,39 +617,72 @@
         } catch (e) { alert(e.message); } finally { this.showLoader(false); }
       },
 
+      /* PAPARAN MODAL PENSYARAH UNTUK CETAKAN */
       paparModalLaporan: function(index) {
         const p = this.state.senaraiLaporanPensyarah[index];
         const body = document.getElementById('modal-body');
         
         let html = `
-          <div class="flex items-center gap-4 mb-8 bg-slate-50/50 p-5 rounded-[2rem] border border-slate-100">
-            <img src="${p.linkGambar || 'https://via.placeholder.com/80?text=ST'}" class="w-20 h-20 rounded-full object-cover border-4 border-white shadow-md bg-white">
-            <div><h4 class="font-black text-slate-900 text-lg leading-tight mb-1">${p.nama}</h4><p class="text-xs font-bold text-brand uppercase tracking-widest bg-blue-50 w-fit px-2 py-1 rounded-md border border-blue-100">${p.idSistem}</p></div>
+          <!-- Header Surat Laporan -->
+          <div class="text-center border-b-2 border-slate-800 pb-4 mb-8">
+            <h2 class="text-2xl font-black uppercase text-slate-900 tracking-wider">Laporan Pentaksiran Amali</h2>
+            <p class="font-bold text-slate-600 mt-1">KURSUS: MPU3421 SEPAK TAKRAW</p>
           </div>
+          
+          <div class="grid grid-cols-2 gap-4 text-sm font-bold text-slate-800 mb-8 bg-slate-50 p-4 rounded-xl border border-slate-200 print:bg-transparent print:border-none print:p-0">
+            <p>NAMA PELAJAR: <br><span class="font-medium text-base text-slate-600">${p.nama}</span></p>
+            <p>NO. KAD PENGENALAN: <br><span class="font-medium text-base text-slate-600">${p.noKP}</span></p>
+          </div>
+
+          <table class="w-full mb-8 border-collapse border border-slate-800 text-sm">
+            <thead>
+              <tr class="bg-slate-100 text-slate-900"><th class="border border-slate-800 p-3 text-left w-2/3">Penilai</th><th class="border border-slate-800 p-3 text-center">Jumlah Markah (/60)</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="border border-slate-800 p-3 text-left font-bold">Penilai 1 (Utama)</td><td class="border border-slate-800 p-3 text-center font-bold text-lg">${p.totalP1 !== null ? p.totalP1 : 'Tiada'}</td></tr>
+              <tr><td class="border border-slate-800 p-3 text-left font-bold">Penilai 2</td><td class="border border-slate-800 p-3 text-center font-bold text-lg">${p.totalP2 !== null ? p.totalP2 : 'Tiada'}</td></tr>
+              <tr class="bg-slate-50"><td class="border border-slate-800 p-3 text-right font-black uppercase">Purata Keseluruhan</td><td class="border border-slate-800 p-3 text-center font-black text-2xl text-brand">${p.purata !== null ? p.purata.toFixed(1) : '-'}</td></tr>
+            </tbody>
+          </table>
+          
+          <h3 class="font-black text-slate-900 uppercase tracking-widest border-b border-slate-300 pb-2 mb-4">Laporan Penilai Utama (P1)</h3>
         `;
 
-        html += `<div class="bg-blue-50/50 p-5 rounded-[2rem] border border-blue-100 mb-6"><h4 class="font-black text-brand text-sm uppercase tracking-widest mb-4 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-brand"></span> Penilai 1 (Jumlah: ${p.totalP1 || '-'})</h4>`;
         if (Object.keys(p.butiranP1).length > 0) {
           CONFIG_KURSUS.kemahiran.forEach(k => {
             if(p.butiranP1[k.id]) {
-              // Pengendalian Ralat: Pastikan data wujud sebelum melakukan .replace
               let formatLaporan = (p.butiranP1[k.id].laporan || "").toString().replace(/\n/g, '<br>');
-              html += `<div class="mb-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-100"><div class="flex justify-between items-center mb-2"><p class="text-xs font-black text-slate-800 uppercase tracking-widest">${k.nama}</p><span class="font-black text-brand bg-blue-50 px-2 py-1 rounded-lg text-xs">${p.butiranP1[k.id].markah} M</span></div><p class="text-sm font-medium text-slate-600 leading-relaxed">${formatLaporan}</p></div>`;
+              html += `
+                <div class="mb-5">
+                  <p class="text-sm font-black text-slate-800 uppercase tracking-wider mb-1">${k.nama}</p>
+                  <p class="text-sm text-slate-700 leading-relaxed text-justify">${formatLaporan}</p>
+                </div>`;
             }
           });
-        } else { html += `<p class="text-sm font-medium text-rose-500 bg-rose-50 p-4 rounded-2xl border border-rose-100">Belum dinilai.</p>`; }
-        html += `</div>`;
+        } else { 
+          html += `<p class="text-sm font-medium text-slate-500 italic mb-8">Laporan analitik belum dimasukkan oleh Penilai Utama.</p>`; 
+        }
 
-        html += `<div class="bg-emerald-50/50 p-5 rounded-[2rem] border border-emerald-100 mb-4"><h4 class="font-black text-emerald-600 text-sm uppercase tracking-widest mb-4 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Penilai 2 (Jumlah: ${p.totalP2 || '-'})</h4>`;
-        if (Object.keys(p.butiranP2).length > 0) {
-          CONFIG_KURSUS.kemahiran.forEach(k => {
-            if(p.butiranP2[k.id]) {
-              let formatLaporan = (p.butiranP2[k.id].laporan || "").toString().replace(/\n/g, '<br>');
-              html += `<div class="mb-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-100"><div class="flex justify-between items-center mb-2"><p class="text-xs font-black text-slate-800 uppercase tracking-widest">${k.nama}</p><span class="font-black text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg text-xs">${p.butiranP2[k.id].markah} M</span></div><p class="text-sm font-medium text-slate-600 leading-relaxed">${formatLaporan}</p></div>`;
-            }
-          });
-        } else { html += `<p class="text-sm font-medium text-rose-500 bg-rose-50 p-4 rounded-2xl border border-rose-100">Belum dinilai.</p>`; }
-        html += `</div>`;
+        // Bahagian Tandatangan
+        html += `
+          <div class="mt-16 flex justify-end">
+            <div class="text-center w-48">
+              <img src="${p.tandatanganP1 || ''}" class="h-20 object-contain mx-auto mb-2 ${!p.tandatanganP1 ? 'hidden-view' : ''}" />
+              <div class="w-full border-b border-slate-800 mx-auto ${!p.tandatanganP1 ? 'mt-20' : ''}"></div>
+              <p class="mt-2 text-xs font-bold text-slate-600 uppercase">Tandatangan Penilai 1</p>
+            </div>
+          </div>
+        `;
+
+        // Butang Cetak (Hanya dipaparkan di skrin, disembunyikan semasa cetakan)
+        html += `
+          <div class="mt-10 flex justify-end no-print">
+            <button onclick="window.print()" class="bg-brand text-white font-bold py-3 px-8 rounded-full shadow-lg hover:opacity-90 transition-transform active:scale-95 flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+              Cetak Dokumen
+            </button>
+          </div>
+        `;
 
         body.innerHTML = html; document.getElementById('modal-laporan').classList.remove('hidden-view');
       },
@@ -658,7 +691,7 @@
 
       logout: function() {
         this.state.sesiSemasa = null; this.state.dataPelajarSemasa = null;
-        ['nokp-input', 'login-pin'].forEach(id => document.getElementById(id).value = '');
+        ['nokp-input', 'login-pin', 'sig-input'].forEach(id => { if(document.getElementById(id)) document.getElementById(id).value = ''; });
         document.getElementById('user-info').classList.add('hidden-view'); this.showView('view-login');
       }
     };
