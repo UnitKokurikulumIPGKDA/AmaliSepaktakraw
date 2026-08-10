@@ -5,12 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Aplikasi Pemarkahan Sepak Takraw MPU3421</title>
   
-  <!-- Font Moden: Outfit -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -35,51 +33,26 @@
     .view-transition { transition: opacity 0.5s ease, transform 0.5s ease; }
     .hidden-view { display: none !important; opacity: 0; transform: translateY(20px); }
     .floating-bar { padding-bottom: env(safe-area-inset-bottom); }
-    
-    /* GLASSMORPHISM UTILITIES */
     .glass-panel {
-      background: rgba(255, 255, 255, 0.75);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.5); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
     }
-    .glass-input {
-      background: rgba(255, 255, 255, 0.6);
-      backdrop-filter: blur(4px);
-      border: 1px solid rgba(255, 255, 255, 0.8);
-    }
-    
-    /* Animasi Modal */
+    .glass-input { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(4px); border: 1px solid rgba(255, 255, 255, 0.8); }
     .modal-enter { animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     @keyframes modalSlideUp { from { opacity: 0; transform: translateY(30px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
     
-    /* Custom Checkbox Style */
-    .checklist-cb {
-        appearance: none; width: 1.25rem; height: 1.25rem;
-        border: 2px solid #cbd5e1; border-radius: 0.375rem;
-        outline: none; cursor: pointer; transition: all 0.2s ease;
-        position: relative; flex-shrink: 0;
-    }
+    .checklist-cb { appearance: none; width: 1.25rem; height: 1.25rem; border: 2px solid #cbd5e1; border-radius: 0.375rem; outline: none; cursor: pointer; transition: all 0.2s ease; position: relative; flex-shrink: 0; }
     .checklist-cb:checked { background-color: #ef4444; border-color: #ef4444; }
-    .checklist-cb:checked::after {
-        content: '✕'; position: absolute; color: white; font-size: 0.85rem; font-weight: bold;
-        left: 50%; top: 50%; transform: translate(-50%, -50%);
-    }
+    .checklist-cb:checked::after { content: '✕'; position: absolute; color: white; font-size: 0.85rem; font-weight: bold; left: 50%; top: 50%; transform: translate(-50%, -50%); }
     
-    /* GAYA KANVAS TANDATANGAN */
     #global-sig-canvas { background-color: #ffffff; border: 2px dashed #94a3b8; border-radius: 1rem; cursor: crosshair; touch-action: none; width: 100%; height: 160px; }
     
-    /* GAYA KHAS CETAKAN (Menyokong Individu & Pukal) */
     @media print {
       body { background: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       body * { visibility: hidden; }
-      
       .print-area, .print-area * { visibility: visible; }
       .print-area { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; display: block !important; }
-      
       .page-break { page-break-after: always; padding-bottom: 2rem; margin-bottom: 2rem; }
-      
       .bg-white\/95, .glass-panel { background: white !important; box-shadow: none !important; border: none !important; border-radius: 0 !important; max-width: 100% !important; }
       .modal-enter { animation: none !important; transform: none !important; }
       .no-print { display: none !important; }
@@ -106,7 +79,7 @@
     <p class="font-bold text-white tracking-widest text-sm uppercase" id="loader-text">Menyegerak Data...</p>
   </div>
 
-  <!-- MODAL: LAPORAN PENSYARAH (Cetakan Individu) -->
+  <!-- MODAL: LAPORAN PENSYARAH -->
   <div id="modal-laporan" class="hidden-view fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex justify-center items-end sm:items-center p-4 transition-all duration-300">
     <div class="bg-white/95 backdrop-blur-xl w-full max-w-2xl max-h-[90vh] overflow-hidden rounded-[2.5rem] shadow-2xl flex flex-col modal-enter border border-white/50 print-area">
       <div class="p-6 border-b border-slate-200/50 flex justify-between items-center bg-white/50 rounded-t-[2.5rem] no-print">
@@ -119,7 +92,6 @@
     </div>
   </div>
   
-  <!-- KONTAINER TERSEMBUNYI: Untuk Cetakan Pukal -->
   <div id="bulk-print-container" class="hidden-view bg-white text-slate-900 absolute top-0 left-0 w-full z-50"></div>
 
   <!-- MODAL: RUJUKAN RUBRIK UNTUK PENILAI -->
@@ -137,7 +109,7 @@
 
   <main class="max-w-xl mx-auto px-4 mt-8 no-print">
     
-    <!-- ================= PANDANGAN 1: LOG MASUK ================= -->
+    <!-- PANDANGAN 1: LOG MASUK -->
     <div id="view-login" class="view-transition">
       <div class="text-center mb-10 mt-6 text-white">
         <h2 class="text-4xl font-black mb-2 drop-shadow-md">Amali MPU3421</h2>
@@ -176,13 +148,40 @@
       </div>
     </div>
 
-    <!-- ================= PANDANGAN 2: SENARAI PELAJAR ================= -->
+    <!-- PANDANGAN 2: PROFIL PELAJAR -->
+    <div id="view-profil" class="hidden-view view-transition space-y-6">
+      <div class="glass-panel p-8 rounded-[2.5rem]">
+        <h2 class="text-2xl font-black text-slate-900 mb-6">Profil Ujian</h2>
+        <div class="grid grid-cols-2 gap-4 text-sm mb-8">
+          <div class="glass-input p-5 rounded-2xl">
+            <p class="text-slate-500 text-xs uppercase tracking-wider font-black mb-1">Nama</p>
+            <p class="font-bold text-slate-900 leading-tight" id="lbl-nama"></p>
+          </div>
+          <div class="glass-input p-5 rounded-2xl">
+            <p class="text-slate-500 text-xs uppercase tracking-wider font-black mb-1">Status</p>
+            <p class="font-black text-accent" id="lbl-status"></p>
+          </div>
+        </div>
+        <div class="border-2 border-dashed border-slate-300/50 rounded-3xl p-6 text-center flex flex-col items-center bg-white/40">
+          <img id="img-preview" src="" class="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg mb-5">
+          <label class="cursor-pointer bg-white hover:bg-slate-50 text-slate-800 font-bold py-3.5 px-6 rounded-2xl transition-all inline-block mb-2 shadow-sm border border-slate-200 w-full">
+            Muat Naik Gambar Aksi
+            <input type="file" id="file-input" accept="image/png, image/jpeg" class="hidden">
+          </label>
+          <p class="text-xs font-semibold text-slate-500 mb-5 uppercase tracking-widest">Sokongan: JPG/PNG (Max 2MB)</p>
+          <button id="btn-upload" onclick="app.uploadImage()" class="bg-gradient-to-r from-brand to-accent text-white font-bold py-4 px-6 rounded-2xl shadow-lg w-full transition-all active:scale-95">Simpan Data</button>
+          <p id="upload-status" class="text-sm mt-4 font-bold tracking-wide"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANDANGAN 3: SENARAI PELAJAR -->
     <div id="view-penilai" class="hidden-view view-transition">
       <h2 class="text-3xl font-black text-white mb-6 drop-shadow-md">Calon Amali</h2>
       <div id="student-list-container" class="space-y-5"></div>
     </div>
 
-    <!-- ================= PANDANGAN 3: BORANG RUBRIK ================= -->
+    <!-- PANDANGAN 4: BORANG RUBRIK -->
     <div id="view-borang" class="hidden-view view-transition">
       <button onclick="app.showView('view-penilai')" class="mb-6 text-sm font-bold text-white/90 hover:text-white flex items-center gap-1.5 glass-panel py-2 px-5 rounded-full w-fit transition-all active:scale-95">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"></path></svg> Kembali
@@ -220,11 +219,10 @@
       </div>
     </div>
 
-    <!-- ================= PANDANGAN 4: PAPAN PEMUKA PENSYARAH ================= -->
+    <!-- PANDANGAN 5: PAPAN PEMUKA PENSYARAH -->
     <div id="view-pensyarah" class="hidden-view view-transition">
       <h2 class="text-3xl font-black text-white mb-6 drop-shadow-md">Laman Pensyarah</h2>
       
-      <!-- Panel Kawalan Tandatangan Global -->
       <div class="glass-panel p-6 rounded-[2.5rem] mb-8 border-2 border-brand/40 relative overflow-hidden">
         <div class="absolute top-0 left-0 w-2 h-full bg-brand"></div>
         <h3 class="font-extrabold text-slate-900 text-lg mb-1">Tetapan Tandatangan Global</h3>
@@ -267,9 +265,6 @@
   </main>
 
   <script>
-    /**
-     * KONFIGURASI RUBRIK SEPAK TAKRAW (Max: 20 Markah Setiap Kemahiran)
-     */
     const CONFIG_KURSUS = {
       API_URL: 'https://script.google.com/macros/s/AKfycbxIQMBSVJ5xAKBuNlArTkLw5C5-yCaRCHv_g3tug4F4lcphiX8eRMsF0rEILivZzX2A4A/exec',
       tahapList: [
@@ -284,9 +279,6 @@
       ]
     };
 
-    /**
-     * KAWALAN KANVAS TANDATANGAN (GLOBAL)
-     */
     let gCanvas, gCtx, gIsDrawing = false, gHasDrawn = false;
     
     function initGlobalSignaturePad() {
@@ -294,7 +286,7 @@
       if(!gCanvas) return;
       
       const rect = gCanvas.parentElement.getBoundingClientRect();
-      if(rect.width === 0) return; // Tunggu dimensi div dirender dengan sempurna
+      if(rect.width === 0) return;
       gCanvas.width = rect.width;
       gCanvas.height = 160;
       gCtx = gCanvas.getContext('2d');
@@ -325,9 +317,6 @@
       gCanvas.addEventListener('touchend', () => { gIsDrawing = false; });
     }
 
-    /**
-     * KAWALAN LOGIK STATE & API
-     */
     const app = {
       state: { sesiSemasa: null, dataPelajarSemasa: null, dataPenilaianBorang: {}, senaraiLaporanPensyarah: [], globalSigs: {} },
 
@@ -376,11 +365,7 @@
             this.state.sesiSemasa = role; 
             document.getElementById('user-label').innerText = role; 
             document.getElementById('user-info').classList.remove('hidden-view');
-            if (role === 'PENSYARAH') {
-               this.muatLaporanPensyarah();
-            } else {
-               this.muatSenaraiPelajar();
-            }
+            if (role === 'PENSYARAH') this.muatLaporanPensyarah(); else this.muatSenaraiPelajar();
           }
         } catch (e) { alert(e.message); } finally { this.showLoader(false); }
       },
@@ -414,7 +399,6 @@
         this.showLoader(true);
         try {
           const rekod = await this.gasCall('getPenilaianPelajar', { idSistem, penilai: this.state.sesiSemasa });
-          
           Object.keys(rekod).forEach(kId => { 
             if (rekod[kId].adaData && rekod[kId].tahapId !== '') { 
               this.pilihTahapRubrik(kId, rekod[kId].tahapId); 
@@ -430,7 +414,6 @@
               else this.janaUlasanAutomatik(kId);
             } 
           });
-
           this.kiraJumlahMarkah(); this.showView('view-borang');
         } catch (e) { alert(e.message); } finally { this.showLoader(false); }
       },
@@ -448,11 +431,7 @@
           });
           let cHTML = '';
           k.senaraiSemak.forEach((item, cIdx) => {
-            cHTML += `
-              <label class="flex items-start gap-3 p-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 cursor-pointer transition-colors shadow-sm">
-                <input type="checkbox" id="cb-${k.id}-${cIdx}" value="${cIdx}" onchange="app.kemaskiniSemakan('${k.id}')" class="checklist-cb mt-0.5">
-                <span class="text-sm font-medium text-slate-700 leading-tight">${item}</span>
-              </label>`;
+            cHTML += `<label class="flex items-start gap-3 p-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 cursor-pointer transition-colors shadow-sm"><input type="checkbox" id="cb-${k.id}-${cIdx}" value="${cIdx}" onchange="app.kemaskiniSemakan('${k.id}')" class="checklist-cb mt-0.5"><span class="text-sm font-medium text-slate-700 leading-tight">${item}</span></label>`;
           });
           
           c.insertAdjacentHTML('beforeend', `
@@ -480,8 +459,8 @@
                 </div>
               </div>
               <div id="laporan-group-${k.id}" class="hidden-view transition-all">
-                <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Analisis Pintar Penilai Utama</label>
-                <textarea id="laporan-${k.id}" class="w-full text-sm font-medium text-slate-700 bg-white/70 border-0 ring-1 ring-slate-200 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-brand/50 transition-all leading-relaxed shadow-sm" rows="6"></textarea>
+                <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Analisis Automatik (Boleh Disunting)</label>
+                <textarea id="laporan-${k.id}" class="w-full text-sm font-medium text-slate-700 bg-white/70 border-0 ring-1 ring-slate-200 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-brand/50 transition-all leading-relaxed shadow-sm" rows="5"></textarea>
               </div>
             </div>`);
         });
@@ -517,7 +496,6 @@
 
       kemaskiniSemakan: function(kId) { this.janaUlasanAutomatik(kId); },
 
-      /** MENGHASILKAN LAPORAN PINTAR DALAM BENTUK AYAT (PARAGRAPH) BERDASARKAN RUBRIK */
       janaUlasanAutomatik: function(kId) {
         const kDef = CONFIG_KURSUS.kemahiran.find(k => k.id === kId);
         if(!kDef) return;
@@ -527,14 +505,12 @@
           if (cb && cb.checked) checkedText.push(item);
         });
 
-        // Struktur pembinaan ayat laporan yang lebih formal dan tersusun
         let ulasan = `Berdasarkan pentaksiran amali, murid boleh melakukan kemahiran ${kDef.nama.split(' (')[0]} mengikut kriteria rubrik yang ditetapkan. `;
         if (checkedText.length === 0) {
           ulasan += `Pada akhir penilaian, didapati pelajar berjaya menguasai kesemua elemen perlakuan dengan sangat cemerlang.`;
         } else {
           ulasan += `Walau bagaimanapun, pada akhir penilaian didapati pelajar masih perlu memperbaiki aspek perlakuan berikut: ${checkedText.join(', ')}.`;
         }
-        
         document.getElementById(`laporan-${kId}`).value = ulasan;
       },
 
@@ -564,7 +540,6 @@
         catch (e) { alert(e.message); } finally { this.showLoader(false); }
       },
 
-      /* FUNGSI MODAL RUJUKAN RUBRIK */
       bukaModalRubrik: function() {
         let html = '';
         CONFIG_KURSUS.kemahiran.forEach((k, idx) => {
@@ -580,7 +555,6 @@
       },
       tutupModalRubrik: function() { document.getElementById('modal-rubrik').classList.add('hidden-view'); },
 
-      /* FUNGSI LAMAN PENSYARAH & TANDATANGAN GLOBAL */
       muatLaporanPensyarah: async function() {
         this.showLoader(true);
         try {
@@ -597,10 +571,7 @@
             container.insertAdjacentHTML('beforeend', `
               <div class="glass-panel p-6 rounded-[2.5rem] flex flex-col gap-5 hover:-translate-y-1 transition-all duration-300">
                 <div class="flex items-center justify-between border-b border-slate-200/50 pb-5">
-                  <div>
-                    <h3 class="font-black text-slate-900 text-lg leading-tight">${p.nama}</h3>
-                    <p class="text-xs font-bold text-slate-500 mt-1 uppercase tracking-widest">${p.idSistem}</p>
-                  </div>
+                  <div><h3 class="font-black text-slate-900 text-lg leading-tight">${p.nama}</h3><p class="text-xs font-bold text-slate-500 mt-1 uppercase tracking-widest">${p.idSistem}</p></div>
                   <span class="text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl shadow-sm ${badgeStyle}">${p.status}</span>
                 </div>
                 <div class="flex justify-between items-center bg-white/40 p-4 rounded-2xl">
@@ -610,7 +581,7 @@
                   <div class="w-px h-8 bg-slate-200"></div>
                   <div class="text-center"><p class="text-[10px] font-black text-brand uppercase tracking-widest mb-1">Purata</p><p class="font-black text-brand text-2xl">${p.purata !== null ? p.purata.toFixed(1) : '-'}</p></div>
                 </div>
-                <button onclick="app.paparModalLaporan(${idx})" class="w-full bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold py-3.5 rounded-2xl transition-all shadow-md active:scale-95">Lihat / Cetak Laporan</button>
+                <button onclick="app.paparModalLaporan(${idx})" class="w-full bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold py-3.5 rounded-2xl transition-all shadow-md active:scale-95">Cetak Keputusan Rasmi</button>
               </div>
             `);
           });
@@ -644,12 +615,11 @@
         } catch(e) { alert(e.message); } finally { this.showLoader(false); }
       },
 
-      /** FUNGSI MENJANA FORMAT HTML UNTUK SURAT CETAKAN (PENAMBAHBAIKAN MATRIX MARKAH) */
+      /** MENJANA STRUKTUR MATRIKS JADUAL LAPORAN */
       janaHTMLLaporan: function(p, isModal = true) {
         const sigP1 = this.state.globalSigs.P1;
         const sigP2 = this.state.globalSigs.P2;
         
-        // Pengekstrakan Markah Terperinci P1 dan P2
         const mP1_S = p.butiranP1?.servis?.markah !== undefined ? p.butiranP1.servis.markah : '-';
         const mP2_S = p.butiranP2?.servis?.markah !== undefined ? p.butiranP2.servis.markah : '-';
         const mP1_M = p.butiranP1?.mengumpan?.markah !== undefined ? p.butiranP1.mengumpan.markah : '-';
@@ -657,7 +627,6 @@
         const mP1_N = p.butiranP1?.menanduk?.markah !== undefined ? p.butiranP1.menanduk.markah : '-';
         const mP2_N = p.butiranP2?.menanduk?.markah !== undefined ? p.butiranP2.menanduk.markah : '-';
         
-        // Pengiraan Purata Setiap Kemahiran
         const purata_S = (mP1_S !== '-' && mP2_S !== '-') ? ((mP1_S + mP2_S) / 2).toFixed(1) : '-';
         const purata_M = (mP1_M !== '-' && mP2_M !== '-') ? ((mP1_M + mP2_M) / 2).toFixed(1) : '-';
         const purata_N = (mP1_N !== '-' && mP2_N !== '-') ? ((mP1_N + mP2_N) / 2).toFixed(1) : '-';
@@ -743,13 +712,11 @@
         return html;
       },
 
-      /* PAPARAN MODAL PENSYARAH UNTUK CETAKAN INDIVIDU */
       paparModalLaporan: function(index) {
         const p = this.state.senaraiLaporanPensyarah[index];
         const body = document.getElementById('modal-body');
         
         let html = this.janaHTMLLaporan(p, true);
-
         html += `<div class="mt-10 flex justify-end no-print"><button onclick="window.print()" class="bg-brand text-white font-bold py-3 px-8 rounded-full shadow-lg hover:opacity-90 transition-transform active:scale-95 flex items-center gap-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>Cetak Dokumen</button></div>`;
 
         const modal = document.getElementById('modal-laporan');
@@ -762,19 +729,13 @@
 
       tutupModalLaporan: function() { document.getElementById('modal-laporan').classList.add('hidden-view'); },
 
-      /* FUNGSI CETAKAN PUKAL (BULK PRINT) */
       cetakSemuaLaporan: function() {
         if(this.state.senaraiLaporanPensyarah.length === 0) return alert("Tiada data pelajar untuk dicetak.");
-        
         const bulkContainer = document.getElementById('bulk-print-container');
         let bulkHTML = '';
-        
-        this.state.senaraiLaporanPensyarah.forEach(p => {
-          bulkHTML += this.janaHTMLLaporan(p, false);
-        });
+        this.state.senaraiLaporanPensyarah.forEach(p => { bulkHTML += this.janaHTMLLaporan(p, false); });
         
         bulkContainer.innerHTML = bulkHTML;
-        
         document.getElementById('modal-laporan').classList.remove('print-active');
         bulkContainer.classList.add('print-active');
         
