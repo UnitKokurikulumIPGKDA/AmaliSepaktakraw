@@ -5,12 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Aplikasi Pemarkahan Sepak Takraw MPU3421</title>
   
-  <!-- Font Moden: Outfit -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -35,29 +33,19 @@
     .view-transition { transition: opacity 0.5s ease, transform 0.5s ease; }
     .hidden-view { display: none !important; opacity: 0; transform: translateY(20px); }
     .floating-bar { padding-bottom: env(safe-area-inset-bottom); }
-    
-    /* GLASSMORPHISM UTILITIES */
     .glass-panel {
       background: rgba(255, 255, 255, 0.75);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(255, 255, 255, 0.5);
       box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
     }
-    .glass-input {
-      background: rgba(255, 255, 255, 0.6);
-      backdrop-filter: blur(4px);
-      border: 1px solid rgba(255, 255, 255, 0.8);
-    }
-    
-    /* Animasi Modal */
+    .glass-input { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(4px); border: 1px solid rgba(255, 255, 255, 0.8); }
     .modal-enter { animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     @keyframes modalSlideUp { from { opacity: 0; transform: translateY(30px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
   </style>
 </head>
 <body class="bg-gradient-to-br from-blue-600 via-indigo-600 to-cyan-500 animate-gradient-x text-slate-800 antialiased min-h-screen relative pb-32 selection:bg-accent selection:text-white">
 
-  <!-- AppBar Glassmorphism -->
   <header class="glass-panel sticky top-0 z-40 px-5 py-4 flex justify-between items-center transition-all rounded-b-3xl">
     <div class="flex items-center gap-3">
       <div class="bg-gradient-to-tr from-brand to-accent text-white w-10 h-10 rounded-2xl flex items-center justify-center font-black text-sm shadow-lg">ST</div>
@@ -69,13 +57,11 @@
     </div>
   </header>
 
-  <!-- Overlay Loading -->
   <div id="loader" class="hidden-view fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex flex-col justify-center items-center transition-all duration-300">
     <div class="w-14 h-14 border-4 border-white/30 border-t-accent rounded-full animate-spin mb-4 shadow-xl"></div>
     <p class="font-bold text-white tracking-widest text-sm uppercase">Menyegerak Data...</p>
   </div>
 
-  <!-- MODAL LAPORAN PENSYARAH -->
   <div id="modal-laporan" class="hidden-view fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex justify-center items-end sm:items-center p-4 transition-all duration-300">
     <div class="bg-white/95 backdrop-blur-xl w-full max-w-xl max-h-[85vh] overflow-hidden rounded-[2.5rem] shadow-2xl flex flex-col modal-enter border border-white/50">
       <div class="p-6 border-b border-slate-200/50 flex justify-between items-center bg-white/50 rounded-t-[2.5rem]">
@@ -90,7 +76,6 @@
 
   <main class="max-w-xl mx-auto px-4 mt-8">
     
-    <!-- ================= PANDANGAN 1: LOG MASUK ================= -->
     <div id="view-login" class="view-transition">
       <div class="text-center mb-10 mt-6 text-white">
         <h2 class="text-4xl font-black mb-2 drop-shadow-md">Amali MPU3421</h2>
@@ -129,7 +114,6 @@
       </div>
     </div>
 
-    <!-- ================= PANDANGAN 2: PROFIL PELAJAR ================= -->
     <div id="view-profil" class="hidden-view view-transition space-y-6">
       <div class="glass-panel p-8 rounded-[2.5rem]">
         <h2 class="text-2xl font-black text-slate-900 mb-6">Profil Ujian</h2>
@@ -156,13 +140,11 @@
       </div>
     </div>
 
-    <!-- ================= PANDANGAN 3: SENARAI PELAJAR ================= -->
     <div id="view-penilai" class="hidden-view view-transition">
       <h2 class="text-3xl font-black text-white mb-6 drop-shadow-md">Calon Amali</h2>
       <div id="student-list-container" class="space-y-5"></div>
     </div>
 
-    <!-- ================= PANDANGAN 4: BORANG RUBRIK ================= -->
     <div id="view-borang" class="hidden-view view-transition">
       <button onclick="app.showView('view-penilai')" class="mb-6 text-sm font-bold text-white/90 hover:text-white flex items-center gap-1.5 glass-panel py-2 px-5 rounded-full w-fit transition-all active:scale-95">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"></path></svg> Kembali
@@ -195,7 +177,6 @@
       </div>
     </div>
 
-    <!-- ================= PANDANGAN 5: PAPAN PEMUKA PENSYARAH ================= -->
     <div id="view-pensyarah" class="hidden-view view-transition">
       <h2 class="text-3xl font-black text-white mb-6 drop-shadow-md">Analisis Keseluruhan</h2>
       <div id="laporan-list-container" class="space-y-6"></div>
@@ -204,9 +185,6 @@
   </main>
 
   <script>
-    /**
-     * KONFIGURASI RUBRIK SEPAK TAKRAW MPU3421
-     */
     const CONFIG_KURSUS = {
       API_URL: 'https://script.google.com/macros/s/AKfycbxIQMBSVJ5xAKBuNlArTkLw5C5-yCaRCHv_g3tug4F4lcphiX8eRMsF0rEILivZzX2A4A/exec',
       tahapList: [
@@ -215,46 +193,18 @@
         { id: 'lemah', nama: 'Lemah', min: 0.0, max: 9.99, baseClass: 'glass-input text-slate-700 hover:bg-rose-50', activeClass: 'bg-rose-100/90 border-rose-500 text-rose-800 ring-4 ring-rose-500/30' }
       ],
       kemahiran: [
-        { 
-          id: 'servis', nama: 'Servis (Sepak Sila)', 
-          tahap: { 
-            cemerlang: { sebelum: 'kedudukan kaki sokongan stabil di dalam bulatan; postur bersedia dan fokus mata tepat pada bola', semasa: 'meniru dan mempamerkan perlakuan teknik sepak sila secara tepat; pemindahan berat badan lancar; sentuhan bola tepat pada bahagian dalam atau kekura kaki dengan kawalan ketinggian, kelajuan, dan sasaran yang sempurna', selepas: 'pergerakan ikut lajak lancar serta merta kembali ke posisi bersedia secara seimbang' }, 
-            sederhana: { sebelum: 'kaki sokongan kekal di dalam bulatan; mata memandang arah bola', semasa: 'meniru perlakuan servis dengan teknik yang betul; imbangan memuaskan; kontak bola pada bahagian dalam atau kekura kaki tetapi kelajuan atau ketinggian bola tidak konsisten', selepas: 'melakukan pergerakan ikut lajak asas dan kembali kepada kedudukan bersedia' }, 
-            lemah: { sebelum: 'kaki sokongan keluar dari bulatan; mata tidak memandang pergerakan bola', semasa: 'gagal meniru/mempamerkan teknik servis dengan betul; imbangan badan tidak stabil, kontak bola bukan pada bahagian dalam kaki (tersasar/tidak lancar)', selepas: 'tiada pergerakan ikut lajak; hilang imbangan dan lambat kembali ke kedudukan bersedia' } 
-          } 
-        },
-        { 
-          id: 'mengumpan', nama: 'Mengumpan', 
-          tahap: { 
-            cemerlang: { sebelum: 'memandang arah pergerakan bola tepat; bukaan langkah dan kawalan imbangan badan amat kukuh', semasa: 'meniru dan mempamerkan teknik umpanan dengan sentuhan yang lancar dan terkawal; kordinasi pemindahan daya tepat menghasilkan umpanan bola tidak berputar yang ideal di atas jaring', selepas: 'pergerakan ikut lajak kemas serta merta berada dalam kesediaan bertindak' }, 
-            sederhana: { sebelum: 'berdiri buka langkah dengan selesa; mata memandang pergerakan bola', semasa: 'meniru teknik hantaran umpanan; berat badan diimbang di atas kaki sokongan; hantaran bola menuju ke arah zon hantaran di jaring', selepas: 'melakukan ikut lajak pergerakan asas dan kembali ke kedudukan bersedia' }, 
-            lemah: { sebelum: 'bukaan langkah tidak seimbang; mata tidak mengikut penerbangan bola', semasa: 'gagal mempamerkan perlakuan mengumpan dengan betul; sentuhan bola tidak tepat, umpanan terlalu rendah atau terlalu jauh dari jaring', selepas: 'tiada ikut lajak dan tidak bersedia untuk fasa permainan seterusnya' } 
-          } 
-        },
-        { 
-          id: 'menanduk', nama: 'Menanduk', 
-          tahap: { 
-            cemerlang: { sebelum: 'dapat memastikan kelajuan dan ketinggian bola sangat tepat; postur badan fleksibel dan bersedia untuk rejaman', semasa: 'meniru dan mempamerkan perlakuan merejam dengan kontak bola tepat pada bahagian dahi disertai ayunan leher/dada yang pantas; kawalan arah dan kelajuan tandukan amat baik', selepas: 'mendarat/bergerak secara seimbang, selamat, dan serta-merta sedia untuk tindakan seterusnya' }, 
-            sederhana: { sebelum: 'berdiri selesa mengikut arah bola; mata memandang kedatangan bola', semasa: 'meniru perlakuan menanduk; kontak bola pada kawasan dahi dengan kilasan leher/badan yang baik untuk mengarah bola', selepas: 'menyerap daya pergerakan dan kembali ke kedudukan bersedia' }, 
-            lemah: { sebelum: 'posisi badan pasif; mata tidak memandang bola di udara', semasa: 'gagal mempamerkan perlakuan menanduk yang betul; sentuhan bola bukan pada dahi (terkena ubun-ubun/muka) dan arah tandukan tidak terkawal', selepas: 'hilang imbangan semasa mendarat/bergerak' } 
-          } 
-        }
+        { id: 'servis', nama: 'Servis (Sepak Sila)', tahap: { cemerlang: { sebelum: 'kedudukan kaki sokongan stabil di dalam bulatan; postur bersedia dan fokus mata tepat pada bola', semasa: 'meniru dan mempamerkan perlakuan teknik sepak sila secara tepat; pemindahan berat badan lancar; sentuhan bola tepat pada bahagian dalam atau kekura kaki dengan kawalan ketinggian, kelajuan, dan sasaran yang sempurna', selepas: 'pergerakan ikut lajak lancar serta merta kembali ke posisi bersedia secara seimbang' }, sederhana: { sebelum: 'kaki sokongan kekal di dalam bulatan; mata memandang arah bola', semasa: 'meniru perlakuan servis dengan teknik yang betul; imbangan memuaskan; kontak bola pada bahagian dalam atau kekura kaki tetapi kelajuan atau ketinggian bola tidak konsisten', selepas: 'melakukan pergerakan ikut lajak asas dan kembali kepada kedudukan bersedia' }, lemah: { sebelum: 'kaki sokongan keluar dari bulatan; mata tidak memandang pergerakan bola', semasa: 'gagal meniru/mempamerkan teknik servis dengan betul; imbangan badan tidak stabil, kontak bola bukan pada bahagian dalam kaki (tersasar/tidak lancar)', selepas: 'tiada pergerakan ikut lajak; hilang imbangan dan lambat kembali ke kedudukan bersedia' } } },
+        { id: 'mengumpan', nama: 'Mengumpan', tahap: { cemerlang: { sebelum: 'memandang arah pergerakan bola tepat; bukaan langkah dan kawalan imbangan badan amat kukuh', semasa: 'meniru dan mempamerkan teknik umpanan dengan sentuhan yang lancar dan terkawal; kordinasi pemindahan daya tepat menghasilkan umpanan bola tidak berputar yang ideal di atas jaring', selepas: 'pergerakan ikut lajak kemas serta merta berada dalam kesediaan bertindak' }, sederhana: { sebelum: 'berdiri buka langkah dengan selesa; mata memandang pergerakan bola', semasa: 'meniru teknik hantaran umpanan; berat badan diimbang di atas kaki sokongan; hantaran bola menuju ke arah zon hantaran di jaring', selepas: 'melakukan ikut lajak pergerakan asas dan kembali ke kedudukan bersedia' }, lemah: { sebelum: 'bukaan langkah tidak seimbang; mata tidak mengikut penerbangan bola', semasa: 'gagal mempamerkan perlakuan mengumpan dengan betul; sentuhan bola tidak tepat, umpanan terlalu rendah atau terlalu jauh dari jaring', selepas: 'tiada ikut lajak dan tidak bersedia untuk fasa permainan seterusnya' } } },
+        { id: 'menanduk', nama: 'Menanduk', tahap: { cemerlang: { sebelum: 'dapat memastikan kelajuan dan ketinggian bola sangat tepat; postur badan fleksibel dan bersedia untuk rejaman', semasa: 'meniru dan mempamerkan perlakuan merejam dengan kontak bola tepat pada bahagian dahi disertai ayunan leher/dada yang pantas; kawalan arah dan kelajuan tandukan amat baik', selepas: 'mendarat/bergerak secara seimbang, selamat, dan serta-merta sedia untuk tindakan seterusnya' }, sederhana: { sebelum: 'berdiri selesa mengikut arah bola; mata memandang kedatangan bola', semasa: 'meniru perlakuan menanduk; kontak bola pada kawasan dahi dengan kilasan leher/badan yang baik untuk mengarah bola', selepas: 'menyerap daya pergerakan dan kembali ke kedudukan bersedia' }, lemah: { sebelum: 'posisi badan pasif; mata tidak memandang bola di udara', semasa: 'gagal mempamerkan perlakuan menanduk yang betul; sentuhan bola bukan pada dahi (terkena ubun-ubun/muka) dan arah tandukan tidak terkawal', selepas: 'hilang imbangan semasa mendarat/bergerak' } } }
       ]
     };
 
-    /**
-     * KAWALAN LOGIK STATE & API
-     */
     const app = {
       state: { sesiSemasa: null, dataPelajarSemasa: null, dataPenilaianBorang: {}, senaraiLaporanPensyarah: [] },
 
       gasCall: async function(action, payload) {
         try {
-          const res = await fetch(CONFIG_KURSUS.API_URL, { 
-            method: 'POST', 
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
-            body: JSON.stringify({ action: action, data: payload }) 
-          });
+          const res = await fetch(CONFIG_KURSUS.API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: action, data: payload }) });
           if (!res.ok) throw new Error("Gagal menyambung ke pelayan.");
           const result = await res.json();
           if (result && result.success === false) throw new Error(result.message);
@@ -265,23 +215,20 @@
       showLoader: (s) => document.getElementById('loader').classList.toggle('hidden-view', !s),
       
       showView: (v) => { 
-        ['view-login', 'view-profil', 'view-penilai', 'view-borang', 'view-pensyarah'].forEach(id => {
-          document.getElementById(id).classList.add('hidden-view');
-        }); 
-        setTimeout(() => document.getElementById(v).classList.remove('hidden-view'), 50);
-        window.scrollTo(0, 0);
+        ['view-login', 'view-profil', 'view-penilai', 'view-borang', 'view-pensyarah'].forEach(id => document.getElementById(id).classList.add('hidden-view')); 
+        setTimeout(() => document.getElementById(v).classList.remove('hidden-view'), 50); window.scrollTo(0, 0);
       },
 
       setModLogin: function(mod) {
         document.getElementById('form-pelajar').classList.toggle('hidden-view', mod !== 'PELAJAR');
         document.getElementById('form-penilai').classList.toggle('hidden-view', mod !== 'PENILAI');
-        const tabPelajar = document.getElementById('tab-pelajar'), tabPenilai = document.getElementById('tab-penilai');
+        const tabP = document.getElementById('tab-pelajar'), tabK = document.getElementById('tab-penilai');
         if(mod === 'PELAJAR') {
-          tabPelajar.className = "flex-1 py-3.5 text-sm font-bold rounded-2xl bg-white text-brand shadow transition-all z-10";
-          tabPenilai.className = "flex-1 py-3.5 text-sm font-bold rounded-2xl text-slate-600 hover:text-slate-900 transition-all z-10";
+          tabP.className = "flex-1 py-3.5 text-sm font-bold rounded-2xl bg-white text-brand shadow transition-all z-10";
+          tabK.className = "flex-1 py-3.5 text-sm font-bold rounded-2xl text-slate-600 hover:text-slate-900 transition-all z-10";
         } else {
-          tabPenilai.className = "flex-1 py-3.5 text-sm font-bold rounded-2xl bg-white text-brand shadow transition-all z-10";
-          tabPelajar.className = "flex-1 py-3.5 text-sm font-bold rounded-2xl text-slate-600 hover:text-slate-900 transition-all z-10";
+          tabK.className = "flex-1 py-3.5 text-sm font-bold rounded-2xl bg-white text-brand shadow transition-all z-10";
+          tabP.className = "flex-1 py-3.5 text-sm font-bold rounded-2xl text-slate-600 hover:text-slate-900 transition-all z-10";
         }
       },
 
@@ -317,8 +264,7 @@
             const res = await this.gasCall('muatNaikGambar', { base64Data: e.target.result, filename: fileInput.files[0].name, noKP: this.state.dataPelajarSemasa.noKP });
             if (res.success) {
               status.className = "text-sm mt-4 font-bold text-emerald-500 tracking-wide"; status.innerText = "Berjaya Disimpan!";
-              document.getElementById('img-preview').src = res.url;
-              document.getElementById('lbl-status').innerText = 'Selesai';
+              document.getElementById('img-preview').src = res.url; document.getElementById('lbl-status').innerText = 'Selesai';
             }
           } catch (err) { status.className = "text-sm mt-4 font-bold text-rose-500 tracking-wide"; status.innerText = err.message; } finally { btn.disabled = false; }
         };
@@ -335,7 +281,6 @@
             this.state.sesiSemasa = role; 
             document.getElementById('user-label').innerText = role; 
             document.getElementById('user-info').classList.remove('hidden-view');
-            
             if (role === 'PENSYARAH') this.muatLaporanPensyarah(); else this.muatSenaraiPelajar();
           }
         } catch (e) { alert(e.message); } finally { this.showLoader(false); }
@@ -365,8 +310,7 @@
 
       bukaBorangPenilaian: async function(idSistem, noKP, nama) {
         this.state.dataPelajarSemasa = { idSistem, noKP, nama }; this.state.dataPenilaianBorang = {};
-        document.getElementById('borang-subtitle').innerText = nama;
-        this.binaUIBorang();
+        document.getElementById('borang-subtitle').innerText = nama; this.binaUIBorang();
         
         this.showLoader(true);
         try {
@@ -423,8 +367,7 @@
         const tahapDef = CONFIG_KURSUS.tahapList.find(t => t.id === tId);
         document.getElementById(`card-${kId}-${tId}`).className = `border-2 rounded-2xl p-4 text-center cursor-pointer transition-all active:scale-95 flex flex-col justify-center min-h-[90px] shadow-lg ${tahapDef.activeClass} -translate-y-1`;
         
-        const inputEl = document.getElementById(`markah-${kId}`);
-        inputEl.min = tahapDef.min; inputEl.max = tahapDef.max;
+        const inputEl = document.getElementById(`markah-${kId}`); inputEl.min = tahapDef.min; inputEl.max = tahapDef.max;
         let cur = Number(inputEl.value); if (!inputEl.value || cur < tahapDef.min || cur > tahapDef.max) inputEl.value = tahapDef.max;
         
         document.getElementById(`hint-${kId}`).innerText = `(Had: ${tahapDef.min} - ${tahapDef.max})`;
@@ -440,7 +383,7 @@
 
       janaUlasanAutomatik: function(kId, tId, m) {
         const u = CONFIG_KURSUS.kemahiran.find(k => k.id === kId).tahap[tId];
-        document.getElementById(`laporan-${kId}`).value = `Analisis Perlakuan: Semasa fasa persediaan, pemerhatian mendapati ${u.sebelum}. Seterusnya pada fasa pelaksanaan, didapati ${u.semasa}. Pada fasa akhir (pemulihan), ${u.selepas}.`;
+        document.getElementById(`laporan-${kId}`).value = `Analisis Perlakuan: Semasa fasa persediaan, didapati ${u.sebelum}. Seterusnya pada fasa pelaksanaan, didapati ${u.semasa}. Pada fasa akhir (pemulihan), ${u.selepas}.`;
       },
 
       kiraJumlahMarkah: function() {
@@ -481,7 +424,6 @@
                   </div>
                   <span class="text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl shadow-sm ${badgeStyle}">${p.status}</span>
                 </div>
-                
                 <div class="flex justify-between items-center bg-white/40 p-4 rounded-2xl">
                   <div class="text-center"><p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Skor P1</p><p class="font-black text-slate-700 text-xl">${p.totalP1 !== null ? p.totalP1 : '-'}</p></div>
                   <div class="w-px h-8 bg-slate-200"></div>
@@ -489,7 +431,6 @@
                   <div class="w-px h-8 bg-slate-200"></div>
                   <div class="text-center"><p class="text-[10px] font-black text-brand uppercase tracking-widest mb-1">Purata</p><p class="font-black text-brand text-2xl">${p.purata !== null ? p.purata.toFixed(1) : '-'}</p></div>
                 </div>
-                
                 <button onclick="app.paparModalLaporan(${idx})" class="w-full bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold py-3.5 rounded-2xl transition-all shadow-md active:scale-95">Buka Analitik Laporan</button>
               </div>
             `);
@@ -505,36 +446,25 @@
         let html = `
           <div class="flex items-center gap-4 mb-8 bg-slate-50/50 p-5 rounded-[2rem] border border-slate-100">
             <img src="${p.linkGambar || 'https://via.placeholder.com/80?text=ST'}" class="w-20 h-20 rounded-full object-cover border-4 border-white shadow-md bg-white">
-            <div>
-              <h4 class="font-black text-slate-900 text-lg leading-tight mb-1">${p.nama}</h4>
-              <p class="text-xs font-bold text-brand uppercase tracking-widest bg-blue-50 w-fit px-2 py-1 rounded-md border border-blue-100">${p.noKP}</p>
-            </div>
+            <div><h4 class="font-black text-slate-900 text-lg leading-tight mb-1">${p.nama}</h4><p class="text-xs font-bold text-brand uppercase tracking-widest bg-blue-50 w-fit px-2 py-1 rounded-md border border-blue-100">${p.noKP}</p></div>
           </div>
         `;
 
-        html += `<div class="bg-blue-50/50 p-5 rounded-[2rem] border border-blue-100 mb-6">
-                  <h4 class="font-black text-brand text-sm uppercase tracking-widest mb-4 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-brand"></span> Penilai 1 (Jumlah: ${p.totalP1 || '-'})</h4>`;
+        html += `<div class="bg-blue-50/50 p-5 rounded-[2rem] border border-blue-100 mb-6"><h4 class="font-black text-brand text-sm uppercase tracking-widest mb-4 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-brand"></span> Penilai 1 (Jumlah: ${p.totalP1 || '-'})</h4>`;
         if (Object.keys(p.butiranP1).length > 0) {
           CONFIG_KURSUS.kemahiran.forEach(k => {
             if(p.butiranP1[k.id]) {
-              html += `<div class="mb-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-                        <div class="flex justify-between items-center mb-2"><p class="text-xs font-black text-slate-800 uppercase tracking-widest">${k.nama}</p><span class="font-black text-brand bg-blue-50 px-2 py-1 rounded-lg text-xs">${p.butiranP1[k.id].markah} M</span></div>
-                        <p class="text-sm font-medium text-slate-600 leading-relaxed">${p.butiranP1[k.id].laporan}</p>
-                       </div>`;
+              html += `<div class="mb-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-100"><div class="flex justify-between items-center mb-2"><p class="text-xs font-black text-slate-800 uppercase tracking-widest">${k.nama}</p><span class="font-black text-brand bg-blue-50 px-2 py-1 rounded-lg text-xs">${p.butiranP1[k.id].markah} M</span></div><p class="text-sm font-medium text-slate-600 leading-relaxed">${p.butiranP1[k.id].laporan}</p></div>`;
             }
           });
         } else { html += `<p class="text-sm font-medium text-rose-500 bg-rose-50 p-4 rounded-2xl border border-rose-100">Belum dinilai.</p>`; }
         html += `</div>`;
 
-        html += `<div class="bg-emerald-50/50 p-5 rounded-[2rem] border border-emerald-100 mb-4">
-                  <h4 class="font-black text-emerald-600 text-sm uppercase tracking-widest mb-4 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Penilai 2 (Jumlah: ${p.totalP2 || '-'})</h4>`;
+        html += `<div class="bg-emerald-50/50 p-5 rounded-[2rem] border border-emerald-100 mb-4"><h4 class="font-black text-emerald-600 text-sm uppercase tracking-widest mb-4 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Penilai 2 (Jumlah: ${p.totalP2 || '-'})</h4>`;
         if (Object.keys(p.butiranP2).length > 0) {
           CONFIG_KURSUS.kemahiran.forEach(k => {
             if(p.butiranP2[k.id]) {
-              html += `<div class="mb-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-                        <div class="flex justify-between items-center mb-2"><p class="text-xs font-black text-slate-800 uppercase tracking-widest">${k.nama}</p><span class="font-black text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg text-xs">${p.butiranP2[k.id].markah} M</span></div>
-                        <p class="text-sm font-medium text-slate-600 leading-relaxed">${p.butiranP2[k.id].laporan}</p>
-                       </div>`;
+              html += `<div class="mb-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-100"><div class="flex justify-between items-center mb-2"><p class="text-xs font-black text-slate-800 uppercase tracking-widest">${k.nama}</p><span class="font-black text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg text-xs">${p.butiranP2[k.id].markah} M</span></div><p class="text-sm font-medium text-slate-600 leading-relaxed">${p.butiranP2[k.id].laporan}</p></div>`;
             }
           });
         } else { html += `<p class="text-sm font-medium text-rose-500 bg-rose-50 p-4 rounded-2xl border border-rose-100">Belum dinilai.</p>`; }
