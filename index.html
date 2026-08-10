@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="ms" class="scroll-smooth">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Portal Sukan MPU3421</title>
+  <title>Aplikasi Pemarkahan Futsal MPU3421</title>
   
-  <!-- Font Moden: Inter -->
+  <!-- Font Moden: Outfit -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -16,180 +16,142 @@
     tailwind.config = {
       theme: { 
         extend: { 
-          fontFamily: { sans: ['Inter', 'sans-serif'] },
-          colors: { brand: '#0f172a', accent: '#3b82f6' }
+          fontFamily: { sans: ['Outfit', 'sans-serif'] },
+          colors: { brand: '#4f46e5', accent: '#ec4899' },
+          animation: { 'gradient-x': 'gradient-x 15s ease infinite' },
+          keyframes: {
+            'gradient-x': {
+              '0%, 100%': { 'background-size': '200% 200%', 'background-position': 'left center' },
+              '50%': { 'background-size': '200% 200%', 'background-position': 'right center' }
+            }
+          }
         } 
       }
     }
   </script>
   <style>
-    body { -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
+    body { -webkit-tap-highlight-color: transparent; }
     ::-webkit-scrollbar { width: 0px; background: transparent; }
-    .view-transition { transition: opacity 0.4s ease, transform 0.4s ease; }
-    .hidden-view { display: none !important; opacity: 0; transform: translateY(15px); }
+    .view-transition { transition: opacity 0.5s ease, transform 0.5s ease; }
+    .hidden-view { display: none !important; opacity: 0; transform: translateY(20px); }
     .floating-bar { padding-bottom: env(safe-area-inset-bottom); }
-    /* Animasi Modal */
-    .modal-enter { animation: modalSlideUp 0.3s ease-out forwards; }
-    @keyframes modalSlideUp {
-      from { opacity: 0; transform: translateY(20px) scale(0.95); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
+    
+    /* GLASSMORPHISM UTILITIES */
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    }
+    .glass-input {
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.8);
     }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen relative pb-32 selection:bg-accent selection:text-white">
+<!-- Latar Belakang Warna Bertenaga (Vibrant Animated Gradient) -->
+<body class="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 animate-gradient-x text-slate-800 antialiased min-h-screen relative pb-32 selection:bg-accent selection:text-white">
 
-  <!-- AppBar -->
-  <header class="bg-white/80 backdrop-blur-md sticky top-0 z-40 border-b border-slate-200/60 px-5 py-4 flex justify-between items-center transition-all">
+  <!-- AppBar Glassmorphism -->
+  <header class="glass-panel sticky top-0 z-40 px-5 py-4 flex justify-between items-center transition-all rounded-b-3xl">
     <div class="flex items-center gap-3">
-      <div class="bg-brand text-white w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm shadow-md shadow-slate-300">ST</div>
-      <h1 class="font-bold text-slate-900 tracking-tight text-lg">MPU3421</h1>
+      <div class="bg-gradient-to-tr from-brand to-accent text-white w-10 h-10 rounded-2xl flex items-center justify-center font-black text-sm shadow-lg">FT</div>
+      <h1 class="font-extrabold text-slate-900 tracking-tight text-xl">FUTSAL MPU3421</h1>
     </div>
     <div id="user-info" class="hidden-view flex items-center gap-2">
-      <span id="user-label" class="text-xs font-semibold text-slate-600 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200"></span>
-      <button onclick="app.logout()" class="text-sm font-semibold text-rose-500 hover:text-rose-600 bg-rose-50 px-3 py-1.5 rounded-full transition-all">Keluar</button>
+      <span id="user-label" class="text-xs font-bold text-brand bg-white/80 px-3 py-1.5 rounded-full shadow-sm"></span>
+      <button onclick="app.logout()" class="text-sm font-bold text-rose-600 hover:text-white hover:bg-rose-500 bg-white/80 px-3 py-1.5 rounded-full transition-all shadow-sm">Keluar</button>
     </div>
   </header>
 
   <!-- Overlay Loading -->
-  <div id="loader" class="hidden-view fixed inset-0 bg-white/90 backdrop-blur-sm z-50 flex flex-col justify-center items-center transition-all duration-300">
-    <div class="w-12 h-12 border-4 border-slate-200 border-t-accent rounded-full animate-spin mb-4 shadow-sm"></div>
-    <p class="font-semibold text-slate-600 animate-pulse text-sm">Menyegerak Data...</p>
+  <div id="loader" class="hidden-view fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex flex-col justify-center items-center transition-all duration-300">
+    <div class="w-14 h-14 border-4 border-white/30 border-t-accent rounded-full animate-spin mb-4 shadow-xl"></div>
+    <p class="font-bold text-white tracking-widest text-sm uppercase">Menyegerak Data...</p>
   </div>
 
-  <!-- MODAL LAPORAN PENSYARAH -->
-  <div id="modal-laporan" class="hidden-view fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex justify-center items-end sm:items-center p-4 transition-all duration-300">
-    <div class="bg-white w-full max-w-lg max-h-[85vh] overflow-hidden rounded-[2rem] shadow-2xl flex flex-col modal-enter">
-      <!-- Header Modal -->
-      <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50 rounded-t-[2rem]">
-        <h3 class="font-bold text-slate-800 text-lg">Butiran Laporan</h3>
-        <button onclick="app.tutupModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-600 rounded-full p-2 transition-colors">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </button>
-      </div>
-      <!-- Body Modal -->
-      <div id="modal-body" class="p-5 overflow-y-auto space-y-6">
-        <!-- Kandungan akan dijana oleh JS -->
-      </div>
-    </div>
-  </div>
-
-  <main class="max-w-lg mx-auto px-4 mt-6">
+  <main class="max-w-xl mx-auto px-4 mt-8">
     
     <!-- ================= PANDANGAN 1: LOG MASUK ================= -->
     <div id="view-login" class="view-transition">
-      <div class="text-center mb-8 mt-4">
-        <h2 class="text-3xl font-extrabold text-slate-900 mb-2">Selamat Datang</h2>
-        <p class="text-slate-500 text-sm font-medium">Log masuk untuk memulakan penilaian.</p>
+      <div class="text-center mb-10 mt-6 text-white">
+        <h2 class="text-4xl font-black mb-2 drop-shadow-md">Sistem Penilaian</h2>
+        <p class="text-white/80 text-sm font-medium">Log masuk untuk memulakan pentaksiran.</p>
       </div>
       
-      <div class="flex bg-slate-200/70 p-1.5 rounded-2xl mb-8 relative">
-        <button id="tab-pelajar" onclick="app.setModLogin('PELAJAR')" class="flex-1 py-3 text-sm font-semibold rounded-xl bg-white shadow-sm text-slate-900 transition-all z-10 relative">Pelajar</button>
-        <button id="tab-penilai" onclick="app.setModLogin('PENILAI')" class="flex-1 py-3 text-sm font-semibold rounded-xl text-slate-500 hover:text-slate-700 transition-all z-10 relative">Kakitangan</button>
+      <div class="glass-panel p-2 rounded-3xl mb-8 flex relative shadow-xl">
+        <button id="tab-pelajar" onclick="app.setModLogin('PELAJAR')" class="flex-1 py-3.5 text-sm font-bold rounded-2xl bg-white text-brand shadow transition-all z-10">Pelajar</button>
+        <button id="tab-penilai" onclick="app.setModLogin('PENILAI')" class="flex-1 py-3.5 text-sm font-bold rounded-2xl text-slate-600 hover:text-slate-900 transition-all z-10">Kakitangan</button>
       </div>
 
-      <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100">
-        <!-- Form Pelajar -->
-        <div id="form-pelajar" class="space-y-5">
+      <div class="glass-panel p-8 rounded-[2.5rem]">
+        <div id="form-pelajar" class="space-y-6">
           <div>
-            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 ml-1">No. Kad Pengenalan</label>
-            <input type="number" id="nokp-input" class="w-full bg-slate-50 border-0 ring-1 ring-slate-200 rounded-2xl px-5 py-4 text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-accent transition-shadow placeholder:font-normal placeholder:text-slate-400" placeholder="010101141234">
+            <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Kad Pengenalan</label>
+            <input type="number" id="nokp-input" class="w-full glass-input rounded-2xl px-5 py-4 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-brand focus:bg-white transition-all placeholder:font-medium placeholder:text-slate-400" placeholder="Cth: 010101141234">
           </div>
-          <button onclick="app.loginPelajar()" class="w-full bg-accent hover:bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-500/30 transition-transform active:scale-95">Log Masuk</button>
+          <button onclick="app.loginPelajar()" class="w-full bg-gradient-to-r from-brand to-accent hover:opacity-90 text-white font-bold py-4 rounded-2xl shadow-lg transition-transform active:scale-95 text-lg">Log Masuk</button>
         </div>
 
-        <!-- Form Penilai -->
-        <div id="form-penilai" class="hidden-view space-y-5">
+        <div id="form-penilai" class="hidden-view space-y-6">
           <div>
-            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 ml-1">Peranan</label>
-            <select id="login-role" class="w-full bg-slate-50 border-0 ring-1 ring-slate-200 rounded-2xl px-5 py-4 text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-accent appearance-none transition-shadow">
+            <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Peranan</label>
+            <select id="login-role" class="w-full glass-input rounded-2xl px-5 py-4 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-brand focus:bg-white appearance-none transition-all">
               <option value="P1">Penilai 1</option>
               <option value="P2">Penilai 2</option>
               <option value="PENSYARAH">Penyelaras</option>
             </select>
           </div>
           <div>
-            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 ml-1">PIN Akses</label>
-            <input type="password" id="login-pin" class="w-full bg-slate-50 border-0 ring-1 ring-slate-200 rounded-2xl px-5 py-4 text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-accent transition-shadow placeholder:font-normal placeholder:text-slate-400" placeholder="****">
+            <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">PIN Keselamatan</label>
+            <input type="password" id="login-pin" class="w-full glass-input rounded-2xl px-5 py-4 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-brand focus:bg-white transition-all placeholder:font-medium placeholder:text-slate-400" placeholder="****">
           </div>
-          <button onclick="app.loginKakitangan()" class="w-full bg-brand hover:bg-slate-800 text-white font-bold py-4 rounded-2xl shadow-lg shadow-slate-900/20 transition-transform active:scale-95">Masuk Portal</button>
+          <button onclick="app.loginKakitangan()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 rounded-2xl shadow-xl transition-transform active:scale-95 text-lg">Akses Portal</button>
         </div>
       </div>
     </div>
 
-    <!-- ================= PANDANGAN 2: PROFIL PELAJAR ================= -->
-    <div id="view-profil" class="hidden-view view-transition space-y-6">
-      <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100">
-        <h2 class="text-xl font-bold text-slate-900 mb-4">Profil Pelajar</h2>
-        <div class="grid grid-cols-2 gap-4 text-sm mb-6">
-          <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-            <p class="text-slate-400 text-xs uppercase tracking-wider font-bold mb-1">Nama</p>
-            <p class="font-bold text-slate-900" id="lbl-nama"></p>
-          </div>
-          <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-            <p class="text-slate-400 text-xs uppercase tracking-wider font-bold mb-1">Status</p>
-            <p class="font-bold text-emerald-600" id="lbl-status"></p>
-          </div>
-        </div>
-        <div class="border-2 border-dashed border-slate-200 rounded-3xl p-6 text-center flex flex-col items-center">
-          <img id="img-preview" src="" class="w-28 h-28 rounded-full object-cover border-4 border-white shadow-md mb-4 bg-slate-100">
-          <label class="cursor-pointer bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold py-3 px-6 rounded-xl transition-colors inline-block mb-2 shadow-sm">
-            Pilih Fail Gambar
-            <input type="file" id="file-input" accept="image/png, image/jpeg" class="hidden">
-          </label>
-          <p class="text-xs font-semibold text-slate-400 mb-4">Maksimum 2MB</p>
-          <button id="btn-upload" onclick="app.uploadImage()" class="bg-accent text-white font-bold py-3 px-6 rounded-xl shadow-md shadow-accent/20 w-full transition-all active:scale-[0.98]">Simpan Ke Pangkalan Data</button>
-          <p id="upload-status" class="text-sm mt-3 font-semibold"></p>
-        </div>
-      </div>
-    </div>
-
-    <!-- ================= PANDANGAN 3: SENARAI PELAJAR (PENILAI) ================= -->
+    <!-- ================= PANDANGAN 2: SENARAI PELAJAR ================= -->
     <div id="view-penilai" class="hidden-view view-transition">
-      <h2 class="text-2xl font-extrabold text-slate-900 mb-5">Senarai Ujian Amali</h2>
-      <div id="student-list-container" class="space-y-4">
-        <!-- Dijana Dinamik -->
+      <h2 class="text-3xl font-black text-white mb-6 drop-shadow-md">Calon Futsal</h2>
+      <div id="student-list-container" class="space-y-5">
+        <!-- Kad pelajar dijana secara dinamik -->
       </div>
     </div>
 
-    <!-- ================= PANDANGAN 4: BORANG RUBRIK ================= -->
+    <!-- ================= PANDANGAN 3: BORANG RUBRIK (GLASSMORPHISM) ================= -->
     <div id="view-borang" class="hidden-view view-transition">
-      <button onclick="app.showView('view-penilai')" class="mb-5 text-sm font-bold text-slate-500 hover:text-slate-800 flex items-center gap-1.5 bg-white py-2 px-4 rounded-full border border-slate-200 shadow-sm w-fit transition-all active:scale-95">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg> Kembali
+      <button onclick="app.showView('view-penilai')" class="mb-6 text-sm font-bold text-white/90 hover:text-white flex items-center gap-1.5 glass-panel py-2 px-5 rounded-full w-fit transition-all active:scale-95">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"></path></svg> Kembali
       </button>
       
-      <div class="bg-white border border-slate-100 p-5 rounded-[2rem] shadow-sm mb-6 flex items-center gap-4">
-        <div class="w-12 h-12 bg-accent/10 rounded-full flex items-center justify-center text-accent">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+      <div class="glass-panel p-6 rounded-[2.5rem] mb-8 flex items-center gap-5">
+        <div class="w-14 h-14 bg-gradient-to-br from-brand to-accent rounded-full flex items-center justify-center text-white shadow-inner">
+          <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
         </div>
         <div>
-          <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-0.5">Menilai Pelajar</p>
-          <h2 id="borang-subtitle" class="font-extrabold text-slate-900 text-lg leading-tight"></h2>
+          <p class="text-xs font-black text-brand uppercase tracking-widest mb-1">Penilaian Aktif</p>
+          <h2 id="borang-subtitle" class="font-extrabold text-slate-900 text-xl leading-tight"></h2>
         </div>
       </div>
 
-      <div id="rubrik-container" class="space-y-6 pb-6"></div>
+      <div id="rubrik-container" class="space-y-8 pb-10"></div>
 
-      <!-- Floating Action Bar untuk Borang -->
+      <!-- Floating Bar -->
       <div class="fixed bottom-0 left-0 right-0 z-30 pointer-events-none floating-bar">
-        <div class="max-w-lg mx-auto pointer-events-auto px-4 pb-6 pt-8 bg-gradient-to-t from-slate-50 via-slate-50/90 to-transparent">
-          <div class="bg-brand p-2 rounded-[2rem] shadow-2xl flex justify-between items-center ring-1 ring-slate-800/50">
+        <div class="max-w-xl mx-auto pointer-events-auto px-4 pb-6 pt-10 bg-gradient-to-t from-slate-900/80 via-slate-900/50 to-transparent">
+          <div class="glass-panel p-3 rounded-[2.5rem] shadow-2xl flex justify-between items-center border border-white/20 bg-slate-900/80 backdrop-blur-xl">
             <div class="pl-6 py-2">
-              <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-0.5">Jumlah Skor</p>
-              <div class="font-black text-white text-2xl leading-none flex items-baseline gap-1">
-                <span id="borang-total">0.0</span><span class="text-sm font-semibold text-slate-500">/60</span>
+              <p class="text-white/60 text-[11px] font-black uppercase tracking-widest mb-0.5">Jumlah Markah</p>
+              <div class="font-black text-white text-3xl leading-none flex items-baseline gap-1">
+                <span id="borang-total">0.0</span><span class="text-base font-semibold text-white/50">/50</span>
               </div>
             </div>
-            <button onclick="app.simpanPenilaian()" class="bg-accent hover:bg-blue-600 text-white font-bold py-4 px-8 rounded-full shadow-lg shadow-blue-500/40 transition-transform active:scale-95 h-full">Hantar</button>
+            <button onclick="app.simpanPenilaian()" class="bg-gradient-to-r from-emerald-400 to-emerald-500 hover:from-emerald-500 hover:to-emerald-600 text-white font-extrabold py-4 px-10 rounded-full shadow-lg shadow-emerald-500/30 transition-transform active:scale-95 text-lg">Hantar</button>
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- ================= PANDANGAN 5: PAPAN PEMUKA PENSYARAH ================= -->
-    <div id="view-pensyarah" class="hidden-view view-transition">
-      <h2 class="text-2xl font-extrabold text-slate-900 mb-5">Laporan Keseluruhan</h2>
-      <div id="laporan-list-container" class="space-y-4">
-        <!-- Kad Laporan Dijana Secara Dinamik -->
       </div>
     </div>
 
@@ -197,30 +159,79 @@
 
   <script>
     /**
-     * KONFIGURASI APLIKASI
+     * KONFIGURASI RUBRIK FUTSAL MPU3421
      */
     const CONFIG_KURSUS = {
-      // Masukkan URL Web App Google Apps Script anda di bawah ini:
+      // GANTIKAN URL ANDA DI SINI
       API_URL: 'https://script.google.com/macros/s/AKfycbxIQMBSVJ5xAKBuNlArTkLw5C5-yCaRCHv_g3tug4F4lcphiX8eRMsF0rEILivZzX2A4A/exec',
       tahapList: [
-        { id: 'cemerlang', nama: 'Cemerlang', min: 16.0, max: 20.0, baseClass: 'bg-slate-50 border-slate-200 text-slate-600', activeClass: 'bg-emerald-50 border-emerald-500 text-emerald-700 ring-4 ring-emerald-500/20' },
-        { id: 'sederhana', nama: 'Sederhana', min: 10.0, max: 15.9, baseClass: 'bg-slate-50 border-slate-200 text-slate-600', activeClass: 'bg-amber-50 border-amber-500 text-amber-700 ring-4 ring-amber-500/20' },
-        { id: 'lemah', nama: 'Lemah', min: 0.0, max: 9.99, baseClass: 'bg-slate-50 border-slate-200 text-slate-600', activeClass: 'bg-rose-50 border-rose-500 text-rose-700 ring-4 ring-rose-500/20' }
+        { id: 'amat_cemerlang', nama: 'Amat Cemerlang', min: 9.0, max: 10.0, baseClass: 'glass-input text-slate-700', activeClass: 'bg-emerald-100/90 border-emerald-500 text-emerald-800 ring-4 ring-emerald-500/30' },
+        { id: 'cemerlang', nama: 'Cemerlang', min: 7.5, max: 8.9, baseClass: 'glass-input text-slate-700', activeClass: 'bg-blue-100/90 border-blue-500 text-blue-800 ring-4 ring-blue-500/30' },
+        { id: 'kepujian', nama: 'Kepujian', min: 6.0, max: 7.4, baseClass: 'glass-input text-slate-700', activeClass: 'bg-indigo-100/90 border-indigo-500 text-indigo-800 ring-4 ring-indigo-500/30' },
+        { id: 'lulus', nama: 'Lulus', min: 5.0, max: 5.9, baseClass: 'glass-input text-slate-700', activeClass: 'bg-amber-100/90 border-amber-500 text-amber-800 ring-4 ring-amber-500/30' },
+        { id: 'lemah', nama: 'Lemah', min: 0.0, max: 4.99, baseClass: 'glass-input text-slate-700', activeClass: 'bg-rose-100/90 border-rose-500 text-rose-800 ring-4 ring-rose-500/30' }
       ],
       kemahiran: [
-        { id: 'servis', nama: 'Servis (Sepak Sila)', tahap: { cemerlang: { sebelum: 'postur stabil', semasa: 'teknik jitu', selepas: 'ikut lajak lancar' }, sederhana: { sebelum: 'kaki di bulatan', semasa: 'teknik betul', selepas: 'kembali sedia' }, lemah: { sebelum: 'hilang postur', semasa: 'sentuhan sasaran lari', selepas: 'hilang imbangan' } } },
-        { id: 'mengumpan', nama: 'Mengumpan', tahap: { cemerlang: { sebelum: 'bukaan selesa', semasa: 'umpanan tepat', selepas: 'kemas' }, sederhana: { sebelum: 'selesa', semasa: 'asas baik', selepas: 'sedia' }, lemah: { sebelum: 'lambat', semasa: 'tersasar', selepas: 'pasif' } } },
-        { id: 'menanduk', nama: 'Menanduk', tahap: { cemerlang: { sebelum: 'bacaan tepat', semasa: 'kontak dahi padu', selepas: 'mendarat kemas' }, sederhana: { sebelum: 'sedia', semasa: 'kontak baik', selepas: 'serap daya' }, lemah: { sebelum: 'pasif', semasa: 'salah kontak', selepas: 'jatuh' } } }
+        { 
+          id: 'sepakan', nama: 'Sepakan 10 m', 
+          tahap: { 
+            amat_cemerlang: 'Menunjukkan imbangan badan yang baik, sepakan kuat dan tepat mencapai sasaran. Kaki yang sesuai digunakan.', 
+            cemerlang: 'Posisi badan stabil. Sepakan biasanya tepat tetapi kadang-kala kurang kekuatan.', 
+            kepujian: 'Imbangan kadang kala tidak stabil, menyebabkan sepakan kurang tepat dan kurang kekuatan.', 
+            lulus: 'Imbangan badan lemah. Sepakan tidak tepat dan jarang mencapai sasaran.', 
+            lemah: 'Imbangan badan sangat lemah. Sepakan tiada kekuatan langsung dan salah teknik kaki.' 
+          } 
+        },
+        { 
+          id: 'hantaran', nama: 'Hantaran Pendek 10 m', 
+          tahap: { 
+            amat_cemerlang: 'Posisi sempurna, hantaran tepat, kawalan bola baik, dan komunikasi cemerlang.', 
+            cemerlang: 'Posisi biasanya betul, hantaran majoriti tepat tetapi boleh diperbaiki untuk kawalan lebih baik.', 
+            kepujian: 'Hantaran kurang tepat dan kadangkala melencung. Komunikasi lemah.', 
+            lulus: 'Posisi sering salah, hantaran terlalu lemah/kuat dan tidak berkesan.', 
+            lemah: 'Posisi sangat lemah, hantaran gagal sepenuhnya dan tiada komunikasi.' 
+          } 
+        },
+        { 
+          id: 'menjaring', nama: 'Menjaring 10 m', 
+          tahap: { 
+            amat_cemerlang: 'Imbangan badan baik, mengelecek cemerlang mengelirukan lawan, mampu bertukar arah pantas untuk 5 percubaan.', 
+            cemerlang: 'Mengelecek terkawal, bertukar arah baik, mampu membuat 4 percubaan.', 
+            kepujian: 'Imbangan kadang terganggu, gerakan kurang meyakinkan, mampu membuat 3 percubaan sederhana.', 
+            lulus: 'Kawalan bola sangat lemah, sukar bertukar arah, hanya mampu 1-2 percubaan.', 
+            lemah: 'Gagal mengawal imbangan, mudah kehilangan bola, tiada percubaan tepat.' 
+          } 
+        },
+        { 
+          id: 'jaga_gol', nama: 'Menjaga Gol 10 m', 
+          tahap: { 
+            amat_cemerlang: 'Posisi sentiasa sedia, membaca bola dengan baik, tangkapan kemas, cekap membuat terjunan, komunikasi cemerlang.', 
+            cemerlang: 'Posisi bersedia, tangkapan baik walau terlepas sedikit, terjunan memuaskan.', 
+            kepujian: 'Keputusan agak lambat, tangkapan kadang terlepas, terjunan kurang meyakinkan.', 
+            lulus: 'Sering tersalah posisi, sukar membaca pergerakan, banyak bola terlepas.', 
+            lemah: 'Gagal membaca permainan, tangkapan sangat lemah, tiada terjunan.' 
+          } 
+        },
+        { 
+          id: 'pegawai', nama: 'Kepegawaian (Undang-undang & Teknikal)', 
+          tahap: { 
+            amat_cemerlang: 'Mengenal pasti undang-undang dengan terperinci, mengambil keputusan tepat dan kefahaman sangat baik.', 
+            cemerlang: 'Mengenal pasti undang-undang dengan tepat, keputusan cukup baik.', 
+            kepujian: 'Penguasaan cukup. Masih perlu meningkatkan kemampuan teknikal dan keputusan.', 
+            lulus: 'Penguasaan sederhana dan kurang meyakinkan. Memerlukan banyak latihan.', 
+            lemah: 'Tidak memahami undang-undang. Penguasaan sangat lemah.' 
+          } 
+        }
       ]
     };
 
     /**
-     * LOGIK APLIKASI FRONTEND
+     * KAWALAN LOGIK STATE & API
      */
     const app = {
-      state: { sesiSemasa: null, dataPelajarSemasa: null, dataPenilaianBorang: {}, senaraiLaporanPensyarah: [] },
+      state: { sesiSemasa: null, dataPelajarSemasa: null, dataPenilaianBorang: {} },
 
-      // Penghantar API Berpusat dengan Pengendalian Ralat (Error Handling)
+      /** Memanggil Endpoint App Script dengan error handling selamat */
       gasCall: async function(action, payload) {
         try {
           const res = await fetch(CONFIG_KURSUS.API_URL, { 
@@ -228,7 +239,7 @@
             headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
             body: JSON.stringify({ action: action, data: payload }) 
           });
-          if (!res.ok) throw new Error("Pelayan tergendala. Sila semak sambungan internet.");
+          if (!res.ok) throw new Error("Gagal menyambung ke pangkalan data.");
           const result = await res.json();
           if (result && result.success === false) throw new Error(result.message);
           return result;
@@ -238,8 +249,11 @@
       showLoader: (s) => document.getElementById('loader').classList.toggle('hidden-view', !s),
       
       showView: (v) => { 
-        ['view-login', 'view-profil', 'view-penilai', 'view-borang', 'view-pensyarah'].forEach(id => document.getElementById(id).classList.add('hidden-view')); 
+        ['view-login', 'view-penilai', 'view-borang'].forEach(id => {
+          document.getElementById(id).classList.add('hidden-view');
+        }); 
         setTimeout(() => document.getElementById(v).classList.remove('hidden-view'), 50);
+        window.scrollTo(0, 0);
       },
 
       setModLogin: function(mod) {
@@ -249,55 +263,16 @@
         const tabPenilai = document.getElementById('tab-penilai');
         
         if(mod === 'PELAJAR') {
-          tabPelajar.className = "flex-1 py-3 text-sm font-semibold rounded-xl bg-white shadow-sm text-slate-900 transition-all z-10 relative";
-          tabPenilai.className = "flex-1 py-3 text-sm font-semibold rounded-xl text-slate-500 hover:text-slate-700 transition-all z-10 relative";
+          tabPelajar.className = "flex-1 py-3.5 text-sm font-bold rounded-2xl bg-white text-brand shadow transition-all z-10";
+          tabPenilai.className = "flex-1 py-3.5 text-sm font-bold rounded-2xl text-slate-600 hover:text-slate-900 transition-all z-10";
         } else {
-          tabPenilai.className = "flex-1 py-3 text-sm font-semibold rounded-xl bg-white shadow-sm text-slate-900 transition-all z-10 relative";
-          tabPelajar.className = "flex-1 py-3 text-sm font-semibold rounded-xl text-slate-500 hover:text-slate-700 transition-all z-10 relative";
+          tabPenilai.className = "flex-1 py-3.5 text-sm font-bold rounded-2xl bg-white text-brand shadow transition-all z-10";
+          tabPelajar.className = "flex-1 py-3.5 text-sm font-bold rounded-2xl text-slate-600 hover:text-slate-900 transition-all z-10";
         }
       },
 
-      /* ----------- MODUL PELAJAR ----------- */
-      loginPelajar: async function() {
-        const noKP = document.getElementById('nokp-input').value.trim();
-        if (!noKP) return alert("Sila masukkan No. KP");
-        this.showLoader(true);
-        try {
-          const res = await this.gasCall('loginPelajar', { noKP });
-          if (res.success) {
-            this.state.sesiSemasa = 'PELAJAR'; this.state.dataPelajarSemasa = res.pelajar;
-            document.getElementById('user-label').innerText = 'Pelajar'; document.getElementById('user-info').classList.remove('hidden-view');
-            document.getElementById('lbl-nama').innerText = res.pelajar.nama; 
-            document.getElementById('lbl-status').innerText = res.pelajar.status || 'Belum Upload';
-            document.getElementById('img-preview').src = res.pelajar.linkGambar || 'https://via.placeholder.com/150';
-            this.showView('view-profil');
-          }
-        } catch (e) { alert(e.message); } finally { this.showLoader(false); }
-      },
+      loginPelajar: async function() { alert("Antaramuka Profil Pelajar dalam penyelenggaraan Glassmorphism."); },
 
-      uploadImage: function() {
-        const fileInput = document.getElementById('file-input');
-        if (fileInput.files.length === 0) return alert("Pilih fail dahulu.");
-        if (fileInput.files[0].size > 2097152) return alert("Fail mesti bawah 2MB.");
-        
-        const status = document.getElementById('upload-status'), btn = document.getElementById('btn-upload');
-        status.className = "text-sm mt-3 font-semibold text-amber-500"; status.innerText = "Memproses..."; btn.disabled = true;
-
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-          status.innerText = "Menghantar ke awan...";
-          try {
-            const res = await this.gasCall('muatNaikGambar', { base64Data: e.target.result, filename: fileInput.files[0].name, noKP: this.state.dataPelajarSemasa.noKP });
-            if (res.success) {
-              status.className = "text-sm mt-3 font-semibold text-emerald-600"; status.innerText = "Berjaya Disimpan!";
-              document.getElementById('img-preview').src = res.url;
-            }
-          } catch (err) { status.className = "text-sm mt-3 font-semibold text-rose-500"; status.innerText = err.message; } finally { btn.disabled = false; }
-        };
-        reader.readAsDataURL(fileInput.files[0]);
-      },
-
-      /* ----------- MODUL AKSES PEGAWAI ----------- */
       loginKakitangan: async function() {
         const role = document.getElementById('login-role').value, pin = document.getElementById('login-pin').value.trim();
         if (!pin) return alert("Sila masukkan PIN Keselamatan.");
@@ -309,17 +284,12 @@
             document.getElementById('user-label').innerText = role; 
             document.getElementById('user-info').classList.remove('hidden-view');
             
-            // PENGHALAAN BERDASARKAN PERANAN
-            if (role === 'PENSYARAH') {
-              this.muatLaporanPensyarah(); 
-            } else {
-              this.muatSenaraiPelajar();
-            }
+            if (role === 'PENSYARAH') { alert('Panel Pensyarah sedang dimuatkan...'); this.logout(); } 
+            else this.muatSenaraiPelajar();
           }
         } catch (e) { alert(e.message); } finally { this.showLoader(false); }
       },
 
-      /* ----------- MODUL PENILAI (P1 & P2) ----------- */
       muatSenaraiPelajar: async function() {
         this.showLoader(true);
         try {
@@ -327,29 +297,31 @@
           const container = document.getElementById('student-list-container'); container.innerHTML = '';
           senarai.forEach(p => {
             container.insertAdjacentHTML('beforeend', `
-              <div class="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm flex items-center justify-between gap-4 transition-transform active:scale-[0.98]">
+              <div class="glass-panel p-5 rounded-[2.5rem] flex items-center justify-between gap-4 hover:-translate-y-1 transition-all duration-300">
                 <div class="flex items-center gap-4">
-                  <img src="${p.linkGambar || 'https://via.placeholder.com/60'}" class="w-14 h-14 rounded-full object-cover border-2 border-slate-100 bg-slate-50">
+                  <div class="w-14 h-14 rounded-full bg-gradient-to-br from-slate-200 to-slate-100 flex items-center justify-center font-bold text-slate-400 border-2 border-white shadow-inner">
+                    ${p.nama.charAt(0)}
+                  </div>
                   <div>
-                    <h3 class="font-extrabold text-slate-800 text-sm md:text-base leading-tight mb-1">${p.nama}</h3>
-                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-widest">${p.noKP}</p>
+                    <h3 class="font-bold text-slate-900 text-sm md:text-base leading-tight mb-1">${p.nama}</h3>
+                    <p class="text-xs font-black text-brand/80 uppercase tracking-widest">${p.noKP}</p>
                   </div>
                 </div>
-                <button onclick="app.bukaBorangPenilaian('${p.noKP}', '${p.nama}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-bold py-3 px-5 rounded-2xl transition-colors shrink-0">Nilai</button>
+                <button onclick="app.bukaBorangPenilaian('${p.idSistem}', '${p.noKP}', '${p.nama}')" class="bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold py-3 px-6 rounded-2xl transition-transform active:scale-95 shadow-md shrink-0">Nilai</button>
               </div>`);
           });
           this.showView('view-penilai');
         } catch (e) { alert(e.message); } finally { this.showLoader(false); }
       },
 
-      bukaBorangPenilaian: async function(noKP, nama) {
-        this.state.dataPelajarSemasa = { noKP, nama }; this.state.dataPenilaianBorang = {};
+      bukaBorangPenilaian: async function(idSistem, noKP, nama) {
+        this.state.dataPelajarSemasa = { idSistem, noKP, nama }; this.state.dataPenilaianBorang = {};
         document.getElementById('borang-subtitle').innerText = nama;
         this.binaUIBorang();
         
         this.showLoader(true);
         try {
-          const rekod = await this.gasCall('getPenilaianPelajar', { noKP, penilai: this.state.sesiSemasa });
+          const rekod = await this.gasCall('getPenilaianPelajar', { idSistem, penilai: this.state.sesiSemasa });
           Object.keys(rekod).forEach(kId => { 
             if (rekod[kId].adaData) { 
               this.pilihTahapRubrik(kId, rekod[kId].tahapId); 
@@ -367,34 +339,33 @@
           let tHTML = '';
           CONFIG_KURSUS.tahapList.forEach(t => { 
             tHTML += `<div id="card-${k.id}-${t.id}" onclick="app.pilihTahapRubrik('${k.id}', '${t.id}')" 
-                        class="border-2 rounded-2xl p-4 text-center cursor-pointer transition-all ${t.baseClass} active:scale-95">
-                        <h4 class="text-sm font-bold">${t.nama}</h4>
-                        <p class="text-xs font-semibold mt-1 opacity-70">${t.min} - ${t.max}</p>
+                        class="border-2 border-transparent rounded-2xl p-4 text-center cursor-pointer transition-all hover:-translate-y-1 ${t.baseClass} active:scale-95 flex flex-col justify-center min-h-[90px]">
+                        <h4 class="text-sm font-bold leading-tight">${t.nama}</h4>
+                        <p class="text-xs font-semibold mt-1.5 opacity-60">${t.min} - ${t.max}</p>
                       </div>`; 
           });
           
           c.insertAdjacentHTML('beforeend', `
-            <div class="bg-white rounded-[2rem] p-6 border border-slate-100 shadow-sm relative overflow-hidden">
-              <div class="absolute top-0 left-0 w-1.5 h-full bg-accent/20"></div>
-              <div class="flex items-center gap-3 mb-5">
-                <span class="bg-accent text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">${idx + 1}</span>
+            <div class="glass-panel rounded-[2.5rem] p-6 relative overflow-hidden">
+              <div class="flex items-center gap-3 mb-6">
+                <span class="bg-slate-900 text-white w-7 h-7 rounded-full flex items-center justify-center text-xs font-black shadow-md">${idx + 1}</span>
                 <h3 class="font-extrabold text-slate-900 text-lg tracking-tight">${k.nama}</h3>
               </div>
               
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">${tHTML}</div>
+              <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mb-6">${tHTML}</div>
               
-              <div id="input-group-${k.id}" class="hidden-view bg-slate-50 p-5 rounded-2xl border border-slate-100 mb-4 transition-all">
-                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Markah Muktamad</label>
-                <div class="flex items-center gap-3">
+              <div id="input-group-${k.id}" class="hidden-view glass-input p-5 rounded-2xl mb-4 transition-all">
+                <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-3">Penetapan Markah (Max: 10)</label>
+                <div class="flex items-center gap-4">
                   <input type="number" id="markah-${k.id}" step="0.1" onchange="app.kemaskiniInputMarkah('${k.id}')" 
-                    class="w-32 text-2xl font-black text-brand bg-white border-2 border-slate-200 rounded-xl px-4 py-2 focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/20 transition-all text-center">
-                  <span id="hint-${k.id}" class="text-xs font-semibold text-slate-400 uppercase"></span>
+                    class="w-32 text-2xl font-black text-brand bg-white border-0 ring-2 ring-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-brand/30 transition-all text-center shadow-sm">
+                  <span id="hint-${k.id}" class="text-xs font-bold text-slate-400 uppercase tracking-wider bg-white/50 px-3 py-1.5 rounded-lg"></span>
                 </div>
               </div>
               
               <div id="laporan-group-${k.id}" class="hidden-view transition-all">
-                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Ulasan Pintar (Boleh Disunting)</label>
-                <textarea id="laporan-${k.id}" class="w-full text-sm font-medium text-slate-700 bg-white border-2 border-slate-200 rounded-2xl px-5 py-4 focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/20 transition-all leading-relaxed shadow-sm" rows="3"></textarea>
+                <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-3">Justifikasi Pencapaian</label>
+                <textarea id="laporan-${k.id}" class="w-full text-sm font-medium text-slate-700 bg-white/70 border-0 ring-1 ring-slate-200 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-brand/50 transition-all leading-relaxed shadow-sm" rows="3"></textarea>
               </div>
             </div>`);
         });
@@ -402,14 +373,16 @@
 
       pilihTahapRubrik: function(kId, tId) {
         this.state.dataPenilaianBorang[kId] = tId;
+        
+        // Tetapan Gaya Glassmorphism Aktif
         CONFIG_KURSUS.tahapList.forEach(t => {
            const el = document.getElementById(`card-${kId}-${t.id}`);
-           el.className = `border-2 rounded-2xl p-4 text-center cursor-pointer transition-all ${t.baseClass} active:scale-95`;
+           el.className = `border-2 border-transparent rounded-2xl p-4 text-center cursor-pointer transition-all hover:-translate-y-1 ${t.baseClass} active:scale-95 flex flex-col justify-center min-h-[90px]`;
         });
         
         const tahapDef = CONFIG_KURSUS.tahapList.find(t => t.id === tId);
         const selEl = document.getElementById(`card-${kId}-${tId}`);
-        selEl.className = `border-2 rounded-2xl p-4 text-center cursor-pointer transition-all active:scale-95 ${tahapDef.activeClass} shadow-md`;
+        selEl.className = `border-2 rounded-2xl p-4 text-center cursor-pointer transition-all active:scale-95 flex flex-col justify-center min-h-[90px] shadow-lg ${tahapDef.activeClass} -translate-y-1`;
         
         const inputEl = document.getElementById(`markah-${kId}`);
         inputEl.min = tahapDef.min; inputEl.max = tahapDef.max;
@@ -430,9 +403,10 @@
         this.kiraJumlahMarkah(); this.janaUlasanAutomatik(kId, tId, inputEl.value);
       },
 
+      // Fungsi Laporan Berdasarkan Rubrik Futsal
       janaUlasanAutomatik: function(kId, tId, m) {
         const u = CONFIG_KURSUS.kemahiran.find(k => k.id === kId).tahap[tId];
-        document.getElementById(`laporan-${kId}`).value = `Analisis Perlakuan: Semasa fasa persediaan, pemerhatian mendapati ${u.sebelum}. Seterusnya pada fasa pelaksanaan, didapati ${u.semasa}. Pada fasa akhir (pemulihan), pelajar ${u.selepas}.`;
+        document.getElementById(`laporan-${kId}`).value = `Laporan Pemerhatian: ${u}`;
       },
 
       kiraJumlahMarkah: function() {
@@ -441,7 +415,7 @@
       },
 
       simpanPenilaian: async function() {
-        const payload = { noKP: this.state.dataPelajarSemasa.noKP, penilai: this.state.sesiSemasa, kemahiran: {} };
+        const payload = { idSistem: this.state.dataPelajarSemasa.idSistem, penilai: this.state.sesiSemasa, kemahiran: {} };
         for (const k of CONFIG_KURSUS.kemahiran) {
           const tId = this.state.dataPenilaianBorang[k.id], m = document.getElementById(`markah-${k.id}`).value, l = document.getElementById(`laporan-${k.id}`).value;
           if (!tId || !m) return alert(`Lengkapkan pemarkahan untuk: ${k.nama}`);
@@ -450,94 +424,6 @@
         this.showLoader(true);
         try { await this.gasCall('savePenilaian', payload); alert('Pemarkahan Berjaya Disimpan!'); this.showView('view-penilai'); } 
         catch (e) { alert(e.message); } finally { this.showLoader(false); }
-      },
-
-      /* ----------- MODUL PENSYARAH ----------- */
-      muatLaporanPensyarah: async function() {
-        this.showLoader(true);
-        try {
-          const laporan = await this.gasCall('getLaporan', {});
-          this.state.senaraiLaporanPensyarah = laporan; // Simpan dalam state untuk rujukan Modal
-          const container = document.getElementById('laporan-list-container'); container.innerHTML = '';
-          
-          laporan.forEach((p, idx) => {
-            // Logik Visual Status
-            let badgeStyle = "bg-rose-100 text-rose-700";
-            if (p.status === 'Lengkap') badgeStyle = "bg-emerald-100 text-emerald-700";
-            else if (p.status === 'Separuh') badgeStyle = "bg-amber-100 text-amber-700";
-
-            container.insertAdjacentHTML('beforeend', `
-              <div class="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col gap-4">
-                <div class="flex items-center justify-between border-b border-slate-100 pb-4">
-                  <div>
-                    <h3 class="font-extrabold text-slate-800 text-base leading-tight">${p.nama}</h3>
-                    <p class="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">${p.noKP}</p>
-                  </div>
-                  <span class="text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-full ${badgeStyle}">${p.status}</span>
-                </div>
-                
-                <div class="flex justify-between items-center px-2">
-                  <div class="text-center"><p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Markah P1</p><p class="font-black text-slate-700 text-lg">${p.totalP1 !== null ? p.totalP1 : '-'}</p></div>
-                  <div class="text-center"><p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Markah P2</p><p class="font-black text-slate-700 text-lg">${p.totalP2 !== null ? p.totalP2 : '-'}</p></div>
-                  <div class="text-center bg-slate-50 px-4 py-2 rounded-xl border border-slate-200"><p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Purata Akhir</p><p class="font-black text-accent text-xl">${p.purata !== null ? p.purata.toFixed(1) : '-'}</p></div>
-                </div>
-                
-                <button onclick="app.paparModalLaporan(${idx})" class="w-full bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold py-3 rounded-xl transition-all">Lihat Analitik Laporan</button>
-              </div>
-            `);
-          });
-          this.showView('view-pensyarah');
-        } catch (e) { alert(e.message); } finally { this.showLoader(false); }
-      },
-
-      paparModalLaporan: function(index) {
-        const p = this.state.senaraiLaporanPensyarah[index];
-        const body = document.getElementById('modal-body');
-        body.innerHTML = ''; // Kosongkan kandungan lama
-
-        // Header Profil Kecil dalam Modal
-        let html = `
-          <div class="flex items-center gap-4 mb-6 bg-slate-50 p-4 rounded-2xl border border-slate-100">
-            <img src="${p.linkGambar || 'https://via.placeholder.com/80'}" class="w-16 h-16 rounded-full object-cover border-2 border-white shadow-sm">
-            <div>
-              <h4 class="font-bold text-slate-900 leading-tight">${p.nama}</h4>
-              <p class="text-xs font-semibold text-slate-500 uppercase tracking-widest">${p.noKP}</p>
-            </div>
-          </div>
-        `;
-
-        // Render Laporan Penilai 1
-        html += `<h4 class="font-black text-slate-800 text-sm uppercase tracking-widest mb-3 border-l-4 border-accent pl-2">Laporan Penilai 1 (Total: ${p.totalP1 || '-'})</h4>`;
-        if (Object.keys(p.butiranP1).length > 0) {
-          CONFIG_KURSUS.kemahiran.forEach(k => {
-            if(p.butiranP1[k.id]) {
-              html += `<div class="mb-4 bg-white border border-slate-200 p-4 rounded-xl shadow-sm">
-                        <p class="text-xs font-bold text-accent uppercase tracking-wider mb-2">${k.nama} • Skor: ${p.butiranP1[k.id].markah}</p>
-                        <p class="text-sm font-medium text-slate-600 leading-relaxed">${p.butiranP1[k.id].laporan}</p>
-                       </div>`;
-            }
-          });
-        } else { html += `<p class="text-sm font-medium text-rose-500 bg-rose-50 p-3 rounded-xl mb-4">Penilai 1 belum melengkapkan penilaian.</p>`; }
-
-        // Render Laporan Penilai 2
-        html += `<h4 class="font-black text-slate-800 text-sm uppercase tracking-widest mb-3 border-l-4 border-emerald-500 pl-2 mt-6">Laporan Penilai 2 (Total: ${p.totalP2 || '-'})</h4>`;
-        if (Object.keys(p.butiranP2).length > 0) {
-          CONFIG_KURSUS.kemahiran.forEach(k => {
-            if(p.butiranP2[k.id]) {
-              html += `<div class="mb-4 bg-white border border-slate-200 p-4 rounded-xl shadow-sm">
-                        <p class="text-xs font-bold text-emerald-600 uppercase tracking-wider mb-2">${k.nama} • Skor: ${p.butiranP2[k.id].markah}</p>
-                        <p class="text-sm font-medium text-slate-600 leading-relaxed">${p.butiranP2[k.id].laporan}</p>
-                       </div>`;
-            }
-          });
-        } else { html += `<p class="text-sm font-medium text-rose-500 bg-rose-50 p-3 rounded-xl">Penilai 2 belum melengkapkan penilaian.</p>`; }
-
-        body.innerHTML = html;
-        document.getElementById('modal-laporan').classList.remove('hidden-view');
-      },
-
-      tutupModal: function() {
-        document.getElementById('modal-laporan').classList.add('hidden-view');
       },
 
       logout: function() {
