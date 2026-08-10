@@ -5,10 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Aplikasi Pemarkahan Sepak Takraw MPU3421</title>
   
+  <!-- Font Moden: Outfit -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -33,28 +35,35 @@
     .view-transition { transition: opacity 0.5s ease, transform 0.5s ease; }
     .hidden-view { display: none !important; opacity: 0; transform: translateY(20px); }
     .floating-bar { padding-bottom: env(safe-area-inset-bottom); }
+    
+    /* GLASSMORPHISM UTILITIES */
     .glass-panel {
       background: rgba(255, 255, 255, 0.75);
-      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(255, 255, 255, 0.5);
       box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
     }
-    .glass-input { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(4px); border: 1px solid rgba(255, 255, 255, 0.8); }
+    .glass-input {
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+    }
+    
+    /* Animasi Modal */
     .modal-enter { animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     @keyframes modalSlideUp { from { opacity: 0; transform: translateY(30px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
     
-    /* Custom Checkbox Style for Error Marking */
+    /* Custom Checkbox Style */
     .checklist-cb {
-        appearance: none;
-        width: 1.25rem; height: 1.25rem;
+        appearance: none; width: 1.25rem; height: 1.25rem;
         border: 2px solid #cbd5e1; border-radius: 0.375rem;
         outline: none; cursor: pointer; transition: all 0.2s ease;
         position: relative; flex-shrink: 0;
     }
     .checklist-cb:checked { background-color: #ef4444; border-color: #ef4444; }
     .checklist-cb:checked::after {
-        content: '✕'; position: absolute;
-        color: white; font-size: 0.85rem; font-weight: bold;
+        content: '✕'; position: absolute; color: white; font-size: 0.85rem; font-weight: bold;
         left: 50%; top: 50%; transform: translate(-50%, -50%);
     }
   </style>
@@ -89,19 +98,6 @@
         </button>
       </div>
       <div id="modal-body" class="p-6 overflow-y-auto space-y-8"></div>
-    </div>
-  </div>
-
-  <!-- MODAL: RUJUKAN RUBRIK UNTUK PENILAI -->
-  <div id="modal-rubrik" class="hidden-view fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex justify-center items-end sm:items-center p-4 transition-all duration-300">
-    <div class="bg-white/95 backdrop-blur-xl w-full max-w-xl max-h-[85vh] overflow-hidden rounded-[2.5rem] shadow-2xl flex flex-col modal-enter border border-white/50">
-      <div class="p-6 border-b border-slate-200/50 flex justify-between items-center bg-brand text-white rounded-t-[2.5rem]">
-        <h3 class="font-black text-white text-xl tracking-tight">Rujukan Rubrik</h3>
-        <button onclick="app.tutupModalRubrik()" class="bg-white/20 hover:bg-white/30 text-white rounded-full p-2.5 transition-colors">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </button>
-      </div>
-      <div id="modal-rubrik-body" class="p-6 overflow-y-auto space-y-6"></div>
     </div>
   </div>
 
@@ -179,7 +175,7 @@
       <div id="student-list-container" class="space-y-5"></div>
     </div>
 
-    <!-- PANDANGAN 4: BORANG RUBRIK & SENARAI SEMAK PINTAR -->
+    <!-- PANDANGAN 4: BORANG RUBRIK -->
     <div id="view-borang" class="hidden-view view-transition">
       <button onclick="app.showView('view-penilai')" class="mb-6 text-sm font-bold text-white/90 hover:text-white flex items-center gap-1.5 glass-panel py-2 px-5 rounded-full w-fit transition-all active:scale-95">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"></path></svg> Kembali
@@ -195,9 +191,6 @@
             <h2 id="borang-subtitle" class="font-extrabold text-slate-900 text-xl leading-tight line-clamp-1"></h2>
           </div>
         </div>
-        <button onclick="app.bukaModalRubrik()" class="shrink-0 bg-white border border-slate-200 shadow-sm text-brand p-3 rounded-2xl hover:bg-slate-50 transition-transform active:scale-95" title="Lihat Spesifikasi Rubrik">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-        </button>
       </div>
 
       <div id="rubrik-container" class="space-y-8 pb-10"></div>
@@ -227,7 +220,9 @@
 
   <script>
     /**
-     * KONFIGURASI RUBRIK SEPAK TAKRAW MPU3421 (TERMASUK SENARAI SEMAK PINTAR)
+     * =====================================================================
+     * KONFIGURASI PANGKALAN DATA & RUBRIK
+     * =====================================================================
      */
     const CONFIG_KURSUS = {
       API_URL: 'https://script.google.com/macros/s/AKfycbxIQMBSVJ5xAKBuNlArTkLw5C5-yCaRCHv_g3tug4F4lcphiX8eRMsF0rEILivZzX2A4A/exec',
@@ -247,8 +242,7 @@
             "Sentuhan bola tepat pada bahagian dalam / kekura kaki",
             "Kawalan ketinggian, kelajuan, dan sasaran sempurna",
             "Pergerakan ikut lajak lancar & kembali ke posisi seimbang"
-          ],
-          tahap: { cemerlang: { sebelum: 'kedudukan kaki sokongan stabil di dalam bulatan; postur bersedia dan fokus mata tepat pada bola', semasa: 'meniru dan mempamerkan perlakuan teknik sepak sila secara tepat; pemindahan berat badan lancar; sentuhan bola tepat pada bahagian dalam atau kekura kaki dengan kawalan ketinggian, kelajuan, dan sasaran yang sempurna', selepas: 'pergerakan ikut lajak lancar serta merta kembali ke posisi bersedia secara seimbang' }, sederhana: { sebelum: 'kaki sokongan kekal di dalam bulatan; mata memandang arah bola', semasa: 'meniru perlakuan servis dengan teknik yang betul; imbangan memuaskan; kontak bola pada bahagian dalam atau kekura kaki tetapi kelajuan atau ketinggian bola tidak konsisten', selepas: 'melakukan pergerakan ikut lajak asas dan kembali kepada kedudukan bersedia' }, lemah: { sebelum: 'kaki sokongan keluar dari bulatan; mata tidak memandang pergerakan bola', semasa: 'gagal meniru/mempamerkan teknik servis dengan betul; imbangan badan tidak stabil, kontak bola bukan pada bahagian dalam kaki (tersasar/tidak lancar)', selepas: 'tiada pergerakan ikut lajak; hilang imbangan dan lambat kembali ke kedudukan bersedia' } } 
+          ]
         },
         { 
           id: 'mengumpan', 
@@ -257,10 +251,9 @@
             "Memandang arah pergerakan bola dengan tepat",
             "Bukaan langkah dan kawalan imbangan badan amat kukuh",
             "Sentuhan lancar dan terkawal",
-            "Kordinasi pemindahan daya tepat (bola tidak berputar ideal di atas jaring)",
+            "Kordinasi pemindahan daya tepat (bola tidak berputar ideal)",
             "Pergerakan ikut lajak kemas serta merta bersedia"
-          ],
-          tahap: { cemerlang: { sebelum: 'memandang arah pergerakan bola tepat; bukaan langkah dan kawalan imbangan badan amat kukuh', semasa: 'meniru dan mempamerkan teknik umpanan dengan sentuhan yang lancar dan terkawal; kordinasi pemindahan daya tepat menghasilkan umpanan bola tidak berputar yang ideal di atas jaring', selepas: 'pergerakan ikut lajak kemas serta merta berada dalam kesediaan bertindak' }, sederhana: { sebelum: 'berdiri buka langkah dengan selesa; mata memandang pergerakan bola', semasa: 'meniru teknik hantaran umpanan; berat badan diimbang di atas kaki sokongan; hantaran bola menuju ke arah zon hantaran di jaring', selepas: 'melakukan ikut lajak pergerakan asas dan kembali ke kedudukan bersedia' }, lemah: { sebelum: 'bukaan langkah tidak seimbang; mata tidak mengikut penerbangan bola', semasa: 'gagal mempamerkan perlakuan mengumpan dengan betul; sentuhan bola tidak tepat, umpanan terlalu rendah atau terlalu jauh dari jaring', selepas: 'tiada ikut lajak dan tidak bersedia untuk fasa permainan seterusnya' } } 
+          ]
         },
         { 
           id: 'menanduk', 
@@ -272,15 +265,22 @@
             "Ayunan leher/dada pantas; kawalan arah dan kelajuan amat baik",
             "Mendarat/bergerak secara seimbang dan selamat",
             "Serta-merta sedia untuk tindakan seterusnya"
-          ],
-          tahap: { cemerlang: { sebelum: 'dapat memastikan kelajuan dan ketinggian bola sangat tepat; postur badan fleksibel dan bersedia untuk rejaman', semasa: 'meniru dan mempamerkan perlakuan merejam dengan kontak bola tepat pada bahagian dahi disertai ayunan leher/dada yang pantas; kawalan arah dan kelajuan tandukan amat baik', selepas: 'mendarat/bergerak secara seimbang, selamat, dan serta-merta sedia untuk tindakan seterusnya' }, sederhana: { sebelum: 'berdiri selesa mengikut arah bola; mata memandang kedatangan bola', semasa: 'meniru perlakuan menanduk; kontak bola pada kawasan dahi dengan kilasan leher/badan yang baik untuk mengarah bola', selepas: 'menyerap daya pergerakan dan kembali ke kedudukan bersedia' }, lemah: { sebelum: 'posisi badan pasif; mata tidak memandang bola di udara', semasa: 'gagal mempamerkan perlakuan menanduk yang betul; sentuhan bola bukan pada dahi (terkena ubun-ubun/muka) dan arah tandukan tidak terkawal', selepas: 'hilang imbangan semasa mendarat/bergerak' } } 
+          ]
         }
       ]
     };
 
+    /**
+     * =====================================================================
+     * KAWALAN LOGIK STATE & API (Frontend)
+     * =====================================================================
+     */
     const app = {
       state: { sesiSemasa: null, dataPelajarSemasa: null, dataPenilaianBorang: {}, senaraiLaporanPensyarah: [] },
 
+      /** 
+       * Fungsi komunikasi utama menggunakan Fetch API dengan pengendalian ralat (try/catch). 
+       */
       gasCall: async function(action, payload) {
         try {
           const res = await fetch(CONFIG_KURSUS.API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: action, data: payload }) });
@@ -400,7 +400,6 @@
               this.pilihTahapRubrik(kId, rekod[kId].tahapId); 
               document.getElementById(`markah-${kId}`).value = rekod[kId].markah; 
               
-              // Memuatkan semula senarai semak yang telah ditanda dari pangkalan data
               if (rekod[kId].semakan) {
                 const checkedIndexes = rekod[kId].semakan.split(',');
                 checkedIndexes.forEach(idx => {
@@ -417,6 +416,7 @@
         } catch (e) { alert(e.message); } finally { this.showLoader(false); }
       },
 
+      /** Membina HTML borang dan senarai semak berdasarkan CONFIG_KURSUS */
       binaUIBorang: function() {
         const c = document.getElementById('rubrik-container'); c.innerHTML = '';
         CONFIG_KURSUS.kemahiran.forEach((k, idx) => {
@@ -429,7 +429,6 @@
                       </div>`; 
           });
           
-          // Membina Senarai Semak Dinamik untuk "TIDAK DILAKSANAKAN"
           let cHTML = '';
           k.senaraiSemak.forEach((item, cIdx) => {
             cHTML += `
@@ -476,9 +475,17 @@
 
       pilihTahapRubrik: function(kId, tId) {
         this.state.dataPenilaianBorang[kId] = tId;
-        CONFIG_KURSUS.tahapList.forEach(t => { document.getElementById(`card-${kId}-${t.id}`).className = `border-2 border-transparent rounded-2xl p-4 text-center cursor-pointer transition-all hover:-translate-y-1 ${t.baseClass} active:scale-95 flex flex-col justify-center min-h-[90px]`; });
+        CONFIG_KURSUS.tahapList.forEach(t => { 
+          const el = document.getElementById(`card-${kId}-${t.id}`);
+          if (el) el.className = `border-2 border-transparent rounded-2xl p-4 text-center cursor-pointer transition-all hover:-translate-y-1 ${t.baseClass} active:scale-95 flex flex-col justify-center min-h-[90px]`; 
+        });
+        
         const tahapDef = CONFIG_KURSUS.tahapList.find(t => t.id === tId);
-        document.getElementById(`card-${kId}-${tId}`).className = `border-2 rounded-2xl p-4 text-center cursor-pointer transition-all active:scale-95 flex flex-col justify-center min-h-[90px] shadow-lg ${tahapDef.activeClass} -translate-y-1`;
+        // Null check sekiranya pangkalan data simpan ID tahap lama yang telah dibuang
+        if (!tahapDef) return; 
+
+        const selEl = document.getElementById(`card-${kId}-${tId}`);
+        if (selEl) selEl.className = `border-2 rounded-2xl p-4 text-center cursor-pointer transition-all active:scale-95 flex flex-col justify-center min-h-[90px] shadow-lg ${tahapDef.activeClass} -translate-y-1`;
         
         const inputEl = document.getElementById(`markah-${kId}`); inputEl.min = tahapDef.min; inputEl.max = tahapDef.max;
         let cur = Number(inputEl.value); if (!inputEl.value || cur < tahapDef.min || cur > tahapDef.max) inputEl.value = tahapDef.max;
@@ -492,8 +499,16 @@
       },
 
       kemaskiniInputMarkah: function(kId) {
-        const tId = this.state.dataPenilaianBorang[kId], inputEl = document.getElementById(`markah-${kId}`), tDef = CONFIG_KURSUS.tahapList.find(t => t.id === tId);
-        let val = Number(inputEl.value); if (val < tDef.min) inputEl.value = tDef.min; if (val > tDef.max) inputEl.value = tDef.max;
+        const tId = this.state.dataPenilaianBorang[kId];
+        const inputEl = document.getElementById(`markah-${kId}`);
+        const tDef = CONFIG_KURSUS.tahapList.find(t => t.id === tId);
+        
+        if (!tDef) return;
+
+        let val = Number(inputEl.value); 
+        if (val < tDef.min) inputEl.value = tDef.min; 
+        if (val > tDef.max) inputEl.value = tDef.max;
+        
         this.kiraJumlahMarkah();
       },
 
@@ -501,13 +516,14 @@
         this.janaUlasanAutomatik(kId);
       },
 
-      /** Menjana Ulasan Pintar Berdasarkan Senarai Semak Yang DITANDA (Gagal Dibuat) */
+      /** Menjana Ulasan Pintar Berdasarkan Senarai Semak Yang DITANDA */
       janaUlasanAutomatik: function(kId) {
         const kDef = CONFIG_KURSUS.kemahiran.find(k => k.id === kId);
+        if(!kDef) return;
+
         const checklistItems = kDef.senaraiSemak;
         let checkedText = [];
         
-        // Kumpul semua item yang ditanda
         checklistItems.forEach((item, idx) => {
           const cb = document.getElementById(`cb-${kId}-${idx}`);
           if (cb && cb.checked) checkedText.push(item);
@@ -516,7 +532,7 @@
         let ulasan = `Analisis Perlakuan:\n`;
         
         if (checkedText.length === 0) {
-          ulasan += `Secara keseluruhannya, pelajar berjaya mempamerkan kriteria perlakuan kemahiran ${kDef.nama} dengan sangat cemerlang.`;
+          ulasan += `Secara keseluruhannya, pelajar berjaya mempamerkan kriteria perlakuan kemahiran dengan sangat cemerlang.`;
         } else {
           ulasan += `Berdasarkan pemerhatian, pelajar gagal melaksanakan perlakuan berikut:\n`;
           checkedText.forEach((item, index) => {
@@ -541,12 +557,13 @@
           const m = document.getElementById(`markah-${k.id}`) ? document.getElementById(`markah-${k.id}`).value : '';
           const l = document.getElementById(`laporan-${k.id}`) ? document.getElementById(`laporan-${k.id}`).value : '';
           
-          // Kumpul nilai Senarai Semak yang ditanda (dalam bentuk string koma: "0,2")
           let semakanDitanda = [];
-          k.senaraiSemak.forEach((item, idx) => {
-            const cb = document.getElementById(`cb-${k.id}-${idx}`);
-            if (cb && cb.checked) semakanDitanda.push(idx);
-          });
+          if (k.senaraiSemak) {
+            k.senaraiSemak.forEach((item, idx) => {
+              const cb = document.getElementById(`cb-${k.id}-${idx}`);
+              if (cb && cb.checked) semakanDitanda.push(idx);
+            });
+          }
           const semakanString = semakanDitanda.join(',');
           
           if (tId && m) {
@@ -563,37 +580,6 @@
         try { await this.gasCall('savePenilaian', payload); alert('Pemarkahan Disimpan!'); this.showView('view-penilai'); } 
         catch (e) { alert(e.message); } finally { this.showLoader(false); }
       },
-
-      /* FUNGSI MODAL RUJUKAN RUBRIK */
-      bukaModalRubrik: function() {
-        let html = '';
-        CONFIG_KURSUS.kemahiran.forEach((k, idx) => {
-          html += `<div class="mb-8"><h4 class="font-extrabold text-slate-800 text-lg mb-4 flex items-center gap-2"><span class="bg-brand text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">${idx+1}</span>${k.nama}</h4><div class="space-y-3">`;
-          
-          CONFIG_KURSUS.tahapList.forEach(t => {
-            const u = k.tahap[t.id];
-            let badgeClass = t.id === 'cemerlang' ? 'bg-emerald-100 text-emerald-800' : (t.id === 'sederhana' ? 'bg-amber-100 text-amber-800' : 'bg-rose-100 text-rose-800');
-            html += `
-              <div class="bg-slate-50 border border-slate-200 p-4 rounded-2xl">
-                <div class="flex justify-between items-center mb-3">
-                  <span class="text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full ${badgeClass}">${t.nama}</span>
-                  <span class="text-xs font-bold text-slate-500">${t.min} - ${t.max}</span>
-                </div>
-                <div class="text-sm text-slate-600 space-y-2">
-                  <p><strong>Sebelum:</strong> ${u.sebelum}</p>
-                  <p><strong>Semasa:</strong> ${u.semasa}</p>
-                  <p><strong>Selepas:</strong> ${u.selepas}</p>
-                </div>
-              </div>`;
-          });
-          html += `</div></div>`;
-        });
-        
-        document.getElementById('modal-rubrik-body').innerHTML = html;
-        document.getElementById('modal-rubrik').classList.remove('hidden-view');
-      },
-      
-      tutupModalRubrik: function() { document.getElementById('modal-rubrik').classList.add('hidden-view'); },
 
       muatLaporanPensyarah: async function() {
         this.showLoader(true);
@@ -646,8 +632,8 @@
         if (Object.keys(p.butiranP1).length > 0) {
           CONFIG_KURSUS.kemahiran.forEach(k => {
             if(p.butiranP1[k.id]) {
-              // Format teks (replace \n with <br>)
-              let formatLaporan = p.butiranP1[k.id].laporan.replace(/\n/g, '<br>');
+              // Pengendalian Ralat: Pastikan data wujud sebelum melakukan .replace
+              let formatLaporan = (p.butiranP1[k.id].laporan || "").toString().replace(/\n/g, '<br>');
               html += `<div class="mb-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-100"><div class="flex justify-between items-center mb-2"><p class="text-xs font-black text-slate-800 uppercase tracking-widest">${k.nama}</p><span class="font-black text-brand bg-blue-50 px-2 py-1 rounded-lg text-xs">${p.butiranP1[k.id].markah} M</span></div><p class="text-sm font-medium text-slate-600 leading-relaxed">${formatLaporan}</p></div>`;
             }
           });
@@ -658,7 +644,7 @@
         if (Object.keys(p.butiranP2).length > 0) {
           CONFIG_KURSUS.kemahiran.forEach(k => {
             if(p.butiranP2[k.id]) {
-              let formatLaporan = p.butiranP2[k.id].laporan.replace(/\n/g, '<br>');
+              let formatLaporan = (p.butiranP2[k.id].laporan || "").toString().replace(/\n/g, '<br>');
               html += `<div class="mb-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-100"><div class="flex justify-between items-center mb-2"><p class="text-xs font-black text-slate-800 uppercase tracking-widest">${k.nama}</p><span class="font-black text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg text-xs">${p.butiranP2[k.id].markah} M</span></div><p class="text-sm font-medium text-slate-600 leading-relaxed">${formatLaporan}</p></div>`;
             }
           });
