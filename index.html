@@ -92,7 +92,7 @@
     </div>
   </div>
 
-  <!-- MODAL: RUJUKAN RUBRIK UNTUK PENILAI -->
+  <!-- MODAL: RUJUKAN RUBRIK -->
   <div id="modal-rubrik" class="hidden-view fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex justify-center items-end sm:items-center p-4 transition-all duration-300 no-print">
     <div class="bg-white/95 backdrop-blur-xl w-full max-w-xl max-h-[85vh] overflow-hidden rounded-[2.5rem] shadow-2xl flex flex-col modal-enter border border-white/50">
       <div class="p-6 border-b border-slate-200/50 flex justify-between items-center bg-brand text-white rounded-t-[2.5rem]">
@@ -132,7 +132,7 @@
           <div>
             <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Peranan</label>
             <select id="login-role" class="w-full glass-input rounded-2xl px-5 py-4 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-brand focus:bg-white appearance-none transition-all">
-              <option value="P1">Penilai 1 (Utama)</option>
+              <option value="P1">Penilai 1 (Penilai Utama)</option>
               <option value="P2">Penilai 2</option>
               <option value="PENSYARAH">Pensyarah / Penyelaras</option>
             </select>
@@ -190,15 +190,15 @@
       </div>
     </div>
 
-    <!-- ================= PANDANGAN 4: PAPAN PEMUKA PENSYARAH (GLOBAL SETTINGS & REPORTS) ================= -->
+    <!-- ================= PANDANGAN 4: PAPAN PEMUKA PENSYARAH ================= -->
     <div id="view-pensyarah" class="hidden-view view-transition">
       <h2 class="text-3xl font-black text-white mb-6 drop-shadow-md">Laman Pensyarah</h2>
       
-      <!-- Panel Kawalan Tandatangan Global -->
+      <!-- Panel Kanvas Tandatangan Global -->
       <div class="glass-panel p-6 rounded-[2.5rem] mb-8 border-2 border-brand/40 relative overflow-hidden">
         <div class="absolute top-0 left-0 w-2 h-full bg-brand"></div>
         <h3 class="font-extrabold text-slate-900 text-lg mb-1">Tetapan Tandatangan Global</h3>
-        <p class="text-xs font-semibold text-slate-500 mb-5 leading-relaxed">Tandatangan di sini akan diguna pakai untuk <strong>semua</strong> laporan cetakan secara automatik. Sila pilih peranan dan lukis di dalam kotak.</p>
+        <p class="text-xs font-semibold text-slate-500 mb-5 leading-relaxed">Tandatangan di sini akan diguna pakai untuk <strong>semua</strong> cetakan laporan amali secara automatik.</p>
         
         <div class="mb-4">
           <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Pilih Peranan Penandatangan</label>
@@ -223,7 +223,7 @@
         </div>
       </div>
 
-      <h3 class="font-extrabold text-white text-xl mb-4 drop-shadow-md">Senarai Analisis Keseluruhan</h3>
+      <h3 class="font-extrabold text-white text-xl mb-4 drop-shadow-md">Senarai Analisis Pelajar</h3>
       <div id="laporan-list-container" class="space-y-6"></div>
     </div>
 
@@ -231,7 +231,7 @@
 
   <script>
     /**
-     * KONFIGURASI RUBRIK SEPAK TAKRAW (Max: 20 Markah Setiap Kemahiran)
+     * KONFIGURASI RUBRIK SEPAK TAKRAW
      */
     const CONFIG_KURSUS = {
       API_URL: 'https://script.google.com/macros/s/AKfycbxIQMBSVJ5xAKBuNlArTkLw5C5-yCaRCHv_g3tug4F4lcphiX8eRMsF0rEILivZzX2A4A/exec',
@@ -248,7 +248,7 @@
     };
 
     /**
-     * LOGIK KANVAS TANDATANGAN (DI LAMAN PENSYARAH)
+     * KAWALAN KANVAS TANDATANGAN (GLOBAL)
      */
     let gCanvas, gCtx, gIsDrawing = false, gHasDrawn = false;
     
@@ -257,7 +257,7 @@
       if(!gCanvas) return;
       
       const rect = gCanvas.parentElement.getBoundingClientRect();
-      if(rect.width === 0) return; // Mengelakkan kanvas dimensi 0 jika tersembunyi
+      if(rect.width === 0) return; // Tunggu dimensi div dirender dengan sempurna
       gCanvas.width = rect.width;
       gCanvas.height = 160;
       gCtx = gCanvas.getContext('2d');
@@ -265,13 +265,11 @@
       gCtx.lineCap = 'round';
       gCtx.strokeStyle = '#0f172a';
 
-      // Mouse Events
       gCanvas.addEventListener('mousedown', (e) => { gIsDrawing = true; gHasDrawn = true; gCtx.beginPath(); gCtx.moveTo(e.offsetX, e.offsetY); });
       gCanvas.addEventListener('mousemove', (e) => { if (gIsDrawing) { gCtx.lineTo(e.offsetX, e.offsetY); gCtx.stroke(); } });
       gCanvas.addEventListener('mouseup', () => { gIsDrawing = false; });
       gCanvas.addEventListener('mouseout', () => { gIsDrawing = false; });
 
-      // Touch Events
       gCanvas.addEventListener('touchstart', (e) => {
         if(e.target === gCanvas) e.preventDefault();
         const touch = e.touches[0]; const r = gCanvas.getBoundingClientRect();
@@ -290,8 +288,11 @@
       gCanvas.addEventListener('touchend', () => { gIsDrawing = false; });
     }
 
+    /**
+     * KAWALAN LOGIK STATE & API
+     */
     const app = {
-      state: { sesiSemasa: null, dataPelajarSemasa: null, dataPenilaianBorang: {}, senaraiLaporanPensyarah: {}, globalSigs: {} },
+      state: { sesiSemasa: null, dataPelajarSemasa: null, dataPenilaianBorang: {}, senaraiLaporanPensyarah: [], globalSigs: {} },
 
       gasCall: async function(action, payload) {
         try {
@@ -381,6 +382,7 @@
             if (rekod[kId].adaData && rekod[kId].tahapId !== '') { 
               this.pilihTahapRubrik(kId, rekod[kId].tahapId); 
               document.getElementById(`markah-${kId}`).value = rekod[kId].markah; 
+              
               if (rekod[kId].semakan) {
                 const checkedIndexes = rekod[kId].semakan.split(',');
                 checkedIndexes.forEach(idx => {
@@ -408,27 +410,58 @@
                         <p class="text-[10px] font-black tracking-wider uppercase mt-1.5 opacity-60">${t.min} - ${t.max}</p>
                       </div>`; 
           });
+          
           let cHTML = '';
           k.senaraiSemak.forEach((item, cIdx) => {
-            cHTML += `<label class="flex items-start gap-3 p-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 cursor-pointer transition-colors shadow-sm"><input type="checkbox" id="cb-${k.id}-${cIdx}" value="${cIdx}" onchange="app.kemaskiniSemakan('${k.id}')" class="checklist-cb mt-0.5"><span class="text-sm font-medium text-slate-700 leading-tight">${item}</span></label>`;
+            cHTML += `
+              <label class="flex items-start gap-3 p-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 cursor-pointer transition-colors shadow-sm">
+                <input type="checkbox" id="cb-${k.id}-${cIdx}" value="${cIdx}" onchange="app.kemaskiniSemakan('${k.id}')" class="checklist-cb mt-0.5">
+                <span class="text-sm font-medium text-slate-700 leading-tight">${item}</span>
+              </label>`;
           });
           
           c.insertAdjacentHTML('beforeend', `
             <div class="glass-panel rounded-[2.5rem] p-6 relative overflow-hidden">
-              <div class="flex items-center gap-3 mb-6"><span class="bg-slate-900 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-black shadow-md">${idx + 1}</span><h3 class="font-extrabold text-slate-900 text-lg tracking-tight">${k.nama}</h3></div>
+              <div class="flex items-center gap-3 mb-6">
+                <span class="bg-slate-900 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-black shadow-md">${idx + 1}</span>
+                <h3 class="font-extrabold text-slate-900 text-lg tracking-tight">${k.nama}</h3>
+              </div>
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">${tHTML}</div>
-              <div id="checklist-group-${k.id}" class="hidden-view bg-rose-50/50 p-5 rounded-3xl border border-rose-100 mb-6 transition-all"><p class="block text-xs font-black text-rose-600 uppercase tracking-widest mb-4 flex items-center gap-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>Tandakan perlakuan yang TIDAK dilaksanakan:</p><div class="space-y-2">${cHTML}</div></div>
-              <div id="input-group-${k.id}" class="hidden-view glass-input p-5 rounded-2xl mb-4 transition-all"><label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Penetapan Skor (Max: 20)</label><div class="flex items-center gap-4"><input type="number" id="markah-${k.id}" step="0.1" onchange="app.kemaskiniInputMarkah('${k.id}')" class="w-32 text-2xl font-black text-brand bg-white border-0 ring-2 ring-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-brand/30 transition-all text-center shadow-sm"><span id="hint-${k.id}" class="text-xs font-bold text-slate-400 uppercase tracking-wider bg-white/50 px-3 py-1.5 rounded-lg"></span></div></div>
-              <div id="laporan-group-${k.id}" class="hidden-view transition-all"><label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Analisis Automatik</label><textarea id="laporan-${k.id}" class="w-full text-sm font-medium text-slate-700 bg-white/70 border-0 ring-1 ring-slate-200 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-brand/50 transition-all leading-relaxed shadow-sm" rows="5"></textarea></div>
+              
+              <div id="checklist-group-${k.id}" class="hidden-view bg-rose-50/50 p-5 rounded-3xl border border-rose-100 mb-6 transition-all">
+                <p class="block text-xs font-black text-rose-600 uppercase tracking-widest mb-4 flex items-center gap-2">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                  Tandakan pada perlakuan yang TIDAK dilaksanakan:
+                </p>
+                <div class="space-y-2">${cHTML}</div>
+              </div>
+
+              <div id="input-group-${k.id}" class="hidden-view glass-input p-5 rounded-2xl mb-4 transition-all">
+                <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Penetapan Skor (Max: 20)</label>
+                <div class="flex items-center gap-4">
+                  <input type="number" id="markah-${k.id}" step="0.1" onchange="app.kemaskiniInputMarkah('${k.id}')" 
+                    class="w-32 text-2xl font-black text-brand bg-white border-0 ring-2 ring-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-brand/30 transition-all text-center shadow-sm">
+                  <span id="hint-${k.id}" class="text-xs font-bold text-slate-400 uppercase tracking-wider bg-white/50 px-3 py-1.5 rounded-lg"></span>
+                </div>
+              </div>
+              <div id="laporan-group-${k.id}" class="hidden-view transition-all">
+                <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Analisis Automatik (Boleh Disunting)</label>
+                <textarea id="laporan-${k.id}" class="w-full text-sm font-medium text-slate-700 bg-white/70 border-0 ring-1 ring-slate-200 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-brand/50 transition-all leading-relaxed shadow-sm" rows="5"></textarea>
+              </div>
             </div>`);
         });
       },
 
       pilihTahapRubrik: function(kId, tId) {
         this.state.dataPenilaianBorang[kId] = tId;
-        CONFIG_KURSUS.tahapList.forEach(t => { const el = document.getElementById(`card-${kId}-${t.id}`); if(el) el.className = `border-2 border-transparent rounded-2xl p-4 text-center cursor-pointer transition-all hover:-translate-y-1 ${t.baseClass} active:scale-95 flex flex-col justify-center min-h-[90px]`; });
+        CONFIG_KURSUS.tahapList.forEach(t => { 
+          const el = document.getElementById(`card-${kId}-${t.id}`);
+          if(el) el.className = `border-2 border-transparent rounded-2xl p-4 text-center cursor-pointer transition-all hover:-translate-y-1 ${t.baseClass} active:scale-95 flex flex-col justify-center min-h-[90px]`; 
+        });
+        
         const tDef = CONFIG_KURSUS.tahapList.find(t => t.id === tId);
         if(!tDef) return; 
+
         const selEl = document.getElementById(`card-${kId}-${tId}`);
         if(selEl) selEl.className = `border-2 rounded-2xl p-4 text-center cursor-pointer transition-all active:scale-95 flex flex-col justify-center min-h-[90px] shadow-lg ${tDef.activeClass} -translate-y-1`;
         
@@ -544,8 +577,8 @@
           
           this.showView('view-pensyarah');
           
-          // Memulakan Canvas Tandatangan selepas View dipaparkan supaya mendapat resolusi tepat
-          setTimeout(() => { initGlobalSignaturePad(); }, 100);
+          // Memulakan Canvas Tandatangan dengan delay bagi memastikan div HTML dirender penuh (untuk width kanvas)
+          setTimeout(() => { initGlobalSignaturePad(); }, 200);
           
         } catch (e) { alert(e.message); } finally { this.showLoader(false); }
       },
@@ -562,13 +595,13 @@
         const penilaiRole = document.getElementById('global-sig-role').value;
         const base64 = gCanvas.toDataURL('image/png');
         
-        this.showLoader(true, "Menyimpan Tandatangan Global...");
+        this.showLoader(true, "Menyimpan Tandatangan...");
         try {
           const res = await this.gasCall('simpanTandatanganGlobal', { base64Data: base64, penilaiId: penilaiRole });
           if(res.success) {
-            this.state.globalSigs[penilaiRole] = res.url; // Kemas kini simpanan sementara
+            this.state.globalSigs[penilaiRole] = res.url; 
             document.getElementById('sig-status-indicator').classList.remove('hidden-view');
-            setTimeout(()=> document.getElementById('sig-status-indicator').classList.add('hidden-view'), 3000);
+            setTimeout(()=> document.getElementById('sig-status-indicator').classList.add('hidden-view'), 4000);
           }
         } catch(e) { alert(e.message); } finally { this.showLoader(false); }
       },
