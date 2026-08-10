@@ -316,10 +316,11 @@
         try {
           const rekod = await this.gasCall('getPenilaianPelajar', { idSistem, penilai: this.state.sesiSemasa });
           Object.keys(rekod).forEach(kId => { 
-            if (rekod[kId].adaData) { 
+            if (rekod[kId].adaData && rekod[kId].tahapId !== '') { 
               this.pilihTahapRubrik(kId, rekod[kId].tahapId); 
               document.getElementById(`markah-${kId}`).value = rekod[kId].markah; 
-              this.janaUlasanAutomatik(kId, rekod[kId].tahapId, rekod[kId].markah);
+              if (rekod[kId].laporan) document.getElementById(`laporan-${kId}`).value = rekod[kId].laporan;
+              else this.janaUlasanAutomatik(kId, rekod[kId].tahapId, rekod[kId].markah);
             } 
           });
           this.kiraJumlahMarkah(); this.showView('view-borang');
@@ -393,13 +394,24 @@
 
       simpanPenilaian: async function() {
         const payload = { idSistem: this.state.dataPelajarSemasa.idSistem, penilai: this.state.sesiSemasa, kemahiran: {} };
+        let adaIsi = false;
         for (const k of CONFIG_KURSUS.kemahiran) {
-          const tId = this.state.dataPenilaianBorang[k.id], m = document.getElementById(`markah-${k.id}`).value, l = document.getElementById(`laporan-${k.id}`).value;
-          if (!tId || !m) return alert(`Lengkapkan pemarkahan untuk: ${k.nama}`);
-          payload.kemahiran[k.id] = { tahapId: tId, markah: Number(m), laporan: l };
+          const tId = this.state.dataPenilaianBorang[k.id] || '';
+          const m = document.getElementById(`markah-${k.id}`) ? document.getElementById(`markah-${k.id}`).value : '';
+          const l = document.getElementById(`laporan-${k.id}`) ? document.getElementById(`laporan-${k.id}`).value : '';
+          
+          if (tId && m) {
+            payload.kemahiran[k.id] = { tahapId: tId, markah: Number(m), laporan: l };
+            adaIsi = true;
+          } else {
+            payload.kemahiran[k.id] = { tahapId: '', markah: '', laporan: '' };
+          }
         }
+        
+        if (!adaIsi) return alert('Sila isi sekurang-kurangnya satu kemahiran sebelum menyimpan.');
+        
         this.showLoader(true);
-        try { await this.gasCall('savePenilaian', payload); alert('Pemarkahan Berjaya Disimpan!'); this.showView('view-penilai'); } 
+        try { await this.gasCall('savePenilaian', payload); alert('Pemarkahan Separa/Penuh Berjaya Disimpan!'); this.showView('view-penilai'); } 
         catch (e) { alert(e.message); } finally { this.showLoader(false); }
       },
 
